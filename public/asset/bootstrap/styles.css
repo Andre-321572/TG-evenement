@@ -1,0 +1,510 @@
+:root {
+    --primary-color: #4f46e5;
+    --secondary-color: #764ba2;
+    --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #764ba2 100%);
+    --light-bg: #f9fafb;
+    --text-dark: #1f2937;
+    --font-outfit: 'Outfit', sans-serif;
+}
+
+body {
+    font-family: var(--font-outfit) !important;
+    background-color: var(--light-bg);
+    color: var(--text-dark);
+}
+
+.hover-up {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.hover-up:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: 0 20px 40px rgba(79, 70, 229, 0.12) !important;
+}
+
+.backdrop-blur {
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    background-color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.text-gradient-primary {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+@media (max-width: 768px) {
+    #hero h1 {
+        font-size: 28px;
+        line-height: 36px;
+    }
+
+    #hero h2 {
+        font-size: 18px;
+        line-height: 24px;
+        margin-bottom: 30px;
+    }
+
+    #hero .hero-img img {
+        width: 70%;
+    }
+}
+
+@media (max-width: 575px) {
+    #hero .hero-img img {
+        width: 80%;
+    }
+
+    #hero .btn-get-started {
+        font-size: 16px;
+        padding: 10px 24px 11px 24px;
+    }
+}
+
+@keyframes up-down {
+    0% {
+        transform: translateY(20px);
+    }
+
+    100% {
+        transform: translateY(-20px);
+    }
+}
+
+.fashon {
+    align-items: center;
+    font-size: large;
+    font-weight: bolder;
+    font-size: 200PX;
+}
+
+.fashon h1 {
+    text-decoration: underline;
+    text-shadow: 2px 1px blanchedalmond;
+}
+
+.fashon h2 {
+    flood-color: bisque;
+    color: antiquewhite;
+}
+
+#chargement {
+    background-color: #f9f9f9;
+}
+
+.index-left {
+    color: chocolate;
+}
+
+.categorie {
+    width: 20vh;
+    height: 15vh;
+
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
+
+}
+
+.categrie-title {
+    padding-top: 5px;
+    margin-top: 35px;
+    background-color: #e7e6e2;
+}
+
+.categrie-title h3 {
+    border-radius: 10px 10px 10px 10px;
+}
+
+.categrie-title img {
+    margin-right: 40px;
+    width: 30px;
+    height: 30px;
+    background-color: rgb(211, 214, 214);
+    border-radius: 100%;
+}
+
+.categorie .categorie-img {
+
+    width: 20vh;
+    height: fit-content;
+}
+
+.info-bouton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.image {
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+
+    /* Target screens smaller than 768px */
+    .row {
+        overflow-x: auto;
+    }
+}
+
+.card {
+    position: relative;
+    border: none;
+}
+
+.ville:hover::before {
+    content: attr(data-name);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.5rem;
+    background-color: rgba(65, 64, 64, 0.7);
+    color: white;
+    text-align: center;
+}
+
+.ville img :hover::before {
+    width: 130%;
+
+}
+
+.ville img {
+    height: 30vh;
+    border-radius: 40px 40px 0px 0px;
+}
+
+.scrollbar {
+    /* Réduire la taille de la barre de défilement */
+    scrollbar-width: thin;
+    /* Pour les navigateurs non-WebKit */
+    scrollbar-color: #ccc transparent;
+    /* Couleur de la barre de défilement et de son fond */
+}
+
+/* Pour les navigateurs WebKit (Chrome, Safari, etc.) */
+.scrollbar::-webkit-scrollbar {
+    width: 5px;
+    /* Largeur de la barre de défilement */
+    height: 4px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+    background-color: transparent;
+    /* Couleur du fond de la barre de défilement */
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+    background-color: #3d6670;
+    /* Couleur de la barre de défilement */
+    border-radius: 50px;
+    /* Coins arrondis */
+}
+
+/*nuage  */
+.nuage {
+    /* Définissez la largeur et la hauteur de votre div */
+
+    border: none;
+    position: absolute;
+
+    /* Définissez un pseudo-élément 'after' */
+    &::after {
+        content: "";
+        position: relative;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 5%;
+        position: fixed;
+        background: linear-gradient(to right, rgba(121, 121, 121, 0.5), rgba(231, 231, 231, 0));
+    }
+}
+
+
+/*pour le formulaire de rechercehe sur la page de s evenement  */
+
+
+
+.widget-26 .widget-26-job-title .employer-name {
+    margin: 0;
+    line-height: 1.5;
+    font-weight: 400;
+    color: #3c4142;
+    font-size: 0.8125rem;
+    color: #3c4142;
+}
+
+.widget-26 .widget-26-job-title .employer-name:hover {
+    color: #68CBD7;
+    text-decoration: none;
+}
+
+.widget-26 .widget-26-job-title .time {
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.widget-26 .widget-26-job-info {
+    min-width: 100px;
+    font-weight: 400;
+}
+
+.widget-26 .widget-26-job-info p {
+    line-height: 1.5;
+    color: #3c4142;
+    font-size: 0.8125rem;
+}
+
+.widget-26 .widget-26-job-info .location {
+    color: #3c4142;
+}
+
+.widget-26 .widget-26-job-salary {
+    min-width: 70px;
+    font-weight: 400;
+    color: #3c4142;
+    font-size: 0.8125rem;
+}
+
+.widget-26 .widget-26-job-category {
+    padding: .5rem;
+    display: inline-flex;
+    white-space: nowrap;
+    border-radius: 15px;
+}
+
+.widget-26 .widget-26-job-category .indicator {
+    width: 13px;
+    height: 13px;
+    margin-right: .5rem;
+    float: left;
+    border-radius: 50%;
+}
+
+.widget-26 .widget-26-job-category span {
+    font-size: 0.8125rem;
+    color: #3c4142;
+    font-weight: 600;
+}
+
+.widget-26 .widget-26-job-starred svg {
+    width: 20px;
+    height: 20px;
+    color: #fd8b2c;
+}
+
+.widget-26 .widget-26-job-starred svg.starred {
+    fill: #fd8b2c;
+}
+
+.bg-soft-base {
+    background-color: #e1f5f7;
+}
+
+.bg-soft-warning {
+    background-color: #fff4e1;
+}
+
+.bg-soft-success {
+    background-color: #d1f6f2;
+}
+
+.bg-soft-danger {
+    background-color: #fedce0;
+}
+
+.bg-soft-info {
+    background-color: #d7efff;
+}
+
+
+.search-form {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 1rem;
+
+}
+
+.search-form input {
+    height: 100%;
+    background: #c4bfbf;
+    border: 0;
+    border-left: 1px solid black;
+    border-radius: 0px 0px 0px 0px;
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    height: 100%;
+    font-size: 1rem;
+}
+
+.search-form .boutton {
+    border-radius: 0px 10px 10px 0px;
+
+}
+
+.search-form select {
+    background: #c4bfbf;
+    border: 0;
+    border-radius: 10px 0px 0px 10px;
+    padding: 1rem;
+    height: 100%;
+    font-size: 1rem;
+}
+
+.search-form select:focus {
+    border: 0;
+}
+
+.search-form button {
+    height: 100%;
+    width: 100%;
+    font-size: 1rem;
+}
+
+.search-form button svg {
+    width: 24px;
+    height: 24px;
+}
+
+.wrap {
+
+    flex-wrap: nowrap;
+}
+
+
+
+
+
+.bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+@media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+    }
+}
+
+.b-example-divider {
+    width: 100%;
+    height: 3rem;
+    background-color: rgba(0, 0, 0, .1);
+    border: solid rgba(0, 0, 0, .15);
+    border-width: 1px 0;
+    box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+}
+
+.b-example-vr {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 100vh;
+}
+
+.bi {
+    vertical-align: -.125em;
+    fill: currentColor;
+}
+
+.nav-scroller {
+    position: relative;
+    z-index: 2;
+    height: 2.75rem;
+    overflow-y: hidden;
+}
+
+.nav-scroller .nav {
+    display: flex;
+    flex-wrap: nowrap;
+    padding-bottom: 1rem;
+    margin-top: -1px;
+    overflow-x: auto;
+    text-align: center;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+}
+
+.btn-bd-primary {
+    --bd-violet-bg: #712cf9;
+    --bd-violet-rgb: 112.520718, 44.062154, 249.437846;
+
+    --bs-btn-font-weight: 600;
+    --bs-btn-color: var(--bs-white);
+    --bs-btn-bg: var(--bd-violet-bg);
+    --bs-btn-border-color: var(--bd-violet-bg);
+    --bs-btn-hover-color: var(--bs-white);
+    --bs-btn-hover-bg: #6528e0;
+    --bs-btn-hover-border-color: #6528e0;
+    --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
+    --bs-btn-active-color: var(--bs-btn-hover-color);
+    --bs-btn-active-bg: #5a23c8;
+    --bs-btn-active-border-color: #5a23c8;
+}
+
+.bd-mode-toggle {
+    z-index: 1500;
+}
+
+.bd-mode-toggle .dropdown-menu .active .bi {
+    display: block !important;
+}
+
+/*----------------------inscription--------------------*/
+.inscription-container {
+    max-width: 50%;
+    height: 92vh;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 5px;
+    background-color:transparent;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.registre{
+    background-repeat: none;
+    height: 100%;
+}
+
+.inscription-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: hsl(0, 0%, 100%);
+}
+
+.inscription-container form input,
+.inscription-container form button {
+
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.phone-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.phone-input input {
+    width: calc(100% - 40px); /* Ajustement pour le drapeau + indicatif */
+}
+
+.phone-input label {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    font-size: 16px;
+}
+
