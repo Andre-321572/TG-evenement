@@ -8,13 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('billets', function (Blueprint $table) {
-            $table->integer('quantite_totale')->default(0);
-            $table->integer('quantite_disponible')->default(0);
-            $table->integer('quantite_vendue')->default(0);
-            $table->text('description')->nullable();
-            $table->string('statut')->nullable();
-        });
+        // Les colonnes existent déjà dans la migration de création de la table billets
     }
 
     /**
@@ -22,8 +16,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('billets', function (Blueprint $table) {
-            $table->dropColumn(['quantite_totale', 'quantite_disponible', 'quantite_vendue', 'description', 'statut']);
-        });
+        // No-op
     }
 };

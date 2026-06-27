@@ -15,6 +15,7 @@ use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ScannerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,8 +45,11 @@ Route::prefix('p')->name('p.')->group(function () {
     Route::get('/vie-nocturne', [PublicController::class, 'vie_nocturne'])->name('vie nocturne');
     Route::get('/voyage', [PublicController::class, 'voyage'])->name('voyage');
     Route::get('/detail/{id}/info',[PublicController::class,'show'])->name('detail');
-    Route::get('/payement/payement/{evenement}',[PaiementController::class,'showForm'])->name('paiement.form');
-    Route::get('/payement/process',[PaiementController::class,'processPayment'])->name('paiement.process');
+    Route::post('/payement/checkout', [PaiementController::class, 'createCheckout'])->name('paiement.checkout');
+    Route::get('/payement/success', [PaiementController::class, 'success'])->name('paiement.success');
+    Route::get('/payement/cancel/{evenement}', [PaiementController::class, 'cancel'])->name('paiement.cancel');
+    Route::get('/payement/process', [PaiementController::class, 'processPayment'])->name('paiement.process');
+    Route::get('/payement/{evenement}', [PaiementController::class, 'showForm'])->name('paiement.form');
 });
 
 Route::middleware('auth')->group(function () {
@@ -90,6 +94,21 @@ Route::prefix('organisateur')->name('organisateur.')->middleware(['auth'])->grou
     Route::match(['get'], '/billet/all', [BilletController::class, 'allBillets'])->name('billet-all');
 
 
+});
+
+// ─── Scanner routes ───────────────────────────────────────────────────────────
+Route::prefix('scanner')->name('scanner.')->middleware(['auth', 'scanner'])->group(function () {
+    Route::get('/', [ScannerController::class, 'dashboard'])->name('dashboard');
+    Route::post('/verify', [ScannerController::class, 'verify'])->name('verify');
+    Route::get('/stats', [ScannerController::class, 'stats'])->name('stats');
+});
+
+// ─── Admin: manage scanners ───────────────────────────────────────────────────
+Route::prefix('organisateur')->name('organisateur.')->middleware(['auth'])->group(function () {
+    Route::get('/scanners', [ScannerController::class, 'listScanners'])->name('scanners');
+    Route::get('/scanners/creer', [ScannerController::class, 'createScanner'])->name('scanner-create');
+    Route::post('/scanners/creer', [ScannerController::class, 'storeScanner'])->name('scanner-store');
+    Route::delete('/scanners/{user}', [ScannerController::class, 'deleteScanner'])->name('scanner-delete');
 });
 
 // Routes générales (pour les pages d'accueil alternatives)

@@ -6,13 +6,7 @@
 <main class="container py-5 text-white animate__animated animate__fadeIn">
     <!-- Header Banner -->
     <section class="glass-card rounded-3xl p-6 md:p-8 lg:p-10 mb-12 relative overflow-hidden text-center border border-white/10">
-        <div class="absolute -top-24 -right-24 w-80 h-80 bg-indigo-500/10 rounded-full filter blur-[80px] pointer-events-none"></div>
-        <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-violet-500/10 rounded-full filter blur-[80px] pointer-events-none"></div>
-        
-        <div class="relative z-10 max-w-2xl mx-auto py-4">
-            <span class="w-16 h-16 rounded-full bg-gradient-to-tr from-violet-500 to-indigo-500 flex items-center justify-center text-white fs-3 mx-auto mb-4 shadow-lg shadow-indigo-500/20">
-                <i class="fas fa-cocktail"></i>
-            </span>
+        <div class="max-w-2xl mx-auto py-4">
             <h1 class="fw-extrabold text-white mb-2 fs-2 leading-tight">Vie Nocturne</h1>
             <p class="text-indigo-200 fs-5 mb-4 font-medium">Vivez la nuit sous ses plus belles lumières</p>
             <p class="text-gray-400 small leading-relaxed">Découvrez les meilleures soirées en discothèque, soirées DJ en plein air, afterworks branchés et clubs branchés de la capitale pour danser jusqu'au bout de la nuit.</p>

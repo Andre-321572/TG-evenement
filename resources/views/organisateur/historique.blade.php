@@ -4,13 +4,9 @@
 
 <div class="container mx-auto px-6 py-8 max-w-7xl">
     <!-- Header with animation -->
-    <div class="glass-card rounded-2xl mb-8 overflow-hidden relative">
-        <div class="absolute -right-16 -top-16 w-32 h-32 rounded-full bg-accentIndigo/10 blur-2xl"></div>
-        <div class="px-8 py-10 text-center relative z-10">
-            <div class="flex items-center justify-center mb-4">
-                <i class="fas fa-history text-3xl text-indigo-400 mr-3"></i>
-                <h1 class="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent">Historique des Événements</h1>
-            </div>
+    <div class="glass-card rounded-2xl mb-8 overflow-hidden">
+        <div class="px-8 py-10 text-center">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Historique des Événements</h1>
             <p class="text-gray-400 text-base max-w-xl mx-auto">
                 Consultez les statistiques et performances de vos événements passés
             </p>
@@ -60,13 +56,12 @@
                     <div class="grid lg:grid-cols-12 gap-0">
                         <!-- Event Image -->
                         <div class="lg:col-span-3">
-                            <div class="relative h-48 lg:h-full min-h-[180px]">
-                                @if(isset($evenement->image) && $evenement->image)
-                                    <img src="{{ asset('storage/' . $evenement->image) }}"
-                                         alt="{{ $evenement->titre }}"
-                                         class="w-full h-full object-cover">
+                            <div class="card-thumb h-48 lg:h-full min-h-[180px]">
+                                @if($evenement->photo && $evenement->photo !== 'null')
+                                    <img src="{{ asset('storage/evenement/photo/' . $evenement->photo) }}"
+                                         alt="{{ $evenement->titre }}">
                                 @else
-                                    <div class="w-full h-full bg-gradient-to-br from-indigo-500/10 to-purple-500/10 flex items-center justify-center text-indigo-400">
+                                    <div class="absolute inset-0 bg-white/[0.03] flex items-center justify-center text-indigo-400">
                                         <i data-feather="calendar" class="w-12 h-12"></i>
                                     </div>
                                 @endif
@@ -143,7 +138,7 @@
                             </div>
 
                             <button type="button"
-                                    class="w-full mt-6 bg-gradient-to-r from-accentIndigo to-accentViolet text-white py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-indigo-500/20 flex items-center justify-center transition-all transform hover:-translate-y-0.5"
+                                    class="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl font-semibold flex items-center justify-center transition-colors duration-200"
                                     onclick="showEventDetails('{{ $evenement->id }}', '{{ $evenement->titre }}')">
                                 <i data-feather="bar-chart-2" class="w-4 h-4 mr-2"></i>
                                 Voir rapport
@@ -237,7 +232,7 @@ function showEventDetails(eventId, eventTitle) {
     modalContent.innerHTML = `
         <div class="grid md:grid-cols-2 gap-6 text-gray-300">
             <div class="space-y-5">
-                <div class="bg-gradient-to-r from-accentIndigo/20 to-accentViolet/20 border border-accentIndigo/30 p-6 rounded-2xl">
+                <div class="bg-white/[0.04] border border-white/10 p-6 rounded-2xl">
                     <h3 class="text-lg font-bold text-white mb-4">Résumé des performances</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="text-center">
@@ -305,7 +300,7 @@ function showEventDetails(eventId, eventTitle) {
             <button onclick="hideEventDetails()" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 rounded-xl transition-colors">
                 Fermer
             </button>
-            <button class="px-4 py-2 bg-gradient-to-r from-accentIndigo to-accentViolet text-white rounded-xl font-semibold shadow-lg hover:shadow-indigo-500/20">
+            <button class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors duration-200">
                 Exporter le rapport
             </button>
         </div>

@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg fixed-top z-50 py-3 border-b border-white/10" style="background: rgba(5, 6, 11, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
     <div class="container">
         <a class="navbar-brand fw-extrabold text-gradient-primary fs-4 tracking-wider" href="{{ url('/') }}">
-            <i class="fas fa-calendar-alt me-2 text-indigo-500"></i>TGEvent
+            TGEvent
         </a>
         <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvas"
             aria-controls="navbarOffcanvas" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,13 +18,13 @@
                 <ul class="navbar-nav ms-auto mb-lg-0 align-items-lg-center">
                     <li class="nav-item px-2">
                         <a class="nav-link text-gray-300 hover:text-indigo-400 font-semibold transition-all duration-300 {{ Route::currentRouteName() == 'p.evenement' ? 'text-indigo-400' : '' }}" href="{{ route('p.evenement') }}">
-                            <i class="fas fa-search me-1"></i> Trouver un événement
+                            Trouver un événement
                         </a>
                     </li>
-                    
+
                     <li class="nav-item dropdown px-2">
                         <a class="nav-link dropdown-toggle text-gray-300 hover:text-indigo-400 font-semibold transition-all duration-300" href="#" id="navbarDropdownCategories" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-th-large me-1"></i> Catégories
+                            Catégories
                         </a>
                         <ul class="dropdown-menu border border-white/10 shadow-2xl p-2 bg-[#0d0e16]" aria-labelledby="navbarDropdownCategories" style="backdrop-filter: blur(16px);">
                             <li><a class="dropdown-item text-gray-300 hover:bg-indigo-600 hover:text-white rounded py-2" href="{{route('p.concert et festival de musique')}}"><i class="fas fa-music me-2 text-pink-500"></i> Concerts & Musique</a></li>
@@ -51,8 +51,8 @@
                     
                     @guest
                         <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
-                            <a href="{{ route('login') }}" class="btn px-4 py-2 text-white font-semibold rounded-lg hover:scale-105 transition-all duration-300 shadow-md border-0" style="background: #6366f1;">
-                                <i class="fas fa-sign-in-alt me-1"></i> Connexion
+                            <a href="{{ route('login') }}" class="btn px-4 py-2 text-white font-semibold rounded-lg hover:scale-105 transition-all duration-300 shadow-md border-0" style="background: #4f46e5;">
+                                Connexion
                             </a>
                         </li>
                     @else

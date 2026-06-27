@@ -243,13 +243,29 @@
             background-color: #ffffff !important;
             color: #1f2937 !important;
         }
+
+        /* ── Images de cards : couverture uniforme quel que soit le format ── */
+        .card-thumb {
+            position: relative;
+            overflow: hidden;
+        }
+        .card-thumb img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+        .glass-card img:not([data-no-cover]) {
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
     </style>
 </head>
 <body class="bg-darkDeep text-gray-200 font-sans min-h-screen relative overflow-x-hidden">
-    <!-- Glow Spots -->
-    <div class="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-500/5 blur-[120px] pointer-events-none z-0"></div>
-    <div class="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-emerald-500/5 blur-[120px] pointer-events-none z-0"></div>
-
     <div class="relative z-10">
       @include('organisateur.include.navbar')
         <!-- Main Content -->
@@ -261,7 +277,7 @@
                     <button id="openSidebar" class="mobile-menu-btn lg:hidden p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors">
                         <i data-feather="menu" class="w-6 h-6 text-gray-300"></i>
                     </button>
-                    <h1 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">Tableau de bord</h1>
+                    <h1 class="text-xl sm:text-2xl font-bold text-white">Tableau de bord</h1>
                 </div>
 
                 <div class="flex items-center space-x-2 sm:space-x-4">

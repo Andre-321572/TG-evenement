@@ -10,17 +10,13 @@
             <div class="sticky-top" style="top: 96px; z-index: 10;">
                 <div class="glass-card rounded-3xl overflow-hidden p-4">
                     <div class="border-b border-white/10 pb-3 mb-4">
-                        <h5 class="mb-0 fw-bold text-gradient-primary">
-                            <i class="fas fa-filter me-2 text-indigo-500"></i>Filtrer les événements
-                        </h5>
+                        <h5 class="mb-0 fw-bold text-gradient-primary">Filtrer les événements</h5>
                     </div>
                     
                     <form method="GET" action="{{ route('p.evenement') }}" id="filter-form">
                         <!-- Recherche -->
                         <div class="mb-4">
-                            <label for="search" class="form-label text-gray-400 small fw-semibold">
-                                <i class="fas fa-search me-1 text-indigo-500"></i>Rechercher
-                            </label>
+                            <label for="search" class="form-label text-gray-400 small fw-semibold">Rechercher</label>
                             <input type="text" 
                                    name="search" 
                                    id="search" 
@@ -31,9 +27,7 @@
 
                         <!-- Filtre par catégorie -->
                         <div class="mb-4">
-                            <label for="categorie" class="form-label text-gray-400 small fw-semibold">
-                                <i class="fas fa-tags me-1 text-indigo-500"></i>Catégorie
-                            </label>
+                            <label for="categorie" class="form-label text-gray-400 small fw-semibold">Catégorie</label>
                             <select name="categorie" id="categorie" class="form-select glass-input rounded-xl py-2 px-3 text-sm">
                                 <option value="" class="bg-[#0f111a] text-white">Toutes les catégories</option>
                                 @foreach($categories as $cat)
@@ -46,9 +40,7 @@
 
                         <!-- Filtre par lieu -->
                         <div class="mb-4">
-                            <label for="lieu" class="form-label text-gray-400 small fw-semibold">
-                                <i class="fas fa-map-marker-alt me-1 text-indigo-500"></i>Lieu
-                            </label>
+                            <label for="lieu" class="form-label text-gray-400 small fw-semibold">Lieu</label>
                             <select name="lieu" id="lieu" class="form-select glass-input rounded-xl py-2 px-3 text-sm">
                                 <option value="" class="bg-[#0f111a] text-white">Tous les lieux</option>
                                 @foreach($lieux as $l)
@@ -61,9 +53,7 @@
 
                         <!-- Tri -->
                         <div class="mb-4">
-                            <label for="sort" class="form-label text-gray-400 small fw-semibold">
-                                <i class="fas fa-sort me-1 text-indigo-500"></i>Trier par
-                            </label>
+                            <label for="sort" class="form-label text-gray-400 small fw-semibold">Trier par</label>
                             <select name="sort" id="sort" class="form-select glass-input rounded-xl py-2 px-3 text-sm">
                                 <option value="priority" {{ request('sort') == 'priority' || !request('sort') ? 'selected' : '' }} class="bg-[#0f111a] text-white">Date (Pertinence)</option>
                                 <option value="date_asc" {{ request('sort') == 'date_asc' ? 'selected' : '' }} class="bg-[#0f111a] text-white">Date (Le plus proche)</option>
@@ -76,9 +66,7 @@
 
                         <!-- Filtres par date -->
                         <div class="mb-4">
-                            <label class="form-label text-gray-400 small fw-semibold">
-                                <i class="fas fa-calendar-alt me-1 text-indigo-500"></i>Période
-                            </label>
+                            <label class="form-label text-gray-400 small fw-semibold">Période</label>
                             <div class="row g-2">
                                 <div class="col-12">
                                     <input type="date" 
@@ -98,11 +86,11 @@
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn text-white font-semibold rounded-xl py-2.5 hover:scale-102 transition-all duration-300 border-0" style="background: #6366f1;">
-                                <i class="fas fa-search me-2"></i>Filtrer
+                            <button type="submit" class="btn text-white font-semibold rounded-xl py-2.5 hover:scale-102 transition-all duration-300 border-0" style="background: #4f46e5;">
+                                Filtrer
                             </button>
                             <a href="{{ route('p.evenement') }}" class="btn btn-outline-light border-white/10 hover:bg-white/5 rounded-xl py-2 text-sm text-gray-300">
-                                <i class="fas fa-undo me-2"></i>Réinitialiser
+                                Réinitialiser
                             </a>
                         </div>
                     </form>
@@ -116,7 +104,7 @@
             @if(isset($featuredEvent) && $featuredEvent && !request('search') && !request('categorie'))
             <div class="mb-5">
                 <h4 class="fw-bold mb-4 tracking-wide text-indigo-300 fs-5 uppercase">
-                    <i class="fas fa-star me-2 text-indigo-500"></i>Événement en vedette
+                    Événement en vedette
                 </h4>
                 <div class="glass-card rounded-3xl overflow-hidden p-0 border border-white/10 relative">
                     <div class="row g-0">
@@ -152,8 +140,8 @@
                                         </div>
                                     </div>
                                     
-                                    <a href="{{ route('p.detail', $featuredEvent->id) }}" class="btn btn-sm px-4 rounded-xl text-white font-semibold hover:scale-105 transition-all duration-300 border-0" style="background: #6366f1;">
-                                        S'inscrire <i class="fas fa-arrow-right ms-2 small"></i>
+                                    <a href="{{ route('p.detail', $featuredEvent->id) }}" class="btn btn-sm px-4 rounded-xl text-white font-semibold hover:scale-105 transition-all duration-300 border-0" style="background: #4f46e5;">
+                                        S'inscrire
                                     </a>
                                 </div>
                             </div>
@@ -182,8 +170,8 @@
                         @foreach($events as $event)
                             <div class="col-md-6 col-xl-4">
                                 <div class="glass-card rounded-2xl overflow-hidden hover-up h-100 flex flex-col justify-between">
-                                    <div class="relative overflow-hidden group" style="height: 180px;">
-                                        <img src="{{ $event->photo_url }}" alt="{{ $event->titre }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                    <div class="card-thumb group" style="height: 180px;">
+                                        <img src="{{ $event->photo_url }}" alt="{{ $event->titre }}" style="transition: transform 0.7s ease;">
                                         
                                         <!-- Category -->
                                         <span class="absolute top-2 right-2 px-2.5 py-1 rounded-xl text-[10px] font-semibold text-white bg-black/60 backdrop-blur-md border border-white/10">
@@ -230,7 +218,7 @@
                                                         Gratuit
                                                     @endif
                                                 </span>
-                                                <a href="{{ route('p.detail', $event->id) }}" class="btn btn-sm px-3 rounded-lg text-white font-medium hover:scale-105 transition-all duration-300 border-0" style="background: #6366f1;">
+                                                <a href="{{ route('p.detail', $event->id) }}" class="btn btn-sm px-3 rounded-lg text-white font-medium hover:scale-105 transition-all duration-300 border-0" style="background: #4f46e5;">
                                                     Plus d'info
                                                 </a>
                                             </div>
@@ -247,10 +235,9 @@
                     </div>
                 @else
                     <div class="text-center py-5 glass-card rounded-3xl">
-                        <i class="fas fa-calendar-times fa-3x text-gray-600 mb-3"></i>
-                        <h4 class="text-gray-400">Aucun résultat trouvé</h4>
+                        <p class="text-lg font-semibold text-gray-400 mb-2">Aucun résultat trouvé</p>
                         <p class="text-gray-500 small">Modifiez vos filtres de recherche ou réinitialisez pour afficher tous les événements.</p>
-                        <a href="{{ route('p.evenement') }}" class="btn px-4 py-2 mt-2 rounded-xl text-white font-semibold hover:scale-105 transition-all duration-300 border-0" style="background: #6366f1;">
+                        <a href="{{ route('p.evenement') }}" class="btn px-4 py-2 mt-2 rounded-xl text-white font-semibold hover:scale-105 transition-all duration-300 border-0" style="background: #4f46e5;">
                             Tous les événements
                         </a>
                     </div>

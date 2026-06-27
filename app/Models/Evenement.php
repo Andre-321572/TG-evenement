@@ -10,9 +10,9 @@ class Evenement extends Model
     use HasFactory;
     
     protected $fillable = [
-        'categorie', 'titre', 'date', 'start_heure', 'end_heure', 'lieu', 
-        'lien_google_map', 'description', 'photo', 'video', 'statut', 
-        'nom_proprietaire', 'telephone', 'email', 'facebook', 'whatsapp', 
+        'categorie', 'categorie_id', 'titre', 'date', 'start_heure', 'end_heure', 'lieu',
+        'lien_google_map', 'description', 'photo', 'video', 'statut',
+        'nom_proprietaire', 'telephone', 'email', 'facebook', 'whatsapp',
         'twiter', 'user_id'
     ];
 
@@ -20,6 +20,11 @@ class Evenement extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'categorie_id');
     }
     
     public function billets()

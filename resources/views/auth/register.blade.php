@@ -7,12 +7,10 @@
     <div class="w-100 max-w-xl">
         <div class="glass-card rounded-3xl overflow-hidden p-4 p-md-5 border border-white/10 relative">
             
-            <div class="text-center mb-4">
-                <div class="w-16 h-16 rounded-full bg-indigo-600 flex items-center justify-center text-white fs-3 mx-auto mb-3 shadow-lg">
-                    <i class="fas fa-user-plus"></i>
-                </div>
-                <h2 class="fw-extrabold text-white mb-1 fs-4">Inscription</h2>
-                <p class="text-gray-400 small">Rejoignez-nous pour découvrir des événements exceptionnels</p>
+            <div class="mb-5">
+                <p class="text-indigo-600 fw-bold text-xs uppercase tracking-widest mb-1">TGEvent</p>
+                <h2 class="fw-bold text-slate-800 fs-4 mb-1">Créer un compte</h2>
+                <p class="text-gray-400 small">Rejoignez-nous pour gérer et découvrir des événements</p>
             </div>
 
             <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
@@ -94,8 +92,8 @@
 
                 <!-- Action button -->
                 <div class="d-grid mb-4">
-                    <button type="submit" class="btn text-white font-semibold rounded-xl py-3 hover:scale-105 transition-all duration-300 border-0" style="background: #6366f1;">
-                        S'inscrire <i class="fas fa-user-plus ms-2"></i>
+                    <button type="submit" class="btn text-white font-semibold rounded-xl py-3 hover:scale-105 transition-all duration-300 border-0" style="background: #4f46e5;">
+                        Créer mon compte
                     </button>
                 </div>
 

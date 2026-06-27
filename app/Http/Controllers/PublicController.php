@@ -116,7 +116,8 @@ class PublicController extends Controller
     
     public function show(string $id)
     {
-        $detail_evenement = Evenement::FindOrFail($id);
+        $detail_evenement = Evenement::with(['billets', 'sponsors', 'user'])
+                                     ->findOrFail($id);
         return view('p.detail', compact('detail_evenement'));
     }
 

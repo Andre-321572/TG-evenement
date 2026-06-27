@@ -6,13 +6,7 @@
 <main class="container py-5 text-white animate__animated animate__fadeIn">
     <!-- Header Banner -->
     <section class="glass-card rounded-3xl p-6 md:p-8 lg:p-10 mb-12 relative overflow-hidden text-center border border-white/10">
-        <div class="absolute -top-24 -right-24 w-80 h-80 bg-indigo-500/10 rounded-full filter blur-[80px] pointer-events-none"></div>
-        <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-purple-500/10 rounded-full filter blur-[80px] pointer-events-none"></div>
-        
-        <div class="relative z-10 max-w-2xl mx-auto py-4">
-            <span class="w-16 h-16 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white fs-3 mx-auto mb-4 shadow-lg">
-                <i class="fas fa-users"></i>
-            </span>
+        <div class="max-w-2xl mx-auto py-4">
             <h1 class="fw-extrabold text-white mb-2 fs-2 leading-tight">À propos de TGEvent</h1>
             <p class="text-indigo-200 fs-5 mb-4 font-medium">Découvrez notre histoire, notre vision et notre équipe</p>
         </div>

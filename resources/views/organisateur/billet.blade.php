@@ -5,9 +5,7 @@
 <div class="container mx-auto px-6 py-8 max-w-5xl">
     <!-- Header -->
     <div class="text-center mb-8">
-        <h1 class="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent mb-2">
-            Création de Billets
-        </h1>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-2">Création de Billets</h1>
         <p class="text-gray-400 text-sm">Créez des billets pour vos événements et gérez vos ventes facilement</p>
     </div>
 
@@ -87,7 +85,7 @@
 
                     <!-- Submit Button -->
                     <div class="pt-4">
-                        <button type="submit" class="w-full py-3 bg-gradient-to-r from-accentIndigo to-accentViolet text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/25 transform hover:-translate-y-0.5 transition-all flex items-center justify-center">
+                        <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-colors duration-200 flex items-center justify-center">
                             <i data-feather="save" class="w-4 h-4 mr-2"></i>
                             <span>Créer le billet</span>
                         </button>

@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;  // Ajoutez cet import
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable  // Changez Model par Authenticatable
 {
-    use HasFactory, Notifiable;  // Enlevez le doublon de HasFactory
+    use HasApiTokens, HasFactory, Notifiable;  // Enlevez le doublon de HasFactory
 
     protected $fillable = [
         'nom',
@@ -16,6 +17,7 @@ class User extends Authenticatable  // Changez Model par Authenticatable
         'email',
         'phone',
         'password',
+        'role',
         'lien_facebook',
         'lien_instagram',
         'lien_web',
@@ -51,5 +53,15 @@ class User extends Authenticatable  // Changez Model par Authenticatable
     public function isUtilisateur()
     {
         return $this->role === 'utilisateur';
+    }
+
+    public function isScanner()
+    {
+        return $this->role === 'scanner';
+    }
+
+    public function ticketCodes()
+    {
+        return $this->hasMany(\App\Models\TicketCode::class, 'scanned_by');
     }
 }

@@ -205,22 +205,47 @@
             background-color: #ffffff !important;
             color: #0f172a !important;
         }
+
+        /* ── Images de cards : couverture uniforme quel que soit le format ── */
+        .card-thumb {
+            position: relative;
+            overflow: hidden;
+        }
+        .card-thumb img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+        /* Fallback pour les img sans .card-thumb mais dans un container à hauteur fixe */
+        .glass-card img:not([data-no-cover]),
+        .event-card img:not([data-no-cover]) {
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Faint Background Glows for depth without excessive coloring -->
-    <div class="glow-orb w-[600px] h-[600px] bg-indigo-500/10 top-[-250px] left-[-250px]"></div>
-
     <div id="app">
-        <!-- Modern Loading Screen -->
-        <div id="chargement" class="fixed inset-0 z-[9999] flex flex-col justify-center align-items-center bg-[#f0f7ff]">
-            <div class="relative flex items-center justify-center">
-                <div class="w-20 h-20 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
-                <div class="absolute w-12 h-12 border-4 border-purple-500/20 border-b-purple-500 rounded-full animate-spin" style="animation-direction: reverse; animation-duration: 1s;"></div>
+        <!-- Loading Screen -->
+        <div id="chargement" class="fixed inset-0 z-[9999] flex flex-col justify-center items-center bg-[#f0f7ff]">
+            <span class="text-xl font-bold tracking-widest text-indigo-600 uppercase mb-6">TGEvent</span>
+            <div class="w-48 h-0.5 bg-slate-200 rounded-full overflow-hidden">
+                <div class="h-full bg-indigo-500 rounded-full animate-[load_1.2s_ease-in-out_infinite]"></div>
             </div>
-            <h4 class="mt-4 text-lg font-semibold tracking-wider text-gradient-primary uppercase animate-pulse">TGEvent</h4>
         </div>
+        <style>
+            @keyframes load {
+                0%   { width: 0%;   margin-left: 0; }
+                50%  { width: 70%;  margin-left: 15%; }
+                100% { width: 0%;   margin-left: 100%; }
+            }
+        </style>
 
         <!-- #contenu: hidden via native CSS (NO Bootstrap d-none dependency) -->
         <div id="contenu" style="display:none;" class="min-h-screen flex flex-col justify-between">

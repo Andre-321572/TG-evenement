@@ -6,14 +6,11 @@
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
         <div>
-            <h1 class="text-3xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent flex items-center">
-                <i class="fas fa-ticket-alt mr-3 text-indigo-400"></i>
-                Tous les Billets
-            </h1>
+            <h1 class="text-3xl font-extrabold text-white">Tous les Billets</h1>
             <p class="text-gray-400 mt-1">Vue d'ensemble de tous vos billets d'événements et statistiques de ventes.</p>
         </div>
         <div class="flex-shrink-0 flex items-center space-x-3">
-            <a href="{{ route('organisateur.billet-form') }}" class="px-5 py-2.5 bg-gradient-to-r from-accentIndigo to-accentViolet text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-indigo-500/20 flex items-center justify-center space-x-2 transition-all duration-300 transform hover:-translate-y-0.5">
+            <a href="{{ route('organisateur.billet-form') }}" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl flex items-center justify-center space-x-2 transition-colors duration-200">
                 <i data-feather="plus" class="w-4 h-4"></i>
                 <span>Nouveau Billet</span>
             </a>

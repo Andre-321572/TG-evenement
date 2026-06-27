@@ -5,9 +5,7 @@
 <div class="container mx-auto px-6 py-8 max-w-4xl">
     <!-- Header -->
     <div class="text-center mb-8">
-        <h1 class="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent mb-2">
-            Modifier l'Événement
-        </h1>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-2">Modifier l'Événement</h1>
         <p class="text-gray-400 text-sm">Modifiez les informations de votre événement ci-dessous</p>
     </div>
 
@@ -51,10 +49,7 @@
         <div class="glass-card rounded-2xl border border-white/5 p-6 md:p-8 space-y-8">
             <!-- Section 1: Basic Info -->
             <div>
-                <h4 class="text-lg font-bold text-white mb-4 flex items-center border-b border-white/5 pb-2">
-                    <i class="fas fa-info-circle mr-2.5 text-indigo-400"></i>
-                    Informations de base
-                </h4>
+                <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Informations de base</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label class="text-sm font-semibold text-gray-300 mb-1.5 block">
@@ -110,10 +105,7 @@
 
             <!-- Section 2: Location & Media -->
             <div>
-                <h4 class="text-lg font-bold text-white mb-4 flex items-center border-b border-white/5 pb-2">
-                    <i class="fas fa-map-marker-alt mr-2.5 text-indigo-400"></i>
-                    Lieu et médias
-                </h4>
+                <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Lieu et médias</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label class="text-sm font-semibold text-gray-300 mb-1.5 block">
@@ -164,10 +156,7 @@
 
             <!-- Section 3: Organizer Info -->
             <div>
-                <h4 class="text-lg font-bold text-white mb-4 flex items-center border-b border-white/5 pb-2">
-                    <i class="fas fa-user-tie mr-2.5 text-indigo-400"></i>
-                    Informations organisateur
-                </h4>
+                <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Informations organisateur</h4>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div>
                         <label class="text-sm font-semibold text-gray-300 mb-1.5 block">
@@ -197,10 +186,7 @@
 
             <!-- Section 4: Social links -->
             <div>
-                <h4 class="text-lg font-bold text-white mb-4 flex items-center border-b border-white/5 pb-2">
-                    <i class="fas fa-share-alt mr-2.5 text-indigo-400"></i>
-                    Réseaux sociaux
-                </h4>
+                <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Réseaux sociaux</h4>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div>
                         <label class="text-sm font-semibold text-gray-300 mb-1.5 block">Lien Facebook</label>
@@ -219,10 +205,7 @@
 
             <!-- Section 5: Description & Status -->
             <div>
-                <h4 class="text-lg font-bold text-white mb-4 flex items-center border-b border-white/5 pb-2">
-                    <i class="fas fa-align-left mr-2.5 text-indigo-400"></i>
-                    Description & Statut
-                </h4>
+                <h4 class="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">Description & Statut</h4>
                 <div class="space-y-5">
                     <div>
                         <label class="text-sm font-semibold text-gray-300 mb-1.5 block">Description détaillée</label>
@@ -254,8 +237,7 @@
             <!-- Submit Buttons -->
             <input type="hidden" name="user_id" value="{{ $evenement->user_id }}">
             <div class="pt-6 border-t border-white/5 flex justify-end">
-                <button type="submit" class="px-8 py-3 bg-gradient-to-r from-accentIndigo to-accentViolet text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/25 transform hover:-translate-y-0.5 transition-all">
-                    <i class="fas fa-save mr-2"></i>
+                <button type="submit" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-colors duration-200">
                     Sauvegarder les modifications
                 </button>
             </div>

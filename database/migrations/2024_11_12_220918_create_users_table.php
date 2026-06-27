@@ -19,7 +19,7 @@ return new class extends Migration
                 $table->string('phone')->unique()->required();
                 $table->string('email')->unique()->required();
                 $table->timestamp('email_verified_at')->nullable();
-                $table->enum('role', ['utilisateur','admin'])->default('utilisateur');
+                $table->enum('role', ['utilisateur','admin','scanner'])->default('utilisateur');
 
                 $table->string('lien_facebook')->nullable();
                 $table->string('lien_instagram')->nullable();

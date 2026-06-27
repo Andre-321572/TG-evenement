@@ -19,14 +19,11 @@
     <!-- Header Section -->
     <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
         <div>
-            <h1 class="text-3xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent flex items-center">
-                <i class="fas fa-calendar-alt mr-3 text-indigo-400"></i>
-                Gestion des Événements
-            </h1>
+            <h1 class="text-3xl font-extrabold text-white">Gestion des Événements</h1>
             <p class="text-gray-400 mt-1">Consultez et gérez l'ensemble des événements créés.</p>
         </div>
         <div class="flex-shrink-0">
-            <a href="{{ route('organisateur.ajouter-un-evenement') }}" class="px-5 py-2.5 bg-gradient-to-r from-accentIndigo to-accentViolet text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-indigo-500/20 flex items-center justify-center space-x-2 transition-all duration-300 transform hover:-translate-y-0.5">
+            <a href="{{ route('organisateur.ajouter-un-evenement') }}" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl flex items-center justify-center space-x-2 transition-colors duration-200">
                 <i data-feather="plus" class="w-4 h-4"></i>
                 <span>Créer un événement</span>
             </a>
@@ -45,7 +42,7 @@
                              alt="{{ $evenement->titre }}"
                              class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     @else
-                        <div class="absolute inset-0 bg-gradient-to-tr from-accentIndigo/10 to-accentViolet/10 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-white/[0.02] flex items-center justify-center">
                             <i data-feather="image" class="w-12 h-12 text-gray-600"></i>
                         </div>
                     @endif
@@ -140,7 +137,7 @@
                 <p class="text-gray-400 mb-6">
                     Vous n'avez pas encore d'événements créés en base de données.
                 </p>
-                <a href="{{ route('organisateur.ajouter-un-evenement') }}" class="px-5 py-2.5 bg-gradient-to-r from-accentIndigo to-accentViolet text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-indigo-500/20 inline-flex items-center space-x-2 transition-all">
+                <a href="{{ route('organisateur.ajouter-un-evenement') }}" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl inline-flex items-center space-x-2 transition-colors duration-200">
                     <i data-feather="plus" class="w-4 h-4"></i>
                     <span>Créer un premier événement</span>
                 </a>

@@ -4,10 +4,7 @@
 
 <div class="container mx-auto px-6 py-8 max-w-7xl">
     <div class="mb-8">
-        <h1 class="text-3xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent flex items-center">
-            <i class="fas fa-history mr-3 text-indigo-400"></i>
-            Événements Passés
-        </h1>
+        <h1 class="text-3xl font-extrabold text-white">Événements Passés</h1>
         <p class="text-gray-400 mt-1">Consultez l'historique de vos événements terminés.</p>
         <div class="mt-4">
             <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-4 py-1.5 rounded-full text-xs font-bold">
@@ -28,7 +25,7 @@
                                  alt="{{ $evpasser->titre }}"
                                  class="absolute inset-0 w-full h-full object-cover opacity-60 filter grayscale group-hover:grayscale-0 transition-all duration-500">
                         @else
-                            <div class="absolute inset-0 bg-gradient-to-tr from-accentIndigo/10 to-accentViolet/10 flex items-center justify-center">
+                            <div class="absolute inset-0 bg-white/[0.02] flex items-center justify-center">
                                 <i data-feather="image" class="w-12 h-12 text-gray-600"></i>
                             </div>
                         @endif

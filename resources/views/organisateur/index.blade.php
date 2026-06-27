@@ -6,7 +6,6 @@
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <!-- Stats Card 1 -->
             <div class="glass-card rounded-2xl p-5 border-l-4 border-blue-500 hover:translate-y-[-4px] transition-all duration-300 relative overflow-hidden">
-                <div class="absolute -right-8 -top-8 w-20 h-20 rounded-full bg-blue-500/5 blur-xl"></div>
                 <div class="flex justify-between items-start">
                     <div>
                         <p class="text-gray-400 text-xs sm:text-sm font-medium">Événements à venir</p>
@@ -24,7 +23,6 @@
 
             <!-- Stats Card 2 -->
             <div class="glass-card rounded-2xl p-5 border-l-4 border-green-500 hover:translate-y-[-4px] transition-all duration-300 relative overflow-hidden">
-                <div class="absolute -right-8 -top-8 w-20 h-20 rounded-full bg-green-500/5 blur-xl"></div>
                 <div class="flex justify-between items-start">
                     <div>
                         <p class="text-gray-400 text-xs sm:text-sm font-medium">Événements publiés</p>
@@ -42,7 +40,6 @@
 
             <!-- Stats Card 3 -->
             <div class="glass-card rounded-2xl p-5 border-l-4 border-yellow-500 hover:translate-y-[-4px] transition-all duration-300 relative overflow-hidden">
-                <div class="absolute -right-8 -top-8 w-20 h-20 rounded-full bg-yellow-500/5 blur-xl"></div>
                 <div class="flex justify-between items-start">
                     <div>
                         <p class="text-gray-400 text-xs sm:text-sm font-medium">Total Événements</p>
@@ -60,7 +57,6 @@
 
             <!-- Stats Card 4 -->
             <div class="glass-card rounded-2xl p-5 border-l-4 border-purple-500 hover:translate-y-[-4px] transition-all duration-300 relative overflow-hidden">
-                <div class="absolute -right-8 -top-8 w-20 h-20 rounded-full bg-purple-500/5 blur-xl"></div>
                 <div class="flex justify-between items-start">
                     <div>
                         <p class="text-gray-400 text-xs sm:text-sm font-medium">En organisation</p>
@@ -135,7 +131,7 @@
                     <h2 class="text-lg font-bold text-white">Événements à venir</h2>
                     <p class="text-xs text-gray-400">Liste triée chronologiquement</p>
                 </div>
-                <a href="{{ route('organisateur.ajouter-un-evenement') }}" class="px-5 py-2.5 bg-gradient-to-r from-accentIndigo to-accentViolet text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-indigo-500/20 flex items-center justify-center space-x-2 transition-all duration-300 transform hover:-translate-y-0.5">
+                <a href="{{ route('organisateur.ajouter-un-evenement') }}" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl flex items-center justify-center space-x-2 transition-colors duration-200">
                     <i data-feather="plus" class="w-4 h-4"></i>
                     <span>Nouvel événement</span>
                 </a>

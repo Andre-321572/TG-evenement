@@ -5,12 +5,7 @@
 <div class="container mx-auto px-6 py-8 max-w-5xl">
     <!-- Header -->
     <div class="text-center mb-10">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-accentIndigo to-accentViolet rounded-2xl mb-4 shadow-lg shadow-indigo-500/20 text-white">
-            <i data-feather="tag" class="w-8 h-8"></i>
-        </div>
-        <h1 class="text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent mb-2">
-            Gestion des Billets
-        </h1>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-2">Gestion des Billets</h1>
         <p class="text-gray-400 text-sm max-w-xl mx-auto">
             Gérez la tarification, le stock, et visualisez les ventes de vos billets d'événements.
         </p>
@@ -27,7 +22,7 @@
             <p class="text-gray-400 text-xs mb-6 max-w-xs leading-relaxed">
                 Ajoutez un nouveau type de billet (VIP, Standard, etc.) à l'un de vos événements.
             </p>
-            <a href="{{ route('organisateur.billet-form') }}" class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-accentIndigo to-accentViolet text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-indigo-500/20 inline-flex items-center justify-center space-x-2 transition-all">
+            <a href="{{ route('organisateur.billet-form') }}" class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl inline-flex items-center justify-center space-x-2 transition-colors duration-200">
                 <i data-feather="plus" class="w-4 h-4"></i>
                 <span>Nouveau type de billet</span>
             </a>

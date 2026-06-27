@@ -30,10 +30,7 @@
 
     <!-- Header Section -->
     <div class="mb-8">
-        <h1 class="text-3xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent flex items-center">
-            <i class="fas fa-edit mr-3 text-yellow-400"></i>
-            Brouillons & En organisation
-        </h1>
+        <h1 class="text-3xl font-extrabold text-white">Brouillons & En organisation</h1>
         <p class="text-gray-400 mt-1">Gérez vos événements en cours de préparation avant leur publication officielle.</p>
         <div class="mt-4">
             <span class="bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-4 py-1.5 rounded-full text-xs font-bold">
@@ -54,7 +51,7 @@
                                  alt="{{ $ev->titre }}"
                                  class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         @else
-                            <div class="absolute inset-0 bg-gradient-to-tr from-accentIndigo/10 to-accentViolet/10 flex items-center justify-center">
+                            <div class="absolute inset-0 bg-white/[0.02] flex items-center justify-center">
                                 <i data-feather="image" class="w-12 h-12 text-gray-600"></i>
                             </div>
                         @endif
@@ -89,7 +86,7 @@
                         <!-- Action Controls -->
                         <div class="mt-6 pt-4 border-t border-white/5 space-y-3">
                             <!-- Quick Publish -->
-                            <a href="{{ route('organisateur.publier', $ev->id) }}" class="w-full py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-bold rounded-xl flex items-center justify-center space-x-1.5 transition-all transform hover:-translate-y-0.5 shadow-lg shadow-emerald-500/10">
+                            <a href="{{ route('organisateur.publier', $ev->id) }}" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center justify-center space-x-1.5 transition-colors duration-200">
                                 <i data-feather="globe" class="w-3.5 h-3.5"></i>
                                 <span>Publier maintenant</span>
                             </a>
@@ -119,7 +116,7 @@
             <p class="text-gray-400 mb-6">
                 Vous n'avez pas d'événement en cours de préparation. Tous vos événements sont en ligne !
             </p>
-            <a href="{{ route('organisateur.ajouter-un-evenement') }}" class="px-5 py-2.5 bg-gradient-to-r from-accentIndigo to-accentViolet text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-indigo-500/20 inline-flex items-center space-x-2 transition-all">
+            <a href="{{ route('organisateur.ajouter-un-evenement') }}" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl inline-flex items-center space-x-2 transition-colors duration-200">
                 <i data-feather="plus" class="w-4 h-4"></i>
                 <span>Créer un nouvel événement</span>
             </a>

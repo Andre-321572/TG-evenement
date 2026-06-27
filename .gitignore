@@ -17,3 +17,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+/TGevent/node_modules
+/TGevent/.expo

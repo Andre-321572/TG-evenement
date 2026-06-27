@@ -4,17 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 
-
-class category extends Model
+class Category extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'name',
         'icon',
-        'description'
+        'description',
     ];
+
+    public function evenements()
+    {
+        return $this->hasMany(Evenement::class, 'categorie_id');
+    }
 }

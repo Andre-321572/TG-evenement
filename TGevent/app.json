@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "TGevent",
+    "slug": "tgevent",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#000000"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.mawussia.tgevent"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Autoriser TGevent à utiliser votre appareil photo pour scanner les billets."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "be0f4800-cae7-4737-9701-4e02c383f36d"
+      }
+    }
+  }
+}
