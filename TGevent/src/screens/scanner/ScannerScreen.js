@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import { Ionicons } from '@expo/vector-icons';
 import apiClient from '../../api/client';
 
 export default function ScannerScreen() {
@@ -10,18 +11,17 @@ export default function ScannerScreen() {
   const [isValidating, setIsValidating] = useState(false);
 
   if (!permission) {
-    // Permission de la caméra en cours de chargement
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#3b82f6" />
+        <ActivityIndicator size="large" color="#2563eb" />
       </View>
     );
   }
 
   if (!permission.granted) {
-    // Permission de la caméra non accordée
     return (
       <View style={styles.permissionContainer}>
+        <Ionicons name="camera-outline" size={64} color="#94a3b8" style={{ marginBottom: 16 }} />
         <Text style={styles.permissionText}>Nous avons besoin de votre autorisation pour accéder à l'appareil photo afin de scanner les billets.</Text>
         <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
           <Text style={styles.permissionButtonText}>Autoriser la caméra</Text>
@@ -78,7 +78,7 @@ export default function ScannerScreen() {
               <View style={styles.unfocusedContainer}></View>
               <View style={styles.focusedContainer}>
                 {isValidating && (
-                  <ActivityIndicator size="large" color="#3b82f6" />
+                  <ActivityIndicator size="large" color="#2563eb" />
                 )}
               </View>
               <View style={styles.unfocusedContainer}></View>
@@ -95,6 +95,16 @@ export default function ScannerScreen() {
             (scanResult.status === 'invalid' || scanResult.status === 'error') && styles.resultInvalid,
           ]}
         >
+          <Ionicons 
+            name={
+              scanResult.status === 'valid' ? 'checkmark-circle-outline' :
+              scanResult.status === 'already_scanned' ? 'warning-outline' : 'close-circle-outline'
+            } 
+            size={80} 
+            color="#fff" 
+            style={{ marginBottom: 16 }}
+          />
+
           <Text style={styles.resultTitle}>
             {scanResult.status === 'valid' && 'Billet Valide ✓'}
             {scanResult.status === 'already_scanned' && 'Déjà Scanné ⚠️'}
@@ -125,27 +135,32 @@ export default function ScannerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#f8fafc',
   },
   permissionContainer: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#f8fafc',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
   },
   permissionText: {
-    color: '#9ca3af',
+    color: '#64748b',
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 24,
   },
   permissionButton: {
-    backgroundColor: '#3b82f6',
-    borderRadius: 8,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    backgroundColor: '#2563eb',
+    borderRadius: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    shadowColor: '#2563eb',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3,
   },
   permissionButtonText: {
     color: '#fff',
@@ -158,7 +173,7 @@ const styles = StyleSheet.create({
   },
   unfocusedContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(15, 23, 42, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -182,50 +197,58 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   resultValid: {
-    backgroundColor: '#064e3b',
+    backgroundColor: '#059669',
   },
   resultAlreadyScanned: {
-    backgroundColor: '#78350f',
+    backgroundColor: '#d97706',
   },
   resultInvalid: {
-    backgroundColor: '#7f1d1d',
+    backgroundColor: '#dc2626',
   },
   resultTitle: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   resultMessage: {
-    fontSize: 18,
+    fontSize: 17,
     color: '#fff',
     textAlign: 'center',
     marginBottom: 30,
     paddingHorizontal: 16,
+    lineHeight: 22,
   },
   ticketDetails: {
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderRadius: 16,
     padding: 20,
     width: '100%',
     marginBottom: 40,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   detailText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 15,
     marginBottom: 8,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   scanAgainButton: {
     backgroundColor: '#fff',
-    borderRadius: 8,
+    borderRadius: 12,
     paddingHorizontal: 24,
     paddingVertical: 14,
     width: '100%',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
   scanAgainButtonText: {
-    color: '#111827',
+    color: '#0f172a',
     fontSize: 16,
     fontWeight: 'bold',
   },

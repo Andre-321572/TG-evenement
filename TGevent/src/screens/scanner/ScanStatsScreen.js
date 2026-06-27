@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, RefreshControl, ScrollView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import apiClient from '../../api/client';
 
 export default function ScanStatsScreen() {
@@ -33,7 +34,7 @@ export default function ScanStatsScreen() {
   if (isLoading && !refreshing) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#3b82f6" />
+        <ActivityIndicator size="large" color="#2563eb" />
       </View>
     );
   }
@@ -43,10 +44,11 @@ export default function ScanStatsScreen() {
       style={styles.container}
       contentContainerStyle={styles.content}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#3b82f6" />
+        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#2563eb" />
       }
     >
       <View style={styles.card}>
+        <Ionicons name="scan-circle-outline" size={64} color="#2563eb" style={{ marginBottom: 12 }} />
         <Text style={styles.title}>Scans d'Aujourd'hui</Text>
         <Text style={styles.number}>{statsCount}</Text>
         <Text style={styles.description}>Billets validés et enregistrés avec succès aujourd'hui.</Text>
@@ -62,7 +64,7 @@ export default function ScanStatsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#f8fafc',
   },
   content: {
     padding: 24,
@@ -73,26 +75,26 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#111827',
+    backgroundColor: '#f8fafc',
   },
   card: {
-    backgroundColor: '#1f2937',
-    borderRadius: 16,
+    backgroundColor: '#fff',
+    borderRadius: 20,
     padding: 32,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#374151',
-    shadowColor: '#000',
+    borderColor: '#e2e8f0',
+    shadowColor: '#0f172a',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.02,
     shadowRadius: 8,
-    elevation: 8,
+    elevation: 2,
     marginBottom: 24,
   },
   title: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#9ca3af',
+    color: '#64748b',
     marginBottom: 16,
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -100,20 +102,25 @@ const styles = StyleSheet.create({
   number: {
     fontSize: 72,
     fontWeight: 'bold',
-    color: '#3b82f6',
+    color: '#2563eb',
     marginBottom: 16,
   },
   description: {
     fontSize: 14,
-    color: '#9ca3af',
+    color: '#475569',
     textAlign: 'center',
     lineHeight: 20,
   },
   refreshButton: {
-    backgroundColor: '#3b82f6',
-    borderRadius: 8,
+    backgroundColor: '#2563eb',
+    borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
+    shadowColor: '#2563eb',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 3,
   },
   refreshButtonText: {
     color: '#fff',

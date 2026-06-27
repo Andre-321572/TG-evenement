@@ -1,5 +1,6 @@
 /.phpunit.cache
-/node_modules
+node_modules/
+.expo/
 /public/build
 /public/hot
 /public/storage
@@ -17,6 +18,3 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-
-/TGevent/node_modules
-/TGevent/.expo

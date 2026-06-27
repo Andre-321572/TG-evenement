@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, TouchableOpacity, RefreshControl, Alert, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import apiClient from '../../api/client';
 
 export default function OrgDashboardScreen({ navigation }) {
@@ -139,7 +140,7 @@ export default function OrgDashboardScreen({ navigation }) {
           </View>
           <View style={styles.statsCard}>
             <Text style={styles.statsLabel}>Brouillons</Text>
-            <Text style={[styles.statsNumber, { color: '#9ca3af' }]}>{stats.draft_events}</Text>
+            <Text style={[styles.statsNumber, { color: '#64748b' }]}>{stats.draft_events}</Text>
           </View>
         </View>
       )}
@@ -177,13 +178,13 @@ export default function OrgDashboardScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#f8fafc',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#111827',
+    backgroundColor: '#f8fafc',
   },
   header: {
     padding: 16,
@@ -194,16 +195,21 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   statsCard: {
-    backgroundColor: '#1f2937',
-    borderRadius: 10,
+    backgroundColor: '#fff',
+    borderRadius: 12,
     padding: 16,
     width: '30%',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#374151',
+    borderColor: '#e2e8f0',
+    shadowColor: '#0f172a',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.01,
+    shadowRadius: 4,
+    elevation: 1,
   },
   statsLabel: {
-    color: '#9ca3af',
+    color: '#64748b',
     fontSize: 11,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -216,18 +222,23 @@ const styles = StyleSheet.create({
   listTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#1e3a8a',
     marginTop: 10,
   },
   eventCard: {
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
+    backgroundColor: '#fff',
+    borderRadius: 16,
     marginHorizontal: 16,
     marginBottom: 16,
     flexDirection: 'row',
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#374151',
+    borderColor: '#e2e8f0',
+    shadowColor: '#0f172a',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 4,
+    elevation: 2,
   },
   eventImage: {
     width: 100,
@@ -241,11 +252,11 @@ const styles = StyleSheet.create({
   eventTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#1e3a8a',
     marginBottom: 4,
   },
   eventInfo: {
-    color: '#9ca3af',
+    color: '#64748b',
     fontSize: 12,
     marginBottom: 6,
   },
@@ -257,23 +268,23 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingHorizontal: 8,
     paddingVertical: 2,
-    borderRadius: 4,
+    borderRadius: 6,
     alignSelf: 'flex-start',
     overflow: 'hidden',
   },
   statusPublie: {
-    color: '#10b981',
-    backgroundColor: '#064e3b',
+    color: '#047857',
+    backgroundColor: '#ecfdf5',
   },
   statusBrouillon: {
-    color: '#9ca3af',
-    backgroundColor: '#374151',
+    color: '#475569',
+    backgroundColor: '#f1f5f9',
   },
   actionsRow: {
     flexDirection: 'row',
   },
   actionBtn: {
-    borderRadius: 6,
+    borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 6,
     marginRight: 8,
@@ -290,7 +301,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   emptyText: {
-    color: '#9ca3af',
+    color: '#64748b',
     textAlign: 'center',
     marginTop: 40,
     fontStyle: 'italic',

@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Dimensions, Platform } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import apiClient from '../../api/client';
+import { AuthContext } from '../../context/AuthContext';
 
 const { width } = Dimensions.get('window');
 
 export default function EventDetailScreen({ route, navigation }) {
   const { eventId } = route.params;
+  const { token } = useContext(AuthContext);
   const [event, setEvent] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -29,6 +31,18 @@ export default function EventDetailScreen({ route, navigation }) {
   };
 
   const handleBuyTicket = (billet) => {
+    if (!token) {
+      Alert.alert(
+        'Connexion requise',
+        'Veuillez vous connecter à votre compte pour acheter des billets.',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          { text: 'Se connecter', onPress: () => navigation.navigate('Login') }
+        ]
+      );
+      return;
+    }
+
     if (billet.quantite_disponible <= 0) {
       Alert.alert('Épuisé', 'Désolé, ce type de billet n\'est plus disponible.');
       return;
@@ -41,23 +55,10 @@ export default function EventDetailScreen({ route, navigation }) {
     });
   };
 
-  // Helper pour formater la date en français
-  const formatDetailDate = (dateString) => {
-    if (!dateString) return '';
-    try {
-      const date = new Date(dateString);
-      const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
-      const months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-      return `${days[date.getDay()]} ${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
-    } catch (e) {
-      return dateString;
-    }
-  };
-
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#1d4ed8" />
+        <ActivityIndicator size="large" color="#2563eb" />
       </View>
     );
   }
@@ -65,7 +66,6 @@ export default function EventDetailScreen({ route, navigation }) {
   if (!event) {
     return (
       <View style={styles.errorContainer}>
-        <Ionicons name="alert-circle-outline" size={48} color="#ef4444" />
         <Text style={styles.errorText}>Événement non trouvé.</Text>
       </View>
     );
@@ -73,39 +73,23 @@ export default function EventDetailScreen({ route, navigation }) {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
-      {/* Banner Image */}
-      <View style={styles.imageContainer}>
-        <Image source={{ uri: event.photo_url }} style={styles.image} />
-        {/* Custom Back Button overlay */}
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={22} color="#1e293b" />
-        </TouchableOpacity>
-      </View>
-
+      {/* Background Image of Event */}
+      <Image source={{ uri: event.photo_url }} style={styles.image} />
+      
+      {/* Detail Content */}
       <View style={styles.content}>
         <Text style={styles.category}>{event.categorie}</Text>
         <Text style={styles.title}>{event.titre}</Text>
 
-        {/* Practical Infos Card */}
         <Text style={styles.sectionTitle}>Infos Pratiques</Text>
         <View style={styles.infoBox}>
-          <View style={styles.infoRow}>
-            <Ionicons name="calendar" size={18} color="#1d4ed8" style={styles.infoIcon} />
-            <Text style={styles.infoText}>📅 Date : {formatDetailDate(event.date)} à {event.start_heure || 'TBA'}</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Ionicons name="location" size={18} color="#1d4ed8" style={styles.infoIcon} />
-            <Text style={styles.infoText}>📍 Lieu : {event.lieu}</Text>
-          </View>
+          <Text style={styles.infoText}>📅 Date : {event.date} à {event.start_heure}</Text>
+          <Text style={styles.infoText}>📍 Lieu : {event.lieu}</Text>
           {event.nom_proprietaire && (
-            <View style={styles.infoRow}>
-              <Ionicons name="person" size={18} color="#1d4ed8" style={styles.infoIcon} />
-              <Text style={styles.infoText}>👤 Organisé par : {event.nom_proprietaire}</Text>
-            </View>
+            <Text style={styles.infoText}>👤 Organisé par : {event.nom_proprietaire}</Text>
           )}
         </View>
 
-        {/* Description Section */}
         {event.description && (
           <>
             <Text style={styles.sectionTitle}>Description</Text>
@@ -120,7 +104,7 @@ export default function EventDetailScreen({ route, navigation }) {
             <View key={billet.id} style={styles.ticketCard}>
               <View style={styles.ticketInfo}>
                 <Text style={styles.ticketType}>{billet.type}</Text>
-                <Text style={styles.ticketDesc}>{billet.description || 'Accès général à l\'événement'}</Text>
+                <Text style={styles.ticketDesc}>{billet.description || 'Accès standard à l\'événement'}</Text>
                 <Text style={styles.ticketAvailability}>
                   Reste : {billet.quantite_disponible} / {billet.quantite_totale}
                 </Text>
@@ -135,7 +119,7 @@ export default function EventDetailScreen({ route, navigation }) {
                   onPress={() => handleBuyTicket(billet)}
                   disabled={billet.quantite_disponible <= 0}
                 >
-                  <Text style={[styles.buyButtonText, billet.quantite_disponible <= 0 && styles.buyButtonTextDisabled]}>
+                  <Text style={styles.buyButtonText}>
                     {billet.quantite_disponible <= 0 ? 'Complet' : 'Réserver'}
                   </Text>
                 </TouchableOpacity>
@@ -149,18 +133,16 @@ export default function EventDetailScreen({ route, navigation }) {
         {/* Sponsors Section */}
         {event.sponsors && event.sponsors.length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>Sponsors Officiels</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.sponsorsList} contentContainerStyle={{ paddingRight: 20 }}>
+            <Text style={styles.sectionTitle}>Sponsors</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.sponsorsList}>
               {event.sponsors.map((sponsor) => (
                 <View key={sponsor.id} style={styles.sponsorCard}>
                   {sponsor.logo_url ? (
                     <Image source={{ uri: sponsor.logo_url }} style={styles.sponsorLogo} />
                   ) : (
-                    <View style={styles.sponsorLogoPlaceholder}>
-                      <Ionicons name="business" size={24} color="#94a3b8" />
-                    </View>
+                    <View style={styles.sponsorLogoPlaceholder} />
                   )}
-                  <Text style={styles.sponsorName} numberOfLines={1}>{sponsor.nom}</Text>
+                  <Text style={styles.sponsorName}>{sponsor.nom}</Text>
                 </View>
               ))}
             </ScrollView>
@@ -187,110 +169,68 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f8fafc',
-    padding: 40,
   },
   errorText: {
     color: '#ef4444',
     fontSize: 16,
     fontWeight: 'bold',
-    marginTop: 12,
-  },
-  imageContainer: {
-    position: 'relative',
-    width: width,
-    height: 250,
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: width,
+    height: 250,
     resizeMode: 'cover',
-  },
-  backButton: {
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? 50 : 20,
-    left: 20,
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
   },
   content: {
     padding: 20,
   },
   category: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: 'bold',
-    color: '#1d4ed8',
+    color: '#2563eb',
     textTransform: 'uppercase',
-    letterSpacing: 1.2,
-    marginBottom: 6,
+    letterSpacing: 1,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#0f172a',
-    lineHeight: 30,
+    color: '#1e3a8a',
+    marginTop: 6,
     marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: '#1e3a8a',
     marginTop: 24,
     marginBottom: 12,
   },
   infoBox: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
+    backgroundColor: '#fff',
+    borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
-    shadowColor: '#0f172a',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  infoIcon: {
-    marginRight: 10,
+    borderColor: '#e2e8f0',
   },
   infoText: {
-    color: '#334155',
-    fontSize: 14,
-    fontWeight: '500',
+    color: '#475569',
+    fontSize: 15,
+    marginBottom: 8,
   },
   description: {
-    color: '#475569',
-    fontSize: 14,
+    color: '#64748b',
+    fontSize: 15,
     lineHeight: 22,
   },
   ticketCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
+    backgroundColor: '#fff',
+    borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#f1f5f9',
-    shadowColor: '#0f172a',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 2,
+    borderColor: '#e2e8f0',
   },
   ticketInfo: {
     flex: 1,
@@ -305,10 +245,9 @@ const styles = StyleSheet.create({
     color: '#64748b',
     fontSize: 12,
     marginTop: 4,
-    lineHeight: 16,
   },
   ticketAvailability: {
-    color: '#16a34a',
+    color: '#2563eb',
     fontSize: 11,
     marginTop: 6,
     fontWeight: '600',
@@ -317,66 +256,60 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   ticketPrice: {
-    color: '#ef4444',
+    color: '#0f172a',
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
   },
   buyButton: {
-    backgroundColor: '#fee2e2',
+    backgroundColor: '#2563eb',
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
   buyButtonDisabled: {
-    backgroundColor: '#f1f5f9',
+    backgroundColor: '#94a3b8',
   },
   buyButtonText: {
-    color: '#ef4444',
+    color: '#fff',
     fontWeight: 'bold',
-    fontSize: 13,
-  },
-  buyButtonTextDisabled: {
-    color: '#94a3b8',
+    fontSize: 14,
   },
   noTickets: {
-    color: '#94a3b8',
+    color: '#64748b',
     fontStyle: 'italic',
   },
   sponsorsList: {
     flexDirection: 'row',
-    marginTop: 4,
+    marginTop: 8,
   },
   sponsorCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff',
     borderRadius: 12,
-    padding: 10,
+    padding: 12,
     alignItems: 'center',
     marginRight: 10,
-    width: 90,
+    width: 100,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: '#e2e8f0',
   },
   sponsorLogo: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     resizeMode: 'contain',
+    backgroundColor: '#fff',
   },
   sponsorLogoPlaceholder: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: '#f1f5f9',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   sponsorName: {
-    color: '#334155',
-    fontSize: 10,
-    fontWeight: '600',
+    color: '#475569',
+    fontSize: 11,
     marginTop: 6,
     textAlign: 'center',
-    width: '100%',
   },
 });

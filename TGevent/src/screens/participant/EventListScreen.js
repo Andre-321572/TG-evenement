@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, FlatList, Image, TextInput, TouchableOpacity, ActivityIndicator, RefreshControl, Platform, ScrollView, ImageBackground } from 'react-native';
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { StyleSheet, Text, View, FlatList, Image, TextInput, TouchableOpacity, ActivityIndicator, RefreshControl, ScrollView, Dimensions } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import apiClient from '../../api/client';
 import { AuthContext } from '../../context/AuthContext';
+
+const { width } = Dimensions.get('window');
 
 export default function EventListScreen({ navigation }) {
   const { user } = useContext(AuthContext);
@@ -42,7 +44,7 @@ export default function EventListScreen({ navigation }) {
         setEvents(fetchedData);
       }
     } catch (e) {
-      console.error('Erreur lors du chargement des événements', e);
+      console.error('Erreur chargement événements', e);
     } finally {
       setIsLoading(false);
       setRefreshing(false);
@@ -58,63 +60,110 @@ export default function EventListScreen({ navigation }) {
     fetchEvents(true);
   };
 
-  // Helper pour formater les dates sous la forme "12 MAI" pour le badge
-  const formatDateBadge = (dateString) => {
-    if (!dateString) return 'TBA';
-    try {
-      const months = ['JAN', 'FÉV', 'MAR', 'AVR', 'MAI', 'JUI', 'JUL', 'AOÛ', 'SEP', 'OCT', 'NOV', 'DÉC'];
-      const date = new Date(dateString);
-      const day = date.getDate();
-      const month = months[date.getMonth()];
-      return `${day}\n${month}`;
-    } catch (e) {
-      return 'TBA';
-    }
-  };
+  // Les événements populaires pour la section "À l'affiche" (ex: les 3 premiers)
+  const featuredEvents = events.slice(0, 3);
+  // Les autres événements pour la section "Recommandé pour vous"
+  const recommendedEvents = events.slice(3);
 
-  // Helper pour formater la date complète en français
-  const formatEventDate = (dateString) => {
-    if (!dateString) return '';
-    try {
-      const date = new Date(dateString);
-      const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
-      const months = ['Janv.', 'Févr.', 'Mars', 'Avril', 'Mai', 'Juin', 'Juil.', 'Août', 'Sept.', 'Oct.', 'Nov.', 'Déc.'];
-      return `${days[date.getDay()]} ${date.getDate()} ${months[date.getMonth()]}`;
-    } catch (e) {
-      return dateString;
-    }
-  };
+  const renderFeaturedItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.featuredCard}
+      onPress={() => navigation.navigate('EventDetail', { eventId: item.id })}
+    >
+      <Image source={{ uri: item.photo_url }} style={styles.featuredImage} />
+      <View style={styles.gradientOverlay}>
+        <View style={styles.popularBadge}>
+          <Text style={styles.popularText}>POPULAIRE</Text>
+        </View>
+        <Text style={styles.featuredTitle}>{item.titre}</Text>
+        <Text style={styles.featuredLocation}>📍 {item.lieu}</Text>
+      </View>
+    </TouchableOpacity>
+  );
 
-  // Rendu de la section supérieure (Header, Recherche, Catégories, À l'affiche)
-  const renderHeader = () => {
-    // Événements "À l'affiche" (on prend les 3 premiers événements comme mis en avant)
-    const featuredEvents = events.slice(0, 3);
+  const renderRecommendedItem = ({ item }) => {
+    // Formater la date en jj MMM (ex: "12 MAI")
+    let formattedDate = "Aujourd'hui";
+    if (item.date) {
+      const dateParts = item.date.split('-');
+      if (dateParts.length === 3) {
+        const monthNames = ["JAN", "FEV", "MAR", "AVR", "MAI", "JUN", "JUL", "AOÛ", "SEP", "OCT", "NOV", "DEC"];
+        const day = parseInt(dateParts[2], 10);
+        const monthIndex = parseInt(dateParts[1], 10) - 1;
+        formattedDate = `${day} ${monthNames[monthIndex]}`;
+      }
+    }
 
     return (
-      <View style={styles.headerContainer}>
-        {/* TOP BAR */}
-        <View style={styles.topBar}>
-          <TouchableOpacity style={styles.iconButton}>
-            <Feather name="menu" size={24} color="#1e293b" />
-          </TouchableOpacity>
-          <Text style={styles.brandTitle}>EventPro</Text>
-          <TouchableOpacity style={styles.avatarButton} onPress={() => navigation.navigate('Profil')}>
-            {user?.img_profil ? (
+      <TouchableOpacity
+        style={styles.recommendedCard}
+        onPress={() => navigation.navigate('EventDetail', { eventId: item.id })}
+      >
+        <View style={styles.recommendedImageContainer}>
+          <Image source={{ uri: item.photo_url }} style={styles.recommendedImage} />
+          <View style={styles.dateBadge}>
+            <Text style={styles.dateBadgeText}>{formattedDate}</Text>
+          </View>
+        </View>
+        
+        <View style={styles.recommendedInfo}>
+          <Text style={styles.recommendedTitle} numberOfLines={1}>{item.titre}</Text>
+          <Text style={styles.recommendedLocation} numberOfLines={1}>📍 {item.lieu}</Text>
+          <View style={styles.recommendedBottom}>
+            <Text style={styles.recommendedPrice}>
+              {item.min_price === 0 ? 'Gratuit' : `${item.min_price} FCFA`}
+            </Text>
+            <View style={styles.reserveButton}>
+              <Text style={styles.reserveButtonText}>Réserver</Text>
+            </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      {/* App Custom Premium Header */}
+      <View style={styles.appHeader}>
+        <TouchableOpacity style={styles.menuButton}>
+          <Ionicons name="menu-outline" size={26} color="#1e3a8a" />
+        </TouchableOpacity>
+        <Text style={styles.logoText}>TGevent</Text>
+        <TouchableOpacity 
+          style={styles.profileAvatar}
+          onPress={() => navigation.navigate('Profil')}
+        >
+          {user ? (
+            user.img_profil ? (
               <Image source={{ uri: user.img_profil }} style={styles.avatarImage} />
             ) : (
               <View style={styles.avatarFallback}>
-                <Text style={styles.avatarText}>
-                  {user?.prenom?.charAt(0).toUpperCase() || 'U'}
+                <Text style={styles.avatarFallbackText}>
+                  {user.prenom?.charAt(0).toUpperCase()}
+                  {user.nom?.charAt(0).toUpperCase()}
                 </Text>
               </View>
-            )}
-          </TouchableOpacity>
-        </View>
+            )
+          ) : (
+            <View style={styles.avatarFallbackGuest}>
+              <Ionicons name="person" size={18} color="#fff" />
+            </View>
+          )}
+        </TouchableOpacity>
+      </View>
 
-        {/* SEARCH BAR */}
-        <View style={styles.searchSection}>
-          <View style={styles.searchBarWrapper}>
-            <Ionicons name="search-outline" size={20} color="#94a3b8" style={styles.searchIcon} />
+      {/* Main Scroll Content */}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#2563eb" />
+        }
+      >
+        {/* Search Bar */}
+        <View style={styles.searchBar}>
+          <View style={styles.searchInputContainer}>
+            <Ionicons name="search" size={20} color="#94a3b8" style={styles.searchIcon} />
             <TextInput
               style={styles.searchInput}
               placeholder="Rechercher des événements, artistes..."
@@ -123,153 +172,99 @@ export default function EventListScreen({ navigation }) {
               onChangeText={setSearch}
               onSubmitEditing={handleSearchSubmit}
             />
-            {search.length > 0 && (
-              <TouchableOpacity onPress={() => { setSearch(''); fetchEvents(true); }}>
-                <Ionicons name="close-circle" size={18} color="#94a3b8" />
-              </TouchableOpacity>
-            )}
           </View>
         </View>
 
-        {/* CATEGORIES PILLS */}
-        <View style={styles.categoriesSection}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoriesScroll}>
-            <TouchableOpacity
-              style={[styles.categoryPill, selectedCategory === '' && styles.categoryPillActive]}
-              onPress={() => setSelectedCategory('')}
-            >
-              <Text style={[styles.categoryText, selectedCategory === '' && styles.categoryTextActive]}>
-                Tout
-              </Text>
-            </TouchableOpacity>
-            {categories.map((cat, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[styles.categoryPill, selectedCategory === cat && styles.categoryPillActive]}
-                onPress={() => setSelectedCategory(cat)}
-              >
-                <Text style={[styles.categoryText, selectedCategory === cat && styles.categoryTextActive]}>
-                  {cat}
-                </Text>
-              </TouchableOpacity>
-            ))}
+        {/* Categories Horizontal List */}
+        <View style={styles.categoriesContainer}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20 }}>
+            {['', ...categories].map((item, index) => {
+              const isSelected = selectedCategory === item;
+              return (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.categoryButton,
+                    isSelected && styles.categoryButtonActive,
+                  ]}
+                  onPress={() => setSelectedCategory(item)}
+                >
+                  <Text
+                    style={[
+                      styles.categoryButtonText,
+                      isSelected && styles.categoryButtonTextActive,
+                    ]}
+                  >
+                    {item === '' ? 'Tout' : item}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
         </View>
 
-        {/* SECTION À L'AFFICHE */}
-        {featuredEvents.length > 0 && (
-          <View style={styles.featuredSection}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>À l'affiche</Text>
-              <TouchableOpacity>
-                <Text style={styles.seeAllLink}>Voir tout</Text>
-              </TouchableOpacity>
-            </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.featuredScroll}>
-              {featuredEvents.map((item) => (
-                <TouchableOpacity
-                  key={item.id}
-                  style={styles.featuredCard}
-                  onPress={() => navigation.navigate('EventDetail', { eventId: item.id })}
-                >
-                  <ImageBackground
-                    source={{ uri: item.photo_url }}
-                    style={styles.featuredImage}
-                    imageStyle={{ borderRadius: 16 }}
-                  >
-                    <View style={styles.featuredOverlay}>
-                      <View style={styles.popularBadge}>
-                        <Text style={styles.popularBadgeText}>POPULAIRE</Text>
-                      </View>
-                      <View style={styles.featuredInfo}>
-                        <Text style={styles.featuredTitle} numberOfLines={2}>{item.titre}</Text>
-                        <Text style={styles.featuredLocation}>📍 {item.lieu}</Text>
-                      </View>
-                    </View>
-                  </ImageBackground>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+        {isLoading && !refreshing ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color="#2563eb" />
           </View>
-        )}
+        ) : (
+          <>
+            {/* Section: À l'affiche */}
+            {featuredEvents.length > 0 && (
+              <View style={styles.sectionContainer}>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionTitle}>À l'affiche</Text>
+                  <TouchableOpacity onPress={() => navigation.navigate('Recherche')}>
+                    <Text style={styles.seeAllText}>Voir tout</Text>
+                  </TouchableOpacity>
+                </View>
+                <FlatList
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  data={featuredEvents}
+                  keyExtractor={(item) => item.id.toString()}
+                  renderItem={renderFeaturedItem}
+                  contentContainerStyle={{ paddingHorizontal: 20 }}
+                />
+              </View>
+            )}
 
-        {/* SECTION RECOMMANDÉ POUR VOUS HEADER */}
-        <View style={styles.recommendedHeader}>
-          <Text style={styles.sectionTitle}>Recommandé pour vous</Text>
-          <Text style={styles.sectionSubtitle}>Basé sur vos préférences</Text>
-        </View>
-      </View>
-    );
-  };
-
-  // Rendu de chaque élément recommandé (Carte verticale stylisée)
-  const renderEventItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.eventCard}
-      onPress={() => navigation.navigate('EventDetail', { eventId: item.id })}
-    >
-      <View style={styles.eventImageContainer}>
-        <Image source={{ uri: item.photo_url }} style={styles.eventImage} />
-        <View style={styles.dateBadge}>
-          <Text style={styles.dateBadgeText}>{formatDateBadge(item.date)}</Text>
-        </View>
-      </View>
-      <View style={styles.eventDetails}>
-        <View>
-          <Text style={styles.eventTitle} numberOfLines={2}>{item.titre}</Text>
-          <Text style={styles.eventLocation}>📍 {item.lieu}</Text>
-          <Text style={styles.eventDateText}>📅 {formatEventDate(item.date)}</Text>
-        </View>
-        <View style={styles.eventFooter}>
-          <Text style={styles.eventPrice}>{item.min_price > 0 ? `${item.min_price} FCFA` : 'Gratuit'}</Text>
-          <TouchableOpacity
-            style={styles.reserveButton}
-            onPress={() => navigation.navigate('EventDetail', { eventId: item.id })}
-          >
-            <Text style={styles.reserveButtonText}>Réserver</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-
-  return (
-    <View style={styles.container}>
-      <FlatList
-        data={events}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderEventItem}
-        ListHeaderComponent={renderHeader}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#1d4ed8" />
-        }
-        ListEmptyComponent={
-          !isLoading && (
-            <View style={styles.emptyContainer}>
-              <Ionicons name="calendar-outline" size={48} color="#94a3b8" />
-              <Text style={styles.emptyText}>Aucun événement trouvé.</Text>
+            {/* Section: Recommandé pour vous */}
+            <View style={styles.sectionContainer}>
+              <Text style={styles.sectionTitleRecommended}>Recommandé pour vous</Text>
+              <Text style={styles.sectionSubtitle}>Basé sur vos préférences</Text>
+              
+              {recommendedEvents.length === 0 && featuredEvents.length === 0 ? (
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.emptyText}>Aucun événement trouvé.</Text>
+                </View>
+              ) : (
+                <FlatList
+                  scrollEnabled={false}
+                  data={recommendedEvents.length > 0 ? recommendedEvents : featuredEvents}
+                  keyExtractor={(item) => item.id.toString()}
+                  renderItem={renderRecommendedItem}
+                  contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                />
+              )}
             </View>
-          )
-        }
-        ListFooterComponent={
-          isLoading && <ActivityIndicator size="small" color="#1d4ed8" style={{ marginVertical: 20 }} />
-        }
-        contentContainerStyle={styles.listContent}
-      />
+          </>
+        )}
+      </ScrollView>
 
-      {/* FLOATING ACTION BUTTON */}
-      {(user?.role === 'admin' || user?.role === 'organisateur') && (
-        <TouchableOpacity
-          style={styles.fab}
-          onPress={() => {
-            if (navigation.navigate) {
-              navigation.navigate('Créer Événement');
-            }
-          }}
-        >
-          <Ionicons name="add" size={28} color="#fff" />
-        </TouchableOpacity>
-      )}
+      {/* Floating Action Button (FAB) + to simulate the mockup */}
+      <TouchableOpacity 
+        style={styles.fab}
+        onPress={() => {
+          if (user?.role === 'admin' || user?.role === 'organisateur') {
+            navigation.navigate('OrganizerHome', { screen: 'Créer Événement' });
+          } else {
+            Alert.alert('Créer un événement', 'Devenez organisateur sur notre site web pour publier vos événements !');
+          }
+        }}
+      >
+        <Ionicons name="add" size={28} color="#fff" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -279,301 +274,285 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8fafc',
   },
-  listContent: {
-    paddingBottom: 30,
-  },
-  headerContainer: {
-    backgroundColor: '#f8fafc',
-  },
-  topBar: {
+  appHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'ios' ? 55 : 20,
-    paddingBottom: 12,
-    backgroundColor: '#ffffff',
+    paddingTop: 16,
+    paddingBottom: 10,
+    backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#f1f5f9',
   },
-  iconButton: {
-    padding: 6,
+  menuButton: {
+    padding: 4,
   },
-  brandTitle: {
+  logoText: {
     fontSize: 22,
     fontWeight: 'bold',
     color: '#1e3a8a',
     letterSpacing: 0.5,
   },
-  avatarButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+  profileAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     overflow: 'hidden',
   },
   avatarImage: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
   },
   avatarFallback: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#e0e7ff',
-    alignItems: 'center',
+    backgroundColor: '#2563eb',
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  avatarText: {
-    color: '#1d4ed8',
+  avatarFallbackText: {
+    color: '#fff',
+    fontSize: 12,
     fontWeight: 'bold',
-    fontSize: 16,
   },
-  searchSection: {
-    backgroundColor: '#ffffff',
+  avatarFallbackGuest: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#94a3b8',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchBar: {
     paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    paddingVertical: 16,
+    backgroundColor: '#fff',
   },
-  searchBarWrapper: {
+  searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f1f5f9',
     borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 46,
+    paddingHorizontal: 16,
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   searchIcon: {
     marginRight: 8,
   },
   searchInput: {
     flex: 1,
-    color: '#1e293b',
-    fontSize: 14,
-    height: '100%',
+    color: '#0f172a',
+    fontSize: 15,
   },
-  categoriesSection: {
-    backgroundColor: '#f8fafc',
-    paddingVertical: 14,
+  categoriesContainer: {
+    backgroundColor: '#fff',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
   },
-  categoriesScroll: {
-    paddingHorizontal: 20,
-  },
-  categoryPill: {
-    paddingHorizontal: 16,
+  categoryButton: {
+    paddingHorizontal: 18,
     paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#ffffff',
-    marginRight: 8,
+    borderRadius: 99,
+    backgroundColor: '#eff6ff',
+    marginRight: 10,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: '#dbeafe',
   },
-  categoryPillActive: {
+  categoryButtonActive: {
     backgroundColor: '#1e3a8a',
     borderColor: '#1e3a8a',
   },
-  categoryText: {
-    color: '#475569',
-    fontSize: 14,
+  categoryButtonText: {
+    color: '#1e3a8a',
+    fontSize: 13,
     fontWeight: '600',
   },
-  categoryTextActive: {
-    color: '#ffffff',
+  categoryButtonTextActive: {
+    color: '#fff',
   },
-  featuredSection: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
+  loaderContainer: {
+    height: 300,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sectionContainer: {
+    marginTop: 24,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 20,
     marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: '#1e3a8a',
   },
-  sectionSubtitle: {
-    fontSize: 12,
-    color: '#64748b',
-    marginTop: 2,
-  },
-  seeAllLink: {
-    fontSize: 14,
-    color: '#ef4444',
-    fontWeight: '700',
-  },
-  featuredScroll: {
-    paddingRight: 20,
+  seeAllText: {
+    fontSize: 13,
+    color: '#2563eb',
+    fontWeight: '600',
   },
   featuredCard: {
-    width: 280,
-    height: 160,
-    marginRight: 14,
+    width: width * 0.75,
+    height: 180,
     borderRadius: 16,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    marginRight: 16,
+    position: 'relative',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   featuredImage: {
     width: '100%',
     height: '100%',
   },
-  featuredOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.35)',
-    justifyContent: 'space-between',
-    padding: 14,
+  gradientOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(15, 23, 42, 0.35)',
+    padding: 16,
+    justifyContent: 'flex-end',
   },
   popularBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#ef4444',
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    backgroundColor: '#f43f5e',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
   },
-  popularBadgeText: {
-    color: '#ffffff',
+  popularText: {
+    color: '#fff',
     fontSize: 10,
     fontWeight: 'bold',
   },
-  featuredInfo: {
-    marginTop: 'auto',
-  },
   featuredTitle: {
-    color: '#ffffff',
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 4,
-    textShadowColor: 'rgba(0,0,0,0.7)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
   },
   featuredLocation: {
-    color: '#ffffff',
+    color: '#cbd5e1',
     fontSize: 12,
-    textShadowColor: 'rgba(0,0,0,0.7)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
   },
-  recommendedHeader: {
+  sectionTitleRecommended: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1e3a8a',
     paddingHorizontal: 20,
-    marginBottom: 14,
   },
-  eventCard: {
+  sectionSubtitle: {
+    fontSize: 13,
+    color: '#64748b',
+    paddingHorizontal: 20,
+    marginBottom: 16,
+  },
+  recommendedCard: {
     flexDirection: 'row',
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 10,
-    marginHorizontal: 20,
-    marginBottom: 14,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: '#e2e8f0',
     shadowColor: '#0f172a',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowOpacity: 0.02,
+    shadowRadius: 4,
+    elevation: 1,
   },
-  eventImageContainer: {
+  recommendedImageContainer: {
     position: 'relative',
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    overflow: 'hidden',
   },
-  eventImage: {
-    width: 90,
-    height: 90,
-    borderRadius: 12,
+  recommendedImage: {
+    width: '100%',
+    height: '100%',
   },
   dateBadge: {
     position: 'absolute',
     top: 6,
-    right: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: 8,
+    left: 6,
+    backgroundColor: 'rgba(15, 23, 42, 0.75)',
     paddingHorizontal: 6,
-    paddingVertical: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 38,
+    paddingVertical: 2,
+    borderRadius: 4,
   },
   dateBadgeText: {
-    fontSize: 9,
+    color: '#fff',
+    fontSize: 8,
     fontWeight: 'bold',
-    color: '#1e3a8a',
-    textAlign: 'center',
-    lineHeight: 11,
   },
-  eventDetails: {
+  recommendedInfo: {
     flex: 1,
     marginLeft: 12,
     justifyContent: 'space-between',
   },
-  eventTitle: {
+  recommendedTitle: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#1e293b',
-    lineHeight: 18,
+    color: '#1e3a8a',
   },
-  eventLocation: {
+  recommendedLocation: {
     fontSize: 12,
     color: '#64748b',
     marginTop: 2,
   },
-  eventDateText: {
-    fontSize: 11,
-    color: '#64748b',
-    marginTop: 2,
-  },
-  eventFooter: {
+  recommendedBottom: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 6,
+    marginTop: 8,
   },
-  eventPrice: {
+  recommendedPrice: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#ef4444',
+    color: '#0f172a',
   },
   reserveButton: {
-    backgroundColor: '#fee2e2',
+    backgroundColor: '#ffe4e6',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: 6,
   },
   reserveButtonText: {
-    color: '#ef4444',
-    fontSize: 12,
+    color: '#e11d48',
     fontWeight: 'bold',
+    fontSize: 12,
   },
   emptyContainer: {
+    padding: 32,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 40,
   },
   emptyText: {
-    color: '#94a3b8',
-    marginTop: 10,
-    fontSize: 15,
+    color: '#64748b',
+    fontSize: 14,
   },
   fab: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
-    width: 54,
-    height: 54,
-    borderRadius: 27,
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: '#1e3a8a',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#1e3a8a',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
     elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
   },
 });

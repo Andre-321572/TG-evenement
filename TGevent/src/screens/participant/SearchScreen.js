@@ -1,272 +1,227 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, TextInput, TouchableOpacity, ActivityIndicator, Image, ScrollView, Platform } from 'react-native';
-import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, Image, ActivityIndicator, ScrollView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import apiClient from '../../api/client';
 
 export default function SearchScreen({ navigation }) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [search, setSearch] = useState('');
   const [showFilters, setShowFilters] = useState(true);
-  const [selectedWhen, setSelectedWhen] = useState('Ce weekend');
-  const [distance, setDistance] = useState(25);
-  const [selectedPrice, setSelectedPrice] = useState('Paid');
-  const [selectedCategory, setSelectedCategory] = useState('Musique');
+  const [selectedWhen, setSelectedWhen] = useState('Ce weekend'); // 'Aujourd'hui', 'Ce weekend', 'Choisir...'
+  const [radius, setRadius] = useState(25);
+  const [priceFilter, setPriceFilter] = useState('Paid'); // 'Gratuit', 'Paid', 'Premium'
+  
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Événements de démonstration (pour correspondre exactement à la maquette 2 en fallback)
-  const demoEvents = [
-    {
-      id: 'demo-1',
-      titre: 'Neon Pulse Music Festival',
-      categorie: 'FESTIVAL',
-      date: 'Samedi, 21h00',
-      lieu: 'Zénith, Paris',
-      prix: 'À partir de 45€',
-      photo_url: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=600&auto=format&fit=crop',
-    },
-    {
-      id: 'demo-2',
-      titre: 'AI Future Summit 2024',
-      categorie: 'TECH',
-      date: 'Demain, 09h30',
-      lieu: 'Station F, Paris',
-      prix: 'Gratuit',
-      photo_url: 'https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?q=80&w=600&auto=format&fit=crop',
-    },
-    {
-      id: 'demo-3',
-      titre: 'Intimate Jazz Night',
-      categorie: 'CONCERT',
-      date: 'Ce weekend, 20h00',
-      lieu: 'Duc des Lombards, Paris',
-      prix: '25€',
-      photo_url: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=600&auto=format&fit=crop',
-    },
-    {
-      id: 'demo-4',
-      titre: 'Abstraction Moderne',
-      categorie: 'EXPO',
-      date: 'Dimanche, 11h00',
-      lieu: 'Palais de Tokyo, Paris',
-      prix: '12€',
-      photo_url: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=600&auto=format&fit=crop',
-    }
-  ];
+  const [resultsCount, setResultsCount] = useState(0);
 
   useEffect(() => {
-    fetchEvents();
-  }, [searchQuery, selectedWhen, selectedPrice, selectedCategory]);
+    fetchSearchResults();
+  }, [search, selectedWhen, priceFilter]);
 
-  const fetchEvents = async () => {
+  const fetchSearchResults = async () => {
     setIsLoading(true);
     try {
+      // Préparer les paramètres basés sur les filtres
       const params = {
-        search: searchQuery,
-        categorie: selectedCategory === 'Tous' ? '' : selectedCategory,
+        search: search,
       };
+
+      // Simuler le filtre de date pour l'API
+      if (selectedWhen === "Aujourd'hui") {
+        const today = new Date().toISOString().split('T')[0];
+        params.date_start = today;
+        params.date_end = today;
+      } else if (selectedWhen === 'Ce weekend') {
+        // Simuler le weekend
+        const today = new Date();
+        const nextFriday = new Date(today.setDate(today.getDate() + (5 - today.getDay())));
+        const nextSunday = new Date(today.setDate(today.getDate() + 2));
+        params.date_start = nextFriday.toISOString().split('T')[0];
+        params.date_end = nextSunday.toISOString().split('T')[0];
+      }
+
       const response = await apiClient.get('/events', { params });
-      if (response.data.status === 'success' && response.data.data.data.length > 0) {
-        // Formater les événements du backend pour correspondre à notre structure
-        const formatted = response.data.data.data.map(item => ({
-          id: item.id.toString(),
-          titre: item.titre,
-          categorie: item.categorie ? item.categorie.toUpperCase() : 'ÉVÉNEMENT',
-          date: item.date, // ou formater
-          lieu: item.lieu,
-          prix: item.min_price > 0 ? `${item.min_price} FCFA` : 'Gratuit',
-          photo_url: item.photo_url,
-        }));
-        setEvents(formatted);
-      } else {
-        // Utiliser les démos si la base de données est vide
-        setEvents(demoEvents);
+      if (response.data.status === 'success') {
+        let fetchedEvents = response.data.data.data;
+
+        // Filtrage local supplémentaire pour correspondre aux filtres Prix du mockup
+        if (priceFilter === 'Gratuit') {
+          fetchedEvents = fetchedEvents.filter(e => e.min_price === 0);
+        } else if (priceFilter === 'Paid') {
+          fetchedEvents = fetchedEvents.filter(e => e.min_price > 0 && e.min_price < 20000);
+        } else if (priceFilter === 'Premium') {
+          fetchedEvents = fetchedEvents.filter(e => e.min_price >= 20000);
+        }
+
+        setEvents(fetchedEvents);
+        setResultsCount(fetchedEvents.length);
       }
     } catch (e) {
-      console.error(e);
-      setEvents(demoEvents);
+      console.error('Erreur recherche', e);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const renderEventCard = ({ item }) => (
+  const renderEventItem = ({ item }) => (
     <TouchableOpacity
-      style={styles.eventCard}
-      onPress={() => {
-        if (!item.id.startsWith('demo-')) {
-          navigation.navigate('EventDetail', { eventId: item.id });
-        }
-      }}
+      style={styles.card}
+      onPress={() => navigation.navigate('EventDetail', { eventId: item.id })}
     >
-      <View style={styles.imageWrapper}>
-        <Image source={{ uri: item.photo_url }} style={styles.cardImage} />
-        <View style={styles.cardCategoryBadge}>
-          <Text style={styles.cardCategoryText}>{item.categorie}</Text>
+      <View style={styles.imageContainer}>
+        <Image source={{ uri: item.photo_url }} style={styles.image} />
+        <View style={styles.categoryBadge}>
+          <Text style={styles.categoryBadgeText}>{item.categorie?.toUpperCase()}</Text>
         </View>
-        <View style={styles.cardPriceBadge}>
-          <Text style={styles.cardPriceText}>{item.prix}</Text>
+        <View style={styles.priceBadge}>
+          <Text style={styles.priceBadgeText}>
+            {item.min_price === 0 ? 'Gratuit' : `À partir de ${item.min_price} FCFA`}
+          </Text>
         </View>
       </View>
       <View style={styles.cardBody}>
-        <Text style={styles.cardTitle}>{item.titre}</Text>
-        <Text style={styles.cardDetail}><Ionicons name="calendar-outline" size={13} color="#64748b" /> {item.date}</Text>
-        <Text style={styles.cardDetail}><Ionicons name="location-outline" size={13} color="#64748b" /> {item.lieu}</Text>
+        <Text style={styles.title}>{item.titre}</Text>
+        <Text style={styles.dateTime}>📅 {item.formatted_date || item.date} - {item.start_heure}</Text>
+        <Text style={styles.location}>📍 {item.lieu}</Text>
       </View>
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      {/* HEADER */}
+      {/* Search Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton}>
-          <Feather name="menu" size={24} color="#1e293b" />
-        </TouchableOpacity>
-        <Text style={styles.brandTitle}>EventPro</Text>
-        <TouchableOpacity style={styles.avatarButton}>
-          <Image
-            source={{ uri: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=100&auto=format&fit=crop' }}
-            style={styles.avatarImage}
+        <View style={styles.searchBarContainer}>
+          <Ionicons name="search" size={20} color="#94a3b8" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Rechercher des concerts, conférences..."
+            placeholderTextColor="#94a3b8"
+            value={search}
+            onChangeText={setSearch}
           />
+        </View>
+      </View>
+
+      {/* Filter Toggle Button and category quick view */}
+      <View style={styles.filtersBar}>
+        <TouchableOpacity 
+          style={[styles.filterToggle, showFilters && styles.filterToggleActive]} 
+          onPress={() => setShowFilters(!showFilters)}
+        >
+          <Ionicons name="options-outline" size={18} color={showFilters ? '#fff' : '#1e3a8a'} />
+          <Text style={[styles.filterToggleText, showFilters && styles.filterToggleTextActive]}>Filtres</Text>
+        </TouchableOpacity>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.quickTags}>
+          {['Musique', 'Tech', 'Festivals', 'Sport'].map((tag) => (
+            <TouchableOpacity key={tag} style={styles.tagButton}>
+              <Text style={styles.tagButtonText}>{tag}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
+      {/* Advanced Filters Panel */}
+      {showFilters && (
+        <View style={styles.filtersPanel}>
+          {/* Quand */}
+          <Text style={styles.filterSectionTitle}>📅 Quand</Text>
+          <View style={styles.buttonsRow}>
+            {["Aujourd'hui", "Ce weekend", "Choisir..."].map((option) => (
+              <TouchableOpacity
+                key={option}
+                style={[
+                  styles.filterOptionButton,
+                  selectedWhen === option && styles.filterOptionButtonActive
+                ]}
+                onPress={() => setSelectedWhen(option)}
+              >
+                <Text style={[
+                  styles.filterOptionButtonText,
+                  selectedWhen === option && styles.filterOptionButtonTextActive
+                ]}>
+                  {option}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Lieu */}
+          <View style={styles.locationHeader}>
+            <Text style={styles.filterSectionTitle}>📍 Lieu</Text>
+            <Text style={styles.locationRadius}>Rayon : {radius} km</Text>
+          </View>
+          <View style={styles.sliderContainer}>
+            <View style={styles.sliderTrack}>
+              <View style={[styles.sliderFill, { width: `${(radius / 100) * 100}%` }]} />
+              <View style={[styles.sliderThumb, { left: `${(radius / 100) * 100}%` }]} />
+            </View>
+            <View style={styles.sliderLabels}>
+              <Text style={styles.sliderLabel}>1km</Text>
+              <Text style={styles.sliderLabel}>50km</Text>
+              <Text style={styles.sliderLabel}>100km+</Text>
+            </View>
+            <TouchableOpacity style={styles.locationInput}>
+              <Ionicons name="location-outline" size={16} color="#475569" />
+              <Text style={styles.locationInputText}>Lomé, Togo (Position Actuelle)</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Prix */}
+          <Text style={styles.filterSectionTitle}>💵 Prix</Text>
+          <View style={styles.buttonsRow}>
+            {[
+              { label: 'Gratuit', val: 'Gratuit' },
+              { label: 'Payant', val: 'Paid' },
+              { label: 'Premium', val: 'Premium' }
+            ].map((option) => (
+              <TouchableOpacity
+                key={option.val}
+                style={[
+                  styles.filterOptionButton,
+                  priceFilter === option.val && styles.filterOptionButtonActive
+                ]}
+                onPress={() => setPriceFilter(option.val)}
+              >
+                <Text style={[
+                  styles.filterOptionButtonText,
+                  priceFilter === option.val && styles.filterOptionButtonTextActive
+                ]}>
+                  {option.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
+
+      {/* Results Header */}
+      <View style={styles.resultsHeader}>
+        <Text style={styles.resultsTitle}>Résultats ({resultsCount})</Text>
+        <TouchableOpacity style={styles.sortButton}>
+          <Text style={styles.sortButtonText}>Trier par : Pertinence</Text>
+          <Ionicons name="chevron-down" size={14} color="#2563eb" />
         </TouchableOpacity>
       </View>
 
-      <FlatList
-        data={events}
-        keyExtractor={(item) => item.id}
-        renderItem={renderEventCard}
-        contentContainerStyle={styles.listContent}
-        ListHeaderComponent={
-          <View style={styles.searchAndFilters}>
-            {/* SEARCH INPUT */}
-            <View style={styles.searchSection}>
-              <View style={styles.searchBarWrapper}>
-                <Ionicons name="search-outline" size={20} color="#94a3b8" style={styles.searchIcon} />
-                <TextInput
-                  style={styles.searchInput}
-                  placeholder="Rechercher des concerts, conférences..."
-                  placeholderTextColor="#94a3b8"
-                  value={searchQuery}
-                  onChangeText={setSearchQuery}
-                />
-              </View>
-            </View>
-
-            {/* QUICK CATEGORIES FILTERS */}
-            <View style={styles.categoriesSection}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoriesScroll}>
-                <TouchableOpacity
-                  style={[styles.filterToggleBtn, showFilters && styles.filterToggleBtnActive]}
-                  onPress={() => setShowFilters(!showFilters)}
-                >
-                  <Ionicons name="options-outline" size={18} color={showFilters ? '#ffffff' : '#1e3a8a'} />
-                  <Text style={[styles.filterToggleBtnText, showFilters && styles.filterToggleBtnTextActive]}>
-                    Filtres
-                  </Text>
-                </TouchableOpacity>
-
-                {['Musique', 'Tech', 'Festival', 'Théâtre', 'Exposition'].map((cat) => (
-                  <TouchableOpacity
-                    key={cat}
-                    style={[styles.categoryPill, selectedCategory === cat && styles.categoryPillActive]}
-                    onPress={() => setSelectedCategory(cat)}
-                  >
-                    <Text style={[styles.categoryText, selectedCategory === cat && styles.categoryTextActive]}>
-                      {cat}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-
-            {/* EXPANDABLE ADVANCED FILTERS PANEL */}
-            {showFilters && (
-              <View style={styles.filtersPanel}>
-                {/* FILTER QUAND */}
-                <View style={styles.filterGroup}>
-                  <Text style={styles.filterLabel}>📅 Quand</Text>
-                  <View style={styles.filterOptionsRow}>
-                    {["Aujourd'hui", "Ce weekend", "Choisir..."].map((option) => (
-                      <TouchableOpacity
-                        key={option}
-                        style={[styles.filterOptionBtn, selectedWhen === option && styles.filterOptionBtnActive]}
-                        onPress={() => setSelectedWhen(option)}
-                      >
-                        <Text style={[styles.filterOptionBtnText, selectedWhen === option && styles.filterOptionBtnTextActive]}>
-                          {option}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </View>
-
-                {/* FILTER LIEU / DISTANCE */}
-                <View style={styles.filterGroup}>
-                  <View style={styles.distanceLabelRow}>
-                    <Text style={styles.filterLabel}>📍 Lieu</Text>
-                    <Text style={styles.distanceValue}>Rayon : {distance} km</Text>
-                  </View>
-                  {/* Custom Slider View */}
-                  <View style={styles.sliderContainer}>
-                    <View style={styles.sliderTrack}>
-                      <View style={[styles.sliderFill, { width: `${distance}%` }]} />
-                      <TouchableOpacity
-                        style={[styles.sliderThumb, { left: `${distance}%` }]}
-                        activeOpacity={1}
-                      />
-                    </View>
-                    <View style={styles.sliderLimitsRow}>
-                      <TouchableOpacity onPress={() => setDistance(15)}><Text style={styles.limitText}>1km</Text></TouchableOpacity>
-                      <TouchableOpacity onPress={() => setDistance(50)}><Text style={styles.limitText}>50km</Text></TouchableOpacity>
-                      <TouchableOpacity onPress={() => setDistance(100)}><Text style={styles.limitText}>100km+</Text></TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.locationInputBox}>
-                    <Ionicons name="navigate-outline" size={16} color="#1d4ed8" />
-                    <Text style={styles.locationInputText}>Paris, France (Position Actuelle)</Text>
-                  </View>
-                </View>
-
-                {/* FILTER PRIX */}
-                <View style={styles.filterGroup}>
-                  <Text style={styles.filterLabel}>💵 Prix</Text>
-                  <div style={styles.filterOptionsRow}>
-                    {["Gratuit", "Paid", "Premium"].map((option) => (
-                      <TouchableOpacity
-                        key={option}
-                        style={[styles.filterOptionBtn, selectedPrice === option && styles.filterOptionBtnActive]}
-                        onPress={() => setSelectedPrice(option)}
-                      >
-                        <Text style={[styles.filterOptionBtnText, selectedPrice === option && styles.filterOptionBtnTextActive]}>
-                          {option === 'Paid' ? '€ Paid' : option === 'Premium' ? '€€ Premium' : option}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </div>
-                </View>
-              </View>
-            )}
-
-            {/* RESULTS STATISTICS BAR */}
-            <View style={styles.resultsHeaderRow}>
-              <Text style={styles.resultsCountText}>Résultats ({events.length})</Text>
-              <TouchableOpacity style={styles.sortBtn}>
-                <Text style={styles.sortBtnText}>Trier par : Pertinence</Text>
-                <Ionicons name="chevron-down" size={14} color="#1d4ed8" />
-              </TouchableOpacity>
-            </View>
-          </View>
-        }
-        ListEmptyComponent={
-          isLoading ? (
-            <ActivityIndicator size="large" color="#1d4ed8" style={{ marginTop: 30 }} />
-          ) : (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>Aucun résultat ne correspond à vos filtres.</Text>
-            </View>
-          )
-        }
-      />
+      {/* Results List */}
+      {isLoading ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#2563eb" />
+        </View>
+      ) : events.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>Aucun événement ne correspond à vos filtres.</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={events}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderEventItem}
+          contentContainerStyle={styles.listContent}
+        />
+      )}
     </View>
   );
 }
@@ -277,328 +232,282 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8fafc',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'ios' ? 55 : 20,
-    paddingBottom: 12,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 8,
   },
-  iconButton: {
-    padding: 6,
-  },
-  brandTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#1e3a8a',
-    letterSpacing: 0.5,
-  },
-  avatarButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    overflow: 'hidden',
-  },
-  avatarImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  listContent: {
-    paddingBottom: 30,
-  },
-  searchAndFilters: {
-    backgroundColor: '#f8fafc',
-  },
-  searchSection: {
-    backgroundColor: '#ffffff',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-  },
-  searchBarWrapper: {
+  searchBarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f1f5f9',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 46,
+    borderRadius: 99,
+    paddingHorizontal: 16,
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   searchIcon: {
     marginRight: 8,
   },
   searchInput: {
     flex: 1,
-    color: '#1e293b',
-    fontSize: 14,
-    height: '100%',
+    color: '#0f172a',
+    fontSize: 15,
   },
-  categoriesSection: {
-    backgroundColor: '#f8fafc',
+  filtersBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#f1f5f9',
   },
-  categoriesScroll: {
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  filterToggleBtn: {
+  filterToggle: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    backgroundColor: '#eff6ff',
+    paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#ffffff',
+    borderRadius: 99,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: '#1e3a8a',
-    gap: 6,
+    borderColor: '#bfdbfe',
   },
-  filterToggleBtnActive: {
+  filterToggleActive: {
     backgroundColor: '#1e3a8a',
     borderColor: '#1e3a8a',
   },
-  filterToggleBtnText: {
+  filterToggleText: {
     color: '#1e3a8a',
-    fontSize: 14,
     fontWeight: 'bold',
+    marginLeft: 6,
+    fontSize: 13,
   },
-  filterToggleBtnTextActive: {
-    color: '#ffffff',
+  filterToggleTextActive: {
+    color: '#fff',
   },
-  categoryPill: {
+  quickTags: {
+    flexDirection: 'row',
+  },
+  tagButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f1f5f9',
+    borderRadius: 99,
     marginRight: 8,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
   },
-  categoryPillActive: {
-    backgroundColor: '#e0e7ff',
-    borderColor: '#1d4ed8',
-  },
-  categoryText: {
+  tagButtonText: {
     color: '#475569',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  categoryTextActive: {
-    color: '#1d4ed8',
+    fontSize: 13,
+    fontWeight: '500',
   },
   filtersPanel: {
-    backgroundColor: '#ffffff',
-    marginHorizontal: 20,
-    marginTop: 14,
-    borderRadius: 16,
+    backgroundColor: '#fff',
     padding: 16,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    shadowColor: '#0f172a',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.04,
-    shadowRadius: 10,
-    elevation: 3,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
   },
-  filterGroup: {
-    marginBottom: 16,
-  },
-  filterLabel: {
+  filterSectionTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#1e293b',
-    marginBottom: 10,
+    color: '#0f172a',
+    marginBottom: 8,
   },
-  filterOptionsRow: {
+  buttonsRow: {
     flexDirection: 'row',
-    gap: 10,
+    marginBottom: 16,
+    justifyContent: 'space-between',
   },
-  filterOptionBtn: {
+  filterOptionButton: {
     flex: 1,
-    paddingVertical: 10,
-    borderRadius: 10,
-    backgroundColor: '#f8fafc',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: '#cbd5e1',
+    borderRadius: 8,
+    paddingVertical: 10,
+    alignItems: 'center',
+    marginHorizontal: 4,
   },
-  filterOptionBtnActive: {
+  filterOptionButtonActive: {
     backgroundColor: '#1e3a8a',
     borderColor: '#1e3a8a',
   },
-  filterOptionBtnText: {
-    fontSize: 13,
-    fontWeight: '600',
+  filterOptionButtonText: {
     color: '#475569',
+    fontSize: 12,
+    fontWeight: '600',
   },
-  filterOptionBtnTextActive: {
-    color: '#ffffff',
+  filterOptionButtonTextActive: {
+    color: '#fff',
   },
-  distanceLabelRow: {
+  locationHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 8,
   },
-  distanceValue: {
-    fontSize: 13,
+  locationRadius: {
+    fontSize: 12,
+    color: '#1e3a8a',
     fontWeight: 'bold',
-    color: '#1d4ed8',
   },
   sliderContainer: {
-    marginVertical: 8,
+    marginBottom: 16,
   },
   sliderTrack: {
-    height: 6,
-    borderRadius: 3,
+    height: 4,
     backgroundColor: '#e2e8f0',
+    borderRadius: 2,
     position: 'relative',
+    marginVertical: 10,
   },
   sliderFill: {
     height: '100%',
-    backgroundColor: '#1d4ed8',
-    borderRadius: 3,
+    backgroundColor: '#3b82f6',
+    borderRadius: 2,
   },
   sliderThumb: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: '#1d4ed8',
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#1e3a8a',
     position: 'absolute',
     top: -6,
-    marginLeft: -9,
-    borderWidth: 2,
-    borderColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.5,
-    elevation: 2,
+    marginLeft: -8,
   },
-  sliderLimitsRow: {
+  sliderLabels: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 6,
+    marginBottom: 12,
   },
-  limitText: {
-    fontSize: 11,
-    color: '#94a3b8',
+  sliderLabel: {
+    fontSize: 10,
+    color: '#64748b',
   },
-  locationInputBox: {
+  locationInput: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#eff6ff',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginTop: 10,
-    gap: 8,
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+    borderRadius: 8,
+    padding: 10,
   },
   locationInputText: {
+    color: '#475569',
     fontSize: 13,
-    color: '#1e3a8a',
-    fontWeight: '500',
+    marginLeft: 6,
   },
-  resultsHeaderRow: {
+  resultsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
   },
-  resultsCountText: {
+  resultsTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#0f172a',
   },
-  sortBtn: {
+  sortButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
   },
-  sortBtnText: {
+  sortButtonText: {
+    color: '#2563eb',
     fontSize: 13,
-    color: '#1d4ed8',
     fontWeight: '600',
+    marginRight: 4,
   },
-  eventCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    marginHorizontal: 20,
+  listContent: {
+    padding: 16,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    overflow: 'hidden',
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
-    overflow: 'hidden',
-    shadowColor: '#0f172a',
+    borderColor: '#e2e8f0',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
     elevation: 2,
   },
-  imageWrapper: {
+  imageContainer: {
     position: 'relative',
-    height: 160,
-    width: '100%',
+    height: 180,
   },
-  cardImage: {
+  image: {
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
   },
-  cardCategoryBadge: {
+  categoryBadge: {
     position: 'absolute',
     top: 12,
     left: 12,
-    backgroundColor: '#1d4ed8',
-    borderRadius: 6,
-    paddingHorizontal: 8,
+    backgroundColor: '#2563eb',
+    paddingHorizontal: 10,
     paddingVertical: 4,
+    borderRadius: 6,
   },
-  cardCategoryText: {
-    color: '#ffffff',
+  categoryBadgeText: {
+    color: '#fff',
     fontSize: 10,
     fontWeight: 'bold',
   },
-  cardPriceBadge: {
+  priceBadge: {
     position: 'absolute',
     bottom: 12,
     right: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.9)',
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
-  cardPriceText: {
+  priceBadgeText: {
     color: '#0f172a',
     fontSize: 12,
     fontWeight: 'bold',
   },
   cardBody: {
-    padding: 14,
+    padding: 16,
   },
-  cardTitle: {
+  title: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: '#0f172a',
     marginBottom: 6,
   },
-  cardDetail: {
+  dateTime: {
+    fontSize: 13,
+    color: '#2563eb',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  location: {
     fontSize: 13,
     color: '#64748b',
-    marginTop: 4,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 40,
+    padding: 32,
   },
   emptyText: {
-    color: '#94a3b8',
+    color: '#64748b',
+    textAlign: 'center',
     fontSize: 14,
   },
 });

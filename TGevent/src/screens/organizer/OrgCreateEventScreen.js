@@ -65,7 +65,7 @@ export default function OrgCreateEventScreen({ navigation }) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View style={styles.form}>
           <Text style={styles.sectionTitle}>Informations Générales</Text>
 
@@ -73,7 +73,7 @@ export default function OrgCreateEventScreen({ navigation }) {
           <TextInput
             style={styles.input}
             placeholder="Ex: Concert Caritatif"
-            placeholderTextColor="#6b7280"
+            placeholderTextColor="#94a3b8"
             value={titre}
             onChangeText={setTitre}
           />
@@ -82,7 +82,7 @@ export default function OrgCreateEventScreen({ navigation }) {
           <TextInput
             style={styles.input}
             placeholder="Ex: Concert, Conférence, Voyage..."
-            placeholderTextColor="#6b7280"
+            placeholderTextColor="#94a3b8"
             value={categorie}
             onChangeText={setCategorie}
           />
@@ -91,7 +91,7 @@ export default function OrgCreateEventScreen({ navigation }) {
           <TextInput
             style={styles.input}
             placeholder="Format: AAAA-MM-JJ (Ex: 2026-08-15)"
-            placeholderTextColor="#6b7280"
+            placeholderTextColor="#94a3b8"
             value={date}
             onChangeText={setDate}
           />
@@ -102,7 +102,7 @@ export default function OrgCreateEventScreen({ navigation }) {
               <TextInput
                 style={styles.input}
                 placeholder="Ex: 19:00"
-                placeholderTextColor="#6b7280"
+                placeholderTextColor="#94a3b8"
                 value={startHeure}
                 onChangeText={setStartHeure}
               />
@@ -112,7 +112,7 @@ export default function OrgCreateEventScreen({ navigation }) {
               <TextInput
                 style={styles.input}
                 placeholder="Ex: 22:30"
-                placeholderTextColor="#6b7280"
+                placeholderTextColor="#94a3b8"
                 value={endHeure}
                 onChangeText={setEndHeure}
               />
@@ -123,7 +123,7 @@ export default function OrgCreateEventScreen({ navigation }) {
           <TextInput
             style={styles.input}
             placeholder="Ex: Grand Palais, Lomé"
-            placeholderTextColor="#6b7280"
+            placeholderTextColor="#94a3b8"
             value={lieu}
             onChangeText={setLieu}
           />
@@ -132,7 +132,7 @@ export default function OrgCreateEventScreen({ navigation }) {
           <TextInput
             style={[styles.input, styles.textArea]}
             placeholder="Décrivez l'événement..."
-            placeholderTextColor="#6b7280"
+            placeholderTextColor="#94a3b8"
             multiline
             numberOfLines={4}
             value={description}
@@ -145,7 +145,7 @@ export default function OrgCreateEventScreen({ navigation }) {
           <TextInput
             style={styles.input}
             placeholder="Ex: Association X"
-            placeholderTextColor="#6b7280"
+            placeholderTextColor="#94a3b8"
             value={nomProprietaire}
             onChangeText={setNomProprietaire}
           />
@@ -154,7 +154,7 @@ export default function OrgCreateEventScreen({ navigation }) {
           <TextInput
             style={styles.input}
             placeholder="Ex: 90102030"
-            placeholderTextColor="#6b7280"
+            placeholderTextColor="#94a3b8"
             keyboardType="phone-pad"
             value={telephone}
             onChangeText={setTelephone}
@@ -164,7 +164,7 @@ export default function OrgCreateEventScreen({ navigation }) {
           <TextInput
             style={styles.input}
             placeholder="contact@evenement.com"
-            placeholderTextColor="#6b7280"
+            placeholderTextColor="#94a3b8"
             keyboardType="email-address"
             autoCapitalize="none"
             value={email}
@@ -187,44 +187,50 @@ export default function OrgCreateEventScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#f8fafc',
   },
   scrollContainer: {
     padding: 16,
   },
   form: {
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
+    backgroundColor: '#fff',
+    borderRadius: 16,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#374151',
+    borderColor: '#e2e8f0',
+    shadowColor: '#0f172a',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 4,
+    elevation: 2,
+    marginBottom: 24,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#f59e0b',
+    color: '#1e3a8a',
     marginTop: 10,
     marginBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#374151',
+    borderBottomColor: '#f1f5f9',
     paddingBottom: 8,
   },
   label: {
     fontSize: 14,
-    color: '#d1d5db',
+    color: '#334155',
     marginBottom: 6,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   input: {
-    backgroundColor: '#374151',
-    color: '#fff',
+    backgroundColor: '#fff',
+    color: '#0f172a',
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 10,
     fontSize: 15,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#4b5563',
+    borderColor: '#cbd5e1',
   },
   timeRow: {
     flexDirection: 'row',
@@ -240,6 +246,11 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: 'center',
     marginTop: 10,
+    shadowColor: '#f59e0b',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 3,
   },
   submitBtnText: {
     color: '#fff',

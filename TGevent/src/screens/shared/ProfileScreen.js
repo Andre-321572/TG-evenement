@@ -1,162 +1,149 @@
-import React, { useContext, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Image, ScrollView, Platform, Switch } from 'react-native';
-import { Ionicons, Feather, MaterialIcons } from '@expo/vector-icons';
+import React, { useContext } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Image, ScrollView, Switch } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../../context/AuthContext';
 
 export default function ProfileScreen({ navigation }) {
-  const { user, logout, isLoading } = useContext(AuthContext);
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
+  const { user, logout, isLoading, token } = useContext(AuthContext);
 
-  // Valeurs par défaut si non définies chez l'utilisateur
-  const userPrenom = user?.prenom || 'Alexandre';
-  const userNom = user?.nom || 'Dubois';
-  const userEmail = user?.email || 'alexandre.dubois@email.com';
-  const userPhone = user?.phone || '+33 6 12 34 56 78';
+  const handleLogout = async () => {
+    await logout();
+  };
 
-  const renderSectionHeader = (title) => (
-    <Text style={styles.sectionHeaderTitle}>{title}</Text>
-  );
-
-  const renderRow = (icon, label, value, showChevron = true, onPress = null) => (
-    <TouchableOpacity
-      style={styles.row}
+  // Profile section helper row
+  const ProfileRow = ({ icon, label, value, onPress, hasChevron = true, isSwitch = false, switchValue = false, onSwitchChange = null }) => (
+    <TouchableOpacity 
+      style={styles.row} 
       onPress={onPress}
-      disabled={!onPress}
-      activeOpacity={0.7}
+      disabled={!onPress || isSwitch}
     >
       <View style={styles.rowLeft}>
         <Ionicons name={icon} size={20} color="#64748b" style={styles.rowIcon} />
-        <View style={styles.rowTexts}>
+        <View>
           <Text style={styles.rowLabel}>{label}</Text>
-          {value ? <Text style={styles.rowValue}>{value}</Text> : null}
+          {value && <Text style={styles.rowValue}>{value}</Text>}
         </View>
       </View>
-      {showChevron && <Feather name="chevron-right" size={16} color="#94a3b8" />}
+      {isSwitch ? (
+        <Switch 
+          value={switchValue} 
+          onValueChange={onSwitchChange}
+          trackColor={{ false: '#cbd5e1', true: '#93c5fd' }}
+          thumbColor={switchValue ? '#2563eb' : '#f4f4f5'}
+        />
+      ) : (
+        hasChevron && <Ionicons name="chevron-forward" size={16} color="#94a3b8" />
+      )}
     </TouchableOpacity>
   );
 
-  return (
-    <View style={styles.container}>
-      {/* HEADER */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.iconButton}>
-          <Feather name="menu" size={24} color="#1e293b" />
-        </TouchableOpacity>
-        <Text style={styles.brandTitle}>EventPro</Text>
-        <TouchableOpacity style={styles.iconButton}>
-          <Feather name="settings" size={20} color="#1e293b" />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* AVATAR & CARD SECTION */}
-        <View style={styles.profileCard}>
-          <View style={styles.avatarWrapper}>
-            {user?.img_profil ? (
-              <Image source={{ uri: user.img_profil }} style={styles.avatarImage} />
-            ) : (
-              <View style={styles.avatarFallback}>
-                <Text style={styles.avatarFallbackText}>
-                  {userPrenom.charAt(0).toUpperCase()}
-                  {userNom.charAt(0).toUpperCase()}
-                </Text>
-              </View>
-            )}
-            <TouchableOpacity style={styles.editAvatarBtn} activeOpacity={0.8}>
-              <Feather name="edit-2" size={12} color="#ffffff" />
-            </TouchableOpacity>
+  // État invité (non connecté)
+  if (!token) {
+    return (
+      <View style={styles.guestContainer}>
+        <View style={styles.guestCard}>
+          <View style={styles.guestIconBg}>
+            <Ionicons name="person-outline" size={48} color="#2563eb" />
           </View>
+          <Text style={styles.guestTitle}>Votre espace TGevent</Text>
+          <Text style={styles.guestSubtitle}>
+            Connectez-vous pour gérer vos informations personnelles, sécuriser votre compte, et voir vos commandes.
+          </Text>
+          <TouchableOpacity 
+            style={styles.loginButton}
+            onPress={() => navigation.navigate('Login')}
+          >
+            <Text style={styles.loginButtonText}>Se connecter</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.registerButton}
+            onPress={() => navigation.navigate('Register')}
+          >
+            <Text style={styles.registerButtonText}>Créer un compte</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 
-          <Text style={styles.profileName}>{userPrenom} {userNom}</Text>
-          <Text style={styles.profileEmail}>{userEmail}</Text>
-
-          {/* BADGES */}
-          <View style={styles.badgesRow}>
-            <View style={styles.badgePremium}>
-              <Text style={styles.badgePremiumText}>
-                {user?.role === 'admin' ? 'Administrateur' : user?.role === 'scanner' ? 'Scanner Pro' : 'Membre Premium'}
+  // Utilisateur connecté
+  return (
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      {/* Profile Header Card */}
+      <View style={styles.profileHeaderCard}>
+        <View style={styles.avatarContainer}>
+          {user?.img_profil ? (
+            <Image source={{ uri: user.img_profil }} style={styles.avatarImage} />
+          ) : (
+            <View style={styles.avatarFallback}>
+              <Text style={styles.avatarFallbackText}>
+                {user?.prenom?.charAt(0).toUpperCase()}
+                {user?.nom?.charAt(0).toUpperCase()}
               </Text>
             </View>
-            <View style={styles.badgeEvents}>
-              <Text style={styles.badgeEventsText}>12 Événements</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* SECTION : INFORMATIONS PERSONNELLES */}
-        <View style={styles.section}>
-          {renderSectionHeader('Informations Personnelles')}
-          <View style={styles.sectionBody}>
-            {renderRow('person-outline', 'Nom complet', `${userPrenom} ${userNom}`)}
-            {renderRow('mail-outline', 'Email', userEmail)}
-            {renderRow('phone-portrait-outline', 'Téléphone', userPhone)}
-          </View>
-        </View>
-
-        {/* SECTION : SÉCURITÉ */}
-        <View style={styles.section}>
-          {renderSectionHeader('Sécurité')}
-          <View style={styles.sectionBody}>
-            {renderRow('lock-closed-outline', 'Changer le mot de passe')}
-            
-            {/* Custom 2FA row with switch */}
-            <View style={styles.row}>
-              <View style={styles.rowLeft}>
-                <Ionicons name="shield-checkmark-outline" size={20} color="#64748b" style={styles.rowIcon} />
-                <View style={styles.rowTexts}>
-                  <Text style={styles.rowLabel}>Authentification à deux facteurs</Text>
-                </View>
-              </View>
-              <Switch
-                value={twoFactorEnabled}
-                onValueChange={setTwoFactorEnabled}
-                trackColor={{ false: '#e2e8f0', true: '#1e3a8a' }}
-                thumbColor={Platform.OS === 'android' ? '#ffffff' : undefined}
-              />
-            </View>
-          </View>
-        </View>
-
-        {/* SECTION : PRÉFÉRENCES */}
-        <View style={styles.section}>
-          {renderSectionHeader('Préférences')}
-          <View style={styles.sectionBody}>
-            {renderRow('notifications-outline', 'Notifications')}
-            {renderRow('globe-outline', 'Langue', 'Français (FR)')}
-          </View>
-        </View>
-
-        {/* SECTION : AUTRES */}
-        <View style={styles.section}>
-          {renderSectionHeader('Autres')}
-          <View style={styles.sectionBody}>
-            {renderRow('help-circle-outline', 'Aide & Support')}
-            {renderRow('document-text-outline', 'Conditions d\'utilisation')}
-            {renderRow('lock-open-outline', 'Politique de confidentialité')}
-          </View>
-        </View>
-
-        {/* LOGOUT BUTTON */}
-        <TouchableOpacity
-          style={styles.logoutBtn}
-          onPress={logout}
-          disabled={isLoading}
-          activeOpacity={0.8}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#ef4444" />
-          ) : (
-            <>
-              <Feather name="log-out" size={18} color="#ef4444" style={{ marginRight: 8 }} />
-              <Text style={styles.logoutBtnText}>Déconnexion</Text>
-            </>
           )}
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.editAvatarButton}>
+            <Ionicons name="pencil" size={12} color="#fff" />
+          </TouchableOpacity>
+        </View>
 
-        {/* VERSION */}
-        <Text style={styles.versionText}>Version 2.4.0 (Build 882)</Text>
-      </ScrollView>
-    </View>
+        <Text style={styles.userName}>{user?.prenom} {user?.nom}</Text>
+        <Text style={styles.userEmail}>{user?.email}</Text>
+
+        <View style={styles.badgeRow}>
+          <View style={[styles.badge, styles.badgeBlue]}>
+            <Text style={styles.badgeTextBlue}>Membre Premium</Text>
+          </View>
+          <View style={[styles.badge, styles.badgeRed]}>
+            <Text style={styles.badgeTextRed}>12 Événements</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Informations Personnelles */}
+      <Text style={styles.sectionHeader}>Informations Personnelles</Text>
+      <View style={styles.sectionCard}>
+        <ProfileRow icon="person-outline" label="Nom complet" value={`${user?.prenom} ${user?.nom}`} hasChevron={true} />
+        <ProfileRow icon="mail-outline" label="Email" value={user?.email} hasChevron={true} />
+        <ProfileRow icon="call-outline" label="Téléphone" value={user?.phone || '+228 90 00 00 00'} hasChevron={true} />
+      </View>
+
+      {/* Sécurité */}
+      <Text style={styles.sectionHeader}>Sécurité</Text>
+      <View style={styles.sectionCard}>
+        <ProfileRow icon="lock-closed-outline" label="Changer le mot de passe" hasChevron={true} />
+        <ProfileRow icon="shield-checkmark-outline" label="Authentification à deux facteurs" isSwitch={true} switchValue={true} />
+      </View>
+
+      {/* Préférences */}
+      <Text style={styles.sectionHeader}>Préférences</Text>
+      <View style={styles.sectionCard}>
+        <ProfileRow icon="notifications-outline" label="Notifications" hasChevron={true} />
+        <ProfileRow icon="globe-outline" label="Langue" value="Français (FR)" hasChevron={true} />
+      </View>
+
+      {/* Autres */}
+      <Text style={styles.sectionHeader}>Autres</Text>
+      <View style={styles.sectionCard}>
+        <ProfileRow icon="help-circle-outline" label="Aide & Support" hasChevron={true} />
+        <ProfileRow icon="document-text-outline" label="Conditions d'utilisation" hasChevron={true} />
+        <ProfileRow icon="shield-outline" label="Politique de confidentialité" hasChevron={true} />
+      </View>
+
+      {/* Déconnexion Button */}
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout} disabled={isLoading}>
+        {isLoading ? (
+          <ActivityIndicator color="#ef4444" />
+        ) : (
+          <View style={styles.logoutContent}>
+            <Ionicons name="log-out-outline" size={20} color="#ef4444" style={{ marginRight: 8 }} />
+            <Text style={styles.logoutText}>Déconnexion</Text>
+          </View>
+        )}
+      </TouchableOpacity>
+
+      <Text style={styles.versionText}>Version 1.0.0 (Build 120)</Text>
+    </ScrollView>
   );
 }
 
@@ -165,182 +152,230 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8fafc',
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'ios' ? 55 : 20,
-    paddingBottom: 12,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-  },
-  iconButton: {
-    padding: 6,
-  },
-  brandTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#1e3a8a',
-    letterSpacing: 0.5,
-  },
   scrollContent: {
+    padding: 20,
     paddingBottom: 40,
   },
-  profileCard: {
+  profileHeaderCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 24,
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    paddingVertical: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    shadowColor: '#0f172a',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.02,
+    shadowRadius: 8,
+    elevation: 2,
+    marginBottom: 20,
   },
-  avatarWrapper: {
+  avatarContainer: {
     position: 'relative',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   avatarImage: {
     width: 90,
     height: 90,
     borderRadius: 45,
-    borderWidth: 2,
-    borderColor: '#e2e8f0',
   },
   avatarFallback: {
     width: 90,
     height: 90,
     borderRadius: 45,
-    backgroundColor: '#e2e8f0',
-    alignItems: 'center',
+    backgroundColor: '#2563eb',
     justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#e2e8f0',
+    alignItems: 'center',
   },
   avatarFallbackText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#475569',
+    color: '#fff',
   },
-  editAvatarBtn: {
+  editAvatarButton: {
     position: 'absolute',
-    bottom: 2,
-    right: 2,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    bottom: 0,
+    right: 0,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: '#1e3a8a',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#ffffff',
+    borderColor: '#fff',
   },
-  profileName: {
+  userName: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: '#1e3a8a',
     marginBottom: 4,
   },
-  profileEmail: {
+  userEmail: {
     fontSize: 13,
     color: '#64748b',
-    marginBottom: 14,
+    marginBottom: 16,
   },
-  badgesRow: {
+  badgeRow: {
     flexDirection: 'row',
-    gap: 8,
   },
-  badgePremium: {
-    backgroundColor: '#e0e7ff',
+  badge: {
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
+    paddingVertical: 4,
+    borderRadius: 99,
+    marginHorizontal: 4,
   },
-  badgePremiumText: {
-    color: '#1d4ed8',
-    fontSize: 12,
+  badgeBlue: {
+    backgroundColor: '#eff6ff',
+  },
+  badgeRed: {
+    backgroundColor: '#ffe4e6',
+  },
+  badgeTextBlue: {
+    color: '#2563eb',
+    fontSize: 11,
     fontWeight: 'bold',
   },
-  badgeEvents: {
-    backgroundColor: '#fee2e2',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  badgeEventsText: {
-    color: '#ef4444',
-    fontSize: 12,
+  badgeTextRed: {
+    color: '#e11d48',
+    fontSize: 11,
     fontWeight: 'bold',
   },
-  section: {
-    marginHorizontal: 20,
-    marginBottom: 20,
-  },
-  sectionHeaderTitle: {
+  sectionHeader: {
     fontSize: 14,
     fontWeight: 'bold',
     color: '#1e3a8a',
-    marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+    marginTop: 16,
+    marginBottom: 8,
+    marginLeft: 4,
   },
-  sectionBody: {
-    backgroundColor: '#ffffff',
+  sectionCard: {
+    backgroundColor: '#fff',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: '#e2e8f0',
     overflow: 'hidden',
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#f1f5f9',
-    backgroundColor: '#ffffff',
   },
   rowLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
   },
   rowIcon: {
     marginRight: 12,
   },
-  rowTexts: {
-    flex: 1,
-  },
   rowLabel: {
     fontSize: 14,
-    color: '#1e293b',
-    fontWeight: '500',
+    fontWeight: '600',
+    color: '#0f172a',
   },
   rowValue: {
     fontSize: 12,
     color: '#64748b',
     marginTop: 2,
   },
-  logoutBtn: {
-    flexDirection: 'row',
+  logoutButton: {
+    backgroundColor: '#fef2f2',
+    borderRadius: 12,
+    paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fee2e2',
-    marginHorizontal: 20,
-    marginTop: 10,
-    marginBottom: 20,
-    height: 48,
-    borderRadius: 10,
+    marginTop: 24,
+    borderWidth: 1,
+    borderColor: '#fee2e2',
   },
-  logoutBtnText: {
+  logoutContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoutText: {
     color: '#ef4444',
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   versionText: {
     textAlign: 'center',
     color: '#94a3b8',
-    fontSize: 12,
+    fontSize: 11,
+    marginTop: 24,
+  },
+  guestContainer: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  guestCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 32,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  guestIconBg: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#eff6ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  guestTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1e3a8a',
+    marginBottom: 10,
+  },
+  guestSubtitle: {
+    fontSize: 14,
+    color: '#64748b',
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 24,
+  },
+  loginButton: {
+    backgroundColor: '#2563eb',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  loginButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  registerButton: {
+    backgroundColor: '#fff',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    width: '100%',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#2563eb',
+  },
+  registerButtonText: {
+    color: '#2563eb',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
