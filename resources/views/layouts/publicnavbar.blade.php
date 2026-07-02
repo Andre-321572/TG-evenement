@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg fixed-top z-50 py-3 border-b border-blue-100 bg-white/90 backdrop-blur-md shadow-sm">
     <div class="container">
-        <a class="navbar-brand fw-extrabold text-gradient-primary fs-4 tracking-wider" href="{{ url('/') }}">
-            TGEvent
+        <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}" style="height: 38px;">
+            <img src="{{ asset('images/logo.svg') }}" alt="TGEvent" style="height: 100%; max-height: 38px; width: auto;">
         </a>
         <button class="navbar-toggler border-0 text-slate-800" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvas"
             aria-controls="navbarOffcanvas" aria-expanded="false" aria-label="Toggle navigation">

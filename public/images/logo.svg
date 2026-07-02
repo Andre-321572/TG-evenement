@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" width="100%" height="100%">
+    <defs>
+        <!-- Gradients for premium look -->
+        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#d9383a" />
+            <stop offset="100%" stop-color="#9b1c1c" />
+        </linearGradient>
+        <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#4f46e5" />
+            <stop offset="100%" stop-color="#312e81" />
+        </linearGradient>
+        <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.08" />
+        </filter>
+    </defs>
+
+    <!-- Logo Icon / Mark -->
+    <g transform="translate(10, 5)" filter="url(#shadow)">
+        <!-- Outer ticket container with notch cuts -->
+        <path d="M 5,8 
+                 A 4,4 0 0,1 9,4 
+                 L 35,4 
+                 A 4,4 0 0,1 39,8 
+                 L 39,18 
+                 A 5,5 0 0,0 44,23 
+                 A 5,5 0 0,0 39,28 
+                 L 39,38 
+                 A 4,4 0 0,1 35,42 
+                 L 9,42 
+                 A 4,4 0 0,1 5,38 
+                 L 5,28 
+                 A 5,5 0 0,0 0,23 
+                 A 5,5 0 0,0 5,18 
+                 Z" 
+              fill="url(#logoGrad)" />
+        
+        <!-- Overlapping second card/ticket layer for dimension -->
+        <path d="M 17,14 
+                 A 3,3 0 0,1 20,11 
+                 L 43,11 
+                 A 3,3 0 0,1 46,14 
+                 L 46,21 
+                 A 4,4 0 0,0 50,25 
+                 A 4,4 0 0,0 46,29 
+                 L 46,36 
+                 A 3,3 0 0,1 43,39 
+                 L 20,39 
+                 A 3,3 0 0,1 17,36 
+                 Z" 
+              fill="url(#accentGrad)" 
+              opacity="0.9" />
+
+        <!-- Inner dynamic lightning/pulse pathway (Event/Energy representation) -->
+        <path d="M 23,25 L 29,19 L 29,24 L 35,24 L 29,31 L 29,26 Z" fill="#ffffff" />
+    </g>
+
+    <!-- Logo Text Brand -->
+    <!-- "TG" in crimson red, bold -->
+    <text x="75" y="36" 
+          font-family="'Outfit', 'Inter', 'Segoe UI', sans-serif" 
+          font-weight="800" 
+          font-size="28px" 
+          fill="#d9383a" 
+          letter-spacing="0.02em">TG</text>
+
+    <!-- "Event" in deep slate, semi-bold -->
+    <text x="113" y="36" 
+          font-family="'Outfit', 'Inter', 'Segoe UI', sans-serif" 
+          font-weight="600" 
+          font-size="28px" 
+          fill="#0f172a" 
+          letter-spacing="0.01em">Event</text>
+
+    <!-- Small professional tagline -->
+    <text x="75" y="49" 
+          font-family="'Outfit', 'Inter', 'Segoe UI', sans-serif" 
+          font-weight="500" 
+          font-size="9px" 
+          fill="#64748b" 
+          letter-spacing="0.12em" 
+          opacity="0.8">LOGISTIQUE ÉVÉNEMENTIELLE</text>
+</svg>
