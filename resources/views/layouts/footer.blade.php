@@ -1,61 +1,54 @@
-<footer class="border-t border-white/10 py-10 mt-20" style="background: rgba(30, 41, 59, 0.95);">
+<footer class="border-t border-slate-800 py-12 mt-20" style="background: #0e131f;">
     <div class="container">
         <div class="row g-4">
-            <!-- Logo and description -->
-            <div class="col-lg-4 col-md-6 mb-3">
-                <h4 class="fw-bold text-gradient-primary tracking-wider mb-3">TGEvent</h4>
-                <p class="text-gray-400 leading-relaxed small">Votre partenaire pour des événements inoubliables. Découvrez, réservez et vivez les meilleures expériences culturelles, sportives et festives.</p>
+            <!-- Brand Column -->
+            <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                <h4 class="fw-bold text-white tracking-wider mb-3">TGEvent</h4>
+                <p class="text-slate-400 leading-relaxed small mb-0" style="max-width: 320px;">
+                    La destination numéro un pour vos billets d'événements préférés. Fiable, rapide et sécurisé.
+                </p>
             </div>
 
-            <!-- Quick links -->
-            <div class="col-lg-3 col-md-6 mb-3">
-                <h5 class="text-white fw-bold mb-3 small uppercase tracking-wider">Liens rapides</h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="{{ url('/') }}" class="text-gray-400 hover:text-indigo-400 transition-colors duration-300 small">Accueil</a></li>
-                    <li class="mb-2"><a href="{{ route('p.evenement') }}" class="text-gray-400 hover:text-indigo-400 transition-colors duration-300 small">Découvrir les événements</a></li>
-                    <li class="mb-2"><a href="{{ route('p.a-propos') }}" class="text-gray-400 hover:text-indigo-400 transition-colors duration-300 small">À propos de nous</a></li>
-                    <li class="mb-2"><a href="{{ route('p.faq') }}" class="text-gray-400 hover:text-indigo-400 transition-colors duration-300 small">Centre d'aide & FAQ</a></li>
+            <!-- Platform Column -->
+            <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                <h5 class="text-white fw-bold mb-3 small uppercase tracking-wider" style="font-size: 0.75rem; letter-spacing: 0.1em;">PLATEFORME</h5>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><a href="{{ route('p.a-propos') }}" class="text-slate-400 hover:text-white transition-colors duration-200 text-sm text-decoration-none">À propos</a></li>
+                    <li class="mb-2"><a href="#" class="text-slate-400 hover:text-white transition-colors duration-200 text-sm text-decoration-none">Confidentialité</a></li>
+                    <li class="mb-2"><a href="#" class="text-slate-400 hover:text-white transition-colors duration-200 text-sm text-decoration-none">Conditions</a></li>
+                    <li class="mb-2"><a href="{{ route('p.contact') }}" class="text-slate-400 hover:text-white transition-colors duration-200 text-sm text-decoration-none">Contact</a></li>
                 </ul>
             </div>
 
-            <!-- Contact information -->
-            <div class="col-lg-3 col-md-6 mb-3">
-                <h5 class="text-white fw-bold mb-3 small uppercase tracking-wider">Contact</h5>
-                <ul class="list-unstyled text-gray-400 small">
-                    <li class="mb-2"><i class="fa fa-map-marker-alt me-2 text-indigo-500"></i> Agbalépédo, Lomé, Togo</li>
-                    <li class="mb-2"><i class="fa fa-phone me-2 text-indigo-500"></i> +228 98 46 22 88</li>
-                    <li class="mb-2"><i class="fa fa-envelope me-2 text-indigo-500"></i> contact@tgevent.com</li>
+            <!-- Help Column -->
+            <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                <h5 class="text-white fw-bold mb-3 small uppercase tracking-wider" style="font-size: 0.75rem; letter-spacing: 0.1em;">AIDE</h5>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><a href="#" class="text-slate-400 hover:text-white transition-colors duration-200 text-sm text-decoration-none">Support technique</a></li>
+                    <li class="mb-2"><a href="#" class="text-slate-400 hover:text-white transition-colors duration-200 text-sm text-decoration-none">Remboursements</a></li>
+                    <li class="mb-2"><a href="#" class="text-slate-400 hover:text-white transition-colors duration-200 text-sm text-decoration-none">Vendre des billets</a></li>
                 </ul>
             </div>
 
-            <!-- Social media links -->
-            <div class="col-lg-2 col-md-6 mb-3">
-                <h5 class="text-white fw-bold mb-3 small uppercase tracking-wider">Suivez-nous</h5>
-                <div class="d-flex gap-3">
-                    <a href="#" class="w-9 h-9 rounded-full bg-white/5 border border-white/10 d-flex justify-content-center align-items-center text-gray-400 hover:text-white hover:bg-indigo-600 hover:border-indigo-600 transition-all duration-300">
-                        <i class="fab fa-facebook-f text-sm"></i>
-                    </a>
-                    <a href="#" class="w-9 h-9 rounded-full bg-white/5 border border-white/10 d-flex justify-content-center align-items-center text-gray-400 hover:text-white hover:bg-indigo-600 hover:border-indigo-600 transition-all duration-300">
-                        <i class="fab fa-twitter text-sm"></i>
-                    </a>
-                    <a href="#" class="w-9 h-9 rounded-full bg-white/5 border border-white/10 d-flex justify-content-center align-items-center text-gray-400 hover:text-white hover:bg-indigo-600 hover:border-indigo-600 transition-all duration-300">
-                        <i class="fab fa-instagram text-sm"></i>
-                    </a>
-                    <a href="#" class="w-9 h-9 rounded-full bg-white/5 border border-white/10 d-flex justify-content-center align-items-center text-gray-400 hover:text-white hover:bg-indigo-600 hover:border-indigo-600 transition-all duration-300">
-                        <i class="fab fa-youtube text-sm"></i>
-                    </a>
-                </div>
+            <!-- Newsletter Column -->
+            <div class="col-lg-4 col-md-6">
+                <h5 class="text-white fw-bold mb-3 small uppercase tracking-wider" style="font-size: 0.75rem; letter-spacing: 0.1em;">NEWSLETTER</h5>
+                <p class="text-slate-400 small mb-3">Ne manquez aucun événement à venir.</p>
+                <form onsubmit="event.preventDefault(); alert('Merci pour votre inscription !');">
+                    <div class="d-flex rounded-xl overflow-hidden bg-white/5 border border-white/10 p-1">
+                        <input type="email" class="form-control bg-transparent border-0 text-white shadow-none placeholder:text-slate-600 py-1.5 text-sm" placeholder="Votre adresse email" style="color: #ffffff !important;" required>
+                        <button class="btn btn-primary px-3 rounded-lg border-0 bg-[#d9383a] hover:bg-[#c22e30]" type="submit">
+                            <i class="fas fa-paper-plane text-white text-xs"></i>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
         <!-- Copyright -->
-        <div class="row mt-4 pt-4 border-t border-white/5 align-items-center text-gray-500 small">
-            <div class="col-md-6 mb-2 mb-md-0">
+        <div class="row mt-5 pt-4 border-t border-slate-800 align-items-center text-slate-500 small">
+            <div class="col-md-12 text-center">
                 <p class="mb-0">&copy; {{ date('Y') }} TGEvent. Tous droits réservés.</p>
-            </div>
-            <div class="col-md-6 text-md-end">
-                <a href="#" class="text-gray-500 hover:text-gray-300 text-decoration-none me-3">Politique de confidentialité</a>
-                <a href="#" class="text-gray-500 hover:text-gray-300 text-decoration-none">Conditions d'utilisation</a>
             </div>
         </div>
     </div>

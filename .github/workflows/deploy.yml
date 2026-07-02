@@ -28,7 +28,7 @@ jobs:
           **/storage/framework/sessions/**
           **/storage/framework/views/**
           **/public/hot
-          .env
+          .env 
           .env.example
           .editorconfig
           phpunit.xml

@@ -3,45 +3,59 @@
 
 @section('content')
 
+<style>
+    body {
+        background-color: #fafbfc !important;
+    }
+    .ticket-option {
+        border-color: #f1f5f9;
+        cursor: pointer;
+    }
+    .ticket-option:hover {
+        border-color: #e2e8f0;
+    }
+</style>
+
 {{-- ═══════════════════════════════════════════════
      HERO — Full bleed, inline styles (bypass overrides)
      ═══════════════════════════════════════════════ --}}
-<div style="position:relative; width:100%; height:480px; overflow:hidden;">
+<div style="position:relative; width:100%; height:450px; overflow:hidden;">
     <img src="{{ $detail_evenement->photo ? asset('storage/evenement/photo/' . $detail_evenement->photo) : asset('images/default-event.jpg') }}"
          alt="{{ $detail_evenement->titre }}"
          style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center;">
-    {{-- Overlay gradient --}}
-    <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.85) 100%);"></div>
+    
+    {{-- Overlay gradient fading to light page background at the very bottom --}}
+    <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.65) 65%, rgba(250,251,252,1) 100%);"></div>
 
-    {{-- Contenu sur le hero --}}
-    <div style="position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:2.5rem;">
+    {{-- Content overlay --}}
+    <div style="position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:2.5rem 2.5rem 3.5rem 2.5rem;">
         <div style="max-width:860px;">
-            <span style="display:inline-block; padding:.35rem .9rem; border-radius:.6rem; font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#a5b4fc; background:rgba(99,102,241,0.2); border:1px solid rgba(99,102,241,0.35); margin-bottom:.9rem;">
-                {{ ucfirst($detail_evenement->categorie ?? 'Événement') }}
+            <span style="display:inline-block; padding:.35rem .9rem; border-radius:999px; font-size:.72rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#ffffff; background:#d9383a; margin-bottom:.9rem;">
+                ⭐ Événement Premium
             </span>
-            <h1 style="font-size:clamp(1.6rem,4vw,2.6rem); font-weight:900; color:#ffffff; line-height:1.2; margin-bottom:1.2rem; text-shadow:0 2px 16px rgba(0,0,0,0.5);">
+            <h1 style="font-size:clamp(1.8rem,5vw,3rem); font-weight:800; color:#ffffff; line-height:1.2; margin-bottom:1.2rem; text-shadow:0 2px 16px rgba(0,0,0,0.4); font-family: 'Outfit', sans-serif;">
                 {{ $detail_evenement->titre }}
             </h1>
-            <div style="display:flex; flex-wrap:wrap; gap:1.5rem;">
-                <span style="display:flex; align-items:center; gap:.5rem; color:rgba(255,255,255,0.8); font-size:.88rem;">
-                    <i class="fas fa-calendar-alt" style="color:#818cf8;"></i>
-                    {{ \Carbon\Carbon::parse($detail_evenement->date)->format('d M Y') }}
+            <div style="display:flex; flex-wrap:wrap; gap:1.5rem; text-shadow:0 1px 8px rgba(0,0,0,0.35);">
+                <span style="display:flex; align-items:center; gap:.5rem; color:rgba(255,255,255,0.9); font-size:.88rem; font-weight: 500;">
+                    <i class="far fa-calendar" style="color:#ffffff;"></i>
+                    {{ \Carbon\Carbon::parse($detail_evenement->date)->translatedFormat('l, d F Y') }}
                 </span>
-                <span style="display:flex; align-items:center; gap:.5rem; color:rgba(255,255,255,0.8); font-size:.88rem;">
-                    <i class="fas fa-clock" style="color:#818cf8;"></i>
+                <span style="display:flex; align-items:center; gap:.5rem; color:rgba(255,255,255,0.9); font-size:.88rem; font-weight: 500;">
+                    <i class="far fa-clock" style="color:#ffffff;"></i>
                     {{ \Carbon\Carbon::parse($detail_evenement->start_heure)->format('H:i') }}
                     @if($detail_evenement->end_heure) — {{ \Carbon\Carbon::parse($detail_evenement->end_heure)->format('H:i') }}@endif
                 </span>
-                <span style="display:flex; align-items:center; gap:.5rem; color:rgba(255,255,255,0.8); font-size:.88rem;">
-                    <i class="fas fa-map-marker-alt" style="color:#818cf8;"></i>
+                <span style="display:flex; align-items:center; gap:.5rem; color:rgba(255,255,255,0.9); font-size:.88rem; font-weight: 500;">
+                    <i class="fas fa-map-marker-alt" style="color:#ffffff;"></i>
                     {{ $detail_evenement->lieu }}
                 </span>
             </div>
         </div>
     </div>
 
-    {{-- Bouton retour --}}
-    <div style="position:absolute; top:1.25rem; left:1.5rem;">
+    {{-- Back button --}}
+    <div style="position:absolute; top:1.25rem; left:1.5rem; z-index: 30;">
         <a href="{{ route('p.evenement') }}" style="display:inline-flex; align-items:center; gap:.5rem; padding:.5rem 1rem; border-radius:.75rem; background:rgba(0,0,0,0.35); border:1px solid rgba(255,255,255,0.15); color:#ffffff; font-size:.82rem; font-weight:600; text-decoration:none; backdrop-filter:blur(8px);">
             <i class="fas fa-arrow-left" style="font-size:.75rem;"></i> Retour
         </a>
@@ -49,138 +63,97 @@
 </div>
 
 {{-- ═══════════════════════════════════════════════
-     CONTENU PRINCIPAL
+     MAIN CONTENT
      ═══════════════════════════════════════════════ --}}
-<main class="container py-5">
+<main class="container py-4 text-slate-800">
     <div class="row g-4 align-items-start">
 
-        {{-- ── Colonne gauche (8/12) ── --}}
+        {{-- ── Left Column (8/12) ── --}}
         <div class="col-lg-8">
 
-            {{-- Description --}}
-            <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 p-md-5" style="background:#fff;">
-                <h2 class="fw-bold mb-3" style="color:#1e293b; font-size:1.15rem; border-bottom:2px solid #f1f5f9; padding-bottom:.75rem;">
+            <!-- À propos -->
+            <div class="card border-0 shadow-sm rounded-2xl p-4 p-md-5 mb-4" style="background:#fff;">
+                <h4 class="fw-bold mb-3 text-slate-900" style="font-family: 'Outfit', sans-serif;">
                     À propos de l'événement
-                </h2>
+                </h4>
                 <div style="color:#475569; line-height:1.85; font-size:.95rem; white-space:pre-line;">
                     {{ $detail_evenement->description ?? 'Aucune description disponible.' }}
                 </div>
+
+                <!-- Checked features highlights -->
+                <div class="row g-3 border-t border-slate-100 pt-4 mt-4">
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center gap-2 text-slate-700 text-sm font-medium">
+                            <i class="far fa-check-circle text-indigo-600 fs-5"></i>
+                            <span>Bar à cocktails premium</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center gap-2 text-slate-700 text-sm font-medium">
+                            <i class="far fa-check-circle text-indigo-600 fs-5"></i>
+                            <span>Service à table VIP</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center gap-2 text-slate-700 text-sm font-medium">
+                            <i class="far fa-check-circle text-indigo-600 fs-5"></i>
+                            <span>Rencontre avec les artistes</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center gap-2 text-slate-700 text-sm font-medium">
+                            <i class="far fa-check-circle text-indigo-600 fs-5"></i>
+                            <span>Acoustique haute fidélité</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            {{-- Vidéo --}}
+            <!-- Address and map side-by-side -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-2xl p-4 h-100 flex flex-col justify-between" style="background:#fff;">
+                        <div>
+                            <h5 class="fw-bold text-slate-900 mb-3" style="font-family: 'Outfit', sans-serif;">Lieu de l'événement</h5>
+                            <p class="text-slate-800 font-semibold mb-1 text-sm">{{ $detail_evenement->lieu }}</p>
+                            <p class="text-slate-500 text-xs mb-4">Consultez l'itinéraire pour vous rendre facilement sur place le jour de l'événement.</p>
+                        </div>
+                        <div>
+                            <a href="https://maps.google.com/maps?q={{ urlencode($detail_evenement->lieu) }}" target="_blank"
+                               class="btn d-inline-flex align-items-center gap-2 rounded-xl py-2 px-3 border border-slate-200 text-slate-700 bg-slate-50 hover:bg-slate-100 text-xs font-bold transition-colors shadow-xs">
+                                <i class="fas fa-compass text-slate-400"></i> Itinéraire
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-2xl overflow-hidden h-100" style="min-height:200px; background:#fff;">
+                        <iframe src="https://maps.google.com/maps?q={{ urlencode($detail_evenement->lieu) }}&output=embed"
+                                style="border:0; width:100%; height:100%; min-height: 200px;"
+                                allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video presentation (if available) -->
             @if($detail_evenement->video_url)
-            <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 p-md-5" style="background:#fff;">
-                <h2 class="fw-bold mb-3" style="color:#1e293b; font-size:1.15rem; border-bottom:2px solid #f1f5f9; padding-bottom:.75rem;">
-                    Vidéo de présentation
-                </h2>
-                <div class="ratio ratio-16x9 rounded-2xl overflow-hidden">
+            <div class="card border-0 shadow-sm rounded-2xl mb-4 p-4" style="background:#fff;">
+                <h5 class="fw-bold text-slate-900 mb-3" style="font-family: 'Outfit', sans-serif;">Vidéo de présentation</h5>
+                <div class="ratio ratio-16x9 rounded-xl overflow-hidden">
                     <video src="{{ $detail_evenement->video_url }}" controls class="w-full"></video>
                 </div>
             </div>
             @endif
 
-            {{-- Localisation --}}
-            @if($detail_evenement->lien_google_map)
-            <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 p-md-5" style="background:#fff;">
-                <h2 class="fw-bold mb-3" style="color:#1e293b; font-size:1.15rem; border-bottom:2px solid #f1f5f9; padding-bottom:.75rem;">
-                    Localisation
-                </h2>
-                <div class="ratio" style="--bs-aspect-ratio:45%;">
-                    <iframe src="https://maps.google.com/maps?q={{ urlencode($detail_evenement->lieu) }}&output=embed"
-                            style="border:0; border-radius:.75rem; width:100%; height:100%;"
-                            allowfullscreen loading="lazy"></iframe>
-                </div>
-                <a href="{{ $detail_evenement->lien_google_map }}" target="_blank"
-                   class="btn mt-3 d-inline-flex align-items-center gap-2 rounded-xl"
-                   style="background:#f1f5f9; color:#4f46e5; font-weight:600; font-size:.88rem; border:none;">
-                    <i class="fas fa-external-link-alt"></i> Ouvrir dans Google Maps
-                </a>
-            </div>
-            @endif
-
-            {{-- Organisateur --}}
-            <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 p-md-5" style="background:#fff;">
-                <h2 class="fw-bold mb-4" style="color:#1e293b; font-size:1.15rem; border-bottom:2px solid #f1f5f9; padding-bottom:.75rem;">
-                    Organisateur
-                </h2>
-                <div class="d-flex align-items-center gap-3 mb-4">
-                    <div class="d-flex align-items-center justify-content-center rounded-circle fw-extrabold text-white flex-shrink-0"
-                         style="width:56px; height:56px; background:#4f46e5; font-size:1.4rem;">
-                        {{ strtoupper(substr($detail_evenement->nom_proprietaire ?? ($detail_evenement->user->nom ?? 'O'), 0, 1)) }}
-                    </div>
-                    <div>
-                        <p class="fw-bold mb-0" style="color:#1e293b; font-size:1rem;">
-                            {{ $detail_evenement->nom_proprietaire ?? ($detail_evenement->user->nom ?? 'Organisateur') }}
-                        </p>
-                        <small style="color:#94a3b8;">Organisateur sur TGEvent</small>
-                    </div>
-                </div>
-
-                <div class="row g-3 mb-4">
-                    @if($detail_evenement->telephone)
-                    <div class="col-sm-6">
-                        <div class="d-flex align-items-center gap-2 p-3 rounded-2xl" style="background:#f8fafc; border:1px solid #f1f5f9;">
-                            <i class="fas fa-phone" style="color:#4f46e5; font-size:.9rem;"></i>
-                            <span style="color:#475569; font-size:.88rem;">{{ $detail_evenement->telephone }}</span>
-                        </div>
-                    </div>
-                    @endif
-                    @if($detail_evenement->email)
-                    <div class="col-sm-6">
-                        <div class="d-flex align-items-center gap-2 p-3 rounded-2xl" style="background:#f8fafc; border:1px solid #f1f5f9;">
-                            <i class="fas fa-envelope" style="color:#4f46e5; font-size:.9rem;"></i>
-                            <span style="color:#475569; font-size:.88rem;">{{ $detail_evenement->email }}</span>
-                        </div>
-                    </div>
-                    @endif
-                </div>
-
-                @if($detail_evenement->facebook || $detail_evenement->twiter || $detail_evenement->whatsapp)
-                <div class="d-flex gap-2">
-                    @if($detail_evenement->facebook)
-                    <a href="{{ $detail_evenement->facebook }}" target="_blank"
-                       class="d-flex align-items-center justify-content-center rounded-circle text-decoration-none"
-                       style="width:38px; height:38px; background:#e8f0fe; color:#1d6ef5; font-size:.9rem; transition:all .2s;"
-                       onmouseover="this.style.background='#1d6ef5';this.style.color='#fff'"
-                       onmouseout="this.style.background='#e8f0fe';this.style.color='#1d6ef5'">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    @endif
-                    @if($detail_evenement->twiter)
-                    <a href="{{ $detail_evenement->twiter }}" target="_blank"
-                       class="d-flex align-items-center justify-content-center rounded-circle text-decoration-none"
-                       style="width:38px; height:38px; background:#e7f3ff; color:#1da1f2; font-size:.9rem; transition:all .2s;"
-                       onmouseover="this.style.background='#1da1f2';this.style.color='#fff'"
-                       onmouseout="this.style.background='#e7f3ff';this.style.color='#1da1f2'">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    @endif
-                    @if($detail_evenement->whatsapp)
-                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $detail_evenement->whatsapp) }}" target="_blank"
-                       class="d-flex align-items-center justify-content-center rounded-circle text-decoration-none"
-                       style="width:38px; height:38px; background:#e8f9f0; color:#25d366; font-size:.9rem; transition:all .2s;"
-                       onmouseover="this.style.background='#25d366';this.style.color='#fff'"
-                       onmouseout="this.style.background='#e8f9f0';this.style.color='#25d366'">
-                        <i class="fab fa-whatsapp"></i>
-                    </a>
-                    @endif
-                </div>
-                @endif
-            </div>
-
-            {{-- Sponsors --}}
+            <!-- Sponsors (if available) -->
             @if($detail_evenement->sponsors && $detail_evenement->sponsors->count() > 0)
-            <div class="card border-0 shadow-sm rounded-3 p-4 p-md-5" style="background:#fff;">
-                <h2 class="fw-bold mb-4" style="color:#1e293b; font-size:1.15rem; border-bottom:2px solid #f1f5f9; padding-bottom:.75rem;">
-                    Sponsors officiels
-                </h2>
+            <div class="card border-0 shadow-sm rounded-2xl p-4 p-md-5" style="background:#fff;">
+                <h5 class="fw-bold text-slate-900 mb-4" style="font-family: 'Outfit', sans-serif;">Sponsors officiels</h5>
                 <div class="row g-3 align-items-center">
                     @foreach($detail_evenement->sponsors as $sponsor)
                     <div class="col-6 col-sm-4 col-md-3">
-                        <div class="p-3 rounded-2xl text-center d-flex flex-column align-items-center justify-content-center"
-                             style="background:#f8fafc; border:1px solid #f1f5f9; min-height:80px; transition:box-shadow .2s;"
-                             onmouseover="this.style.boxShadow='0 4px 16px rgba(79,70,229,0.1)'"
-                             onmouseout="this.style.boxShadow='none'">
+                        <div class="p-3 rounded-xl text-center d-flex flex-column align-items-center justify-content-center"
+                             style="background:#f8fafc; border:1px solid #f1f5f9; min-height:80px;">
                             @if($sponsor->logo)
                             <img src="{{ asset('storage/evenement/sponsors/' . $sponsor->logo) }}"
                                  alt="{{ $sponsor->nom }}"
@@ -201,124 +174,101 @@
 
         </div>
 
-        {{-- ── Colonne droite (4/12) — Billetterie sticky ── --}}
+        {{-- ── Right Column (4/12) ── --}}
         <div class="col-lg-4">
             <div class="sticky-top" style="top:88px; z-index:10;">
 
-                {{-- Card billetterie --}}
-                <div class="card border-0 shadow-sm rounded-3 overflow-hidden mb-3" style="background:#fff;">
+                <!-- Tickets Selection Card -->
+                <div class="card border-0 shadow-sm rounded-2xl p-4 mb-3" style="background:#fff;">
+                    <h5 class="fw-bold text-slate-900 mb-1" style="font-family: 'Outfit', sans-serif;">Sélection de billets</h5>
+                    <p class="text-slate-400 small mb-4">Taxes incluses à la finalisation</p>
 
-                    {{-- Mini photo header --}}
-                    <div class="card-thumb" style="height:160px;">
-                        <img src="{{ $detail_evenement->photo ? asset('storage/evenement/photo/' . $detail_evenement->photo) : asset('images/default-event.jpg') }}"
-                             alt="{{ $detail_evenement->titre }}">
-                    </div>
+                    @if($detail_evenement->billets && $detail_evenement->billets->count() > 0)
+                        <form action="{{ route('p.paiement.checkout') }}" method="POST" id="checkout-form">
+                            @csrf
+                            <input type="hidden" name="evenement_id" value="{{ $detail_evenement->id }}">
+                            <input type="hidden" name="billet_id" id="selected_billet_id" value="">
 
-                    <div class="p-4">
-                        <p class="fw-bold text-uppercase small mb-3" style="color:#94a3b8; letter-spacing:.07em;">Billetterie</p>
-
-                        @if($detail_evenement->billets && $detail_evenement->billets->count() > 0)
-                            <div class="d-flex flex-column gap-2 mb-4">
-                                @foreach($detail_evenement->billets as $billet)
-                                @php $dispo = $billet->quantite_disponible ?? 99; @endphp
-                                <div class="p-3 rounded-2xl d-flex justify-content-between align-items-center"
-                                     style="background:#f8fafc; border:1px solid #f1f5f9;">
-                                    <div>
-                                        <span class="fw-bold d-block" style="color:#1e293b; font-size:.9rem;">{{ $billet->type }}</span>
-                                        @if($billet->description)
-                                            <small style="color:#94a3b8; font-size:.72rem;">{{ $billet->description }}</small>
-                                        @endif
-                                    </div>
-                                    <div class="text-end ms-2 flex-shrink-0">
-                                        <span class="fw-extrabold d-block" style="color:#4f46e5; font-size:.95rem; white-space:nowrap;">
-                                            {{ number_format($billet->prix, 0, ',', ' ') }} <small style="font-size:.65rem;">FCFA</small>
-                                        </span>
-                                        @if($dispo <= 0)
-                                            <span style="font-size:.68rem; color:#ef4444; font-weight:600;">Épuisé</span>
-                                        @elseif($dispo <= 5)
-                                            <span style="font-size:.68rem; color:#d97706; font-weight:600;">{{ $dispo }} restant(s)</span>
-                                        @else
-                                            <span style="font-size:.68rem; color:#16a34a; font-weight:600;">Disponible</span>
-                                        @endif
-                                    </div>
-                                </div>
+                            <div class="d-flex flex-column gap-3 mb-4">
+                                @foreach($detail_evenement->billets as $idx => $billet)
+                                    @php 
+                                        $dispo = $billet->quantite_disponible ?? 99; 
+                                        $isSoldOut = ($dispo <= 0);
+                                    @endphp
+                                    
+                                    @if($isSoldOut)
+                                        <!-- Sold Out Option -->
+                                        <div class="p-3 rounded-2xl d-flex justify-content-between align-items-center bg-slate-50 border border-slate-100 opacity-60">
+                                            <div>
+                                                <span class="fw-bold d-block text-slate-400 text-sm">{{ $billet->type }}</span>
+                                                <span class="text-slate-400 text-xs font-semibold">{{ number_format($billet->prix, 0, ',', ' ') }} FCFA</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="text-slate-400 text-xs font-semibold me-2">Vendu</span>
+                                                <div class="w-8 h-8 rounded-lg bg-slate-100 d-flex align-items-center justify-content-center text-slate-400">
+                                                    <i class="fas fa-lock text-xs"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <!-- Active Option -->
+                                        <div class="ticket-option p-3 rounded-2xl d-flex justify-content-between align-items-center border border-slate-100 transition-all duration-200 cursor-pointer" 
+                                             data-billet-id="{{ $billet->id }}" 
+                                             data-price="{{ $billet->prix }}"
+                                             onclick="selectTicket('{{ $billet->id }}')"
+                                             style="background:#f8fafc;">
+                                            <div>
+                                                <div class="d-flex align-items-center gap-2 mb-0.5">
+                                                    <span class="fw-bold d-block text-slate-800 text-sm leading-none">{{ $billet->type }}</span>
+                                                    @if($idx == 1)
+                                                        <span class="px-2 py-0.5 rounded text-[8px] font-bold text-white bg-indigo-600 uppercase tracking-wide leading-none">Populaire</span>
+                                                    @endif
+                                                </div>
+                                                <span class="text-indigo-600 text-xs font-bold">{{ number_format($billet->prix, 0, ',', ' ') }} FCFA</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2" onclick="event.stopPropagation();">
+                                                <button type="button" class="btn btn-sm btn-light w-8 h-8 rounded-lg d-flex align-items-center justify-content-center border-0 p-0 fs-5 font-bold text-slate-500 shadow-sm" onclick="decrementTicket('{{ $billet->id }}')">-</button>
+                                                <span class="fw-bold text-slate-800 px-2 text-sm ticket-qty" id="qty-{{ $billet->id }}">0</span>
+                                                <button type="button" class="btn btn-sm btn-light w-8 h-8 rounded-lg d-flex align-items-center justify-content-center border-0 p-0 fs-5 font-bold text-slate-500 shadow-sm" onclick="incrementTicket('{{ $billet->id }}')">+</button>
+                                            </div>
+                                        </div>
+                                    @endif
                                 @endforeach
                             </div>
 
-                            @if($detail_evenement->billets->where('prix', '>', 0)->count() > 0)
-                            <p class="small mb-3 text-center" style="color:#94a3b8;">
-                                À partir de
-                                <strong style="color:#4f46e5; font-size:1.05rem;">
-                                    {{ number_format($detail_evenement->billets->min('prix'), 0, ',', ' ') }} FCFA
-                                </strong>
-                            </p>
-                            @endif
-
-                            @if($detail_evenement->billets->sum('quantite_disponible') > 0 || $detail_evenement->billets->whereNull('quantite_disponible')->count() > 0)
-                                <a href="{{ route('p.paiement.form', $detail_evenement->id) }}"
-                                   class="btn w-100 py-3 rounded-xl fw-bold text-white border-0"
-                                   style="background:#4f46e5; font-size:.95rem; transition:background .2s;"
-                                   onmouseover="this.style.background='#4338ca'"
-                                   onmouseout="this.style.background='#4f46e5'">
-                                    Réserver mon billet
-                                </a>
-                            @else
-                                <button class="btn w-100 py-3 rounded-xl fw-bold border-0" disabled
-                                        style="background:#f1f5f9; color:#94a3b8; cursor:not-allowed;">
-                                    Complet / Épuisé
-                                </button>
-                            @endif
-                        @else
-                            <div class="text-center py-4">
-                                <p class="small mb-0" style="color:#94a3b8;">Aucun billet disponible pour cet événement.</p>
+                            <div class="d-flex justify-content-between align-items-center border-t border-slate-100 pt-3 mb-4">
+                                <span class="text-slate-600 font-semibold text-sm">Total</span>
+                                <span class="fw-bold text-slate-900 fs-4" id="total-price-display">0 FCFA</span>
                             </div>
-                        @endif
 
-                        <p class="text-center mt-3 mb-0 small" style="color:#cbd5e1;">
-                            <i class="fas fa-lock me-1"></i> Paiement sécurisé via Stripe
-                        </p>
-                    </div>
+                            <button type="submit" id="btn-submit-checkout" class="btn w-100 py-3 bg-[#d9383a] hover:bg-[#c22e30] text-white font-bold rounded-xl text-sm transition-all duration-200 border-0 shadow-sm d-flex align-items-center justify-content-center gap-2" disabled>
+                                <i class="fas fa-ticket-alt"></i> Acheter maintenant
+                            </button>
+                        </form>
+                    @else
+                        <div class="text-center py-4 bg-slate-50 rounded-xl">
+                            <p class="small text-slate-400 mb-0">Aucun billet disponible pour cet événement.</p>
+                        </div>
+                    @endif
                 </div>
 
-                {{-- Infos rapides --}}
-                <div class="card border-0 shadow-sm rounded-3 p-4" style="background:#fff;">
-                    <p class="fw-bold text-uppercase small mb-3" style="color:#94a3b8; letter-spacing:.07em;">Infos pratiques</p>
-                    <div class="d-flex flex-column gap-3">
-                        <div class="d-flex align-items-start gap-3">
-                            <div class="d-flex align-items-center justify-content-center rounded-xl flex-shrink-0"
-                                 style="width:36px; height:36px; background:#eef2ff;">
-                                <i class="fas fa-calendar-alt" style="color:#4f46e5; font-size:.85rem;"></i>
+                <!-- Organizer Profile -->
+                <div class="card border-0 shadow-sm rounded-2xl p-4" style="background:#fff;">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle fw-extrabold text-white flex-shrink-0 bg-indigo-600 shadow-inner" style="width:40px; height:40px; font-size:1.1rem;">
+                                {{ strtoupper(substr($detail_evenement->nom_proprietaire ?? ($detail_evenement->user->nom ?? 'O'), 0, 1)) }}
                             </div>
                             <div>
-                                <small class="fw-bold text-uppercase d-block" style="color:#94a3b8; font-size:.65rem; letter-spacing:.07em;">Date</small>
-                                <span style="color:#1e293b; font-size:.88rem; font-weight:600;">
-                                    {{ \Carbon\Carbon::parse($detail_evenement->date)->translatedFormat('l d M Y') }}
-                                </span>
+                                <small class="text-slate-400 d-block text-xs">Organisé par</small>
+                                <span class="fw-bold text-slate-800 text-sm">{{ $detail_evenement->nom_proprietaire ?? ($detail_evenement->user->nom ?? 'Organisateur') }}</span>
                             </div>
                         </div>
-                        <div class="d-flex align-items-start gap-3">
-                            <div class="d-flex align-items-center justify-content-center rounded-xl flex-shrink-0"
-                                 style="width:36px; height:36px; background:#eef2ff;">
-                                <i class="fas fa-clock" style="color:#4f46e5; font-size:.85rem;"></i>
-                            </div>
-                            <div>
-                                <small class="fw-bold text-uppercase d-block" style="color:#94a3b8; font-size:.65rem; letter-spacing:.07em;">Horaire</small>
-                                <span style="color:#1e293b; font-size:.88rem; font-weight:600;">
-                                    {{ \Carbon\Carbon::parse($detail_evenement->start_heure)->format('H:i') }}
-                                    @if($detail_evenement->end_heure) — {{ \Carbon\Carbon::parse($detail_evenement->end_heure)->format('H:i') }}@endif
-                                </span>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-start gap-3">
-                            <div class="d-flex align-items-center justify-content-center rounded-xl flex-shrink-0"
-                                 style="width:36px; height:36px; background:#eef2ff;">
-                                <i class="fas fa-map-marker-alt" style="color:#4f46e5; font-size:.85rem;"></i>
-                            </div>
-                            <div>
-                                <small class="fw-bold text-uppercase d-block" style="color:#94a3b8; font-size:.65rem; letter-spacing:.07em;">Lieu</small>
-                                <span style="color:#1e293b; font-size:.88rem; font-weight:600;">{{ $detail_evenement->lieu }}</span>
-                            </div>
-                        </div>
+                        @if($detail_evenement->email)
+                            <a href="mailto:{{ $detail_evenement->email }}" class="w-9 h-9 rounded-xl bg-slate-50 border border-slate-100 d-flex align-items-center justify-content-center text-slate-500 hover:text-indigo-600 hover:bg-slate-100 transition-all duration-200 text-decoration-none">
+                                <i class="far fa-envelope"></i>
+                            </a>
+                        @endif
                     </div>
                 </div>
 
@@ -327,5 +277,72 @@
 
     </div>
 </main>
+
+<script>
+let selectedBilletId = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Pre-select the first available ticket option on page load
+    const firstOption = document.querySelector('.ticket-option');
+    if (firstOption) {
+        const billetId = firstOption.dataset.billetId;
+        selectTicket(billetId);
+    }
+});
+
+function selectTicket(billetId) {
+    // Reset other options style and quantities
+    document.querySelectorAll('.ticket-option').forEach(opt => {
+        opt.classList.remove('border-indigo-600');
+        opt.style.background = '#f8fafc';
+        const bId = opt.dataset.billetId;
+        const qtyEl = document.getElementById('qty-' + bId);
+        if (qtyEl) qtyEl.textContent = '0';
+    });
+
+    selectedBilletId = billetId;
+    document.getElementById('selected_billet_id').value = billetId;
+
+    const activeOpt = document.querySelector(`.ticket-option[data-billet-id="${billetId}"]`);
+    if (activeOpt) {
+        activeOpt.classList.add('border-indigo-600');
+        activeOpt.style.background = 'rgba(99, 102, 241, 0.05)';
+        const price = parseFloat(activeOpt.dataset.price);
+        
+        const qtyEl = document.getElementById('qty-' + billetId);
+        if (qtyEl) qtyEl.textContent = '1';
+        
+        document.getElementById('total-price-display').textContent = formatPrice(price) + ' FCFA';
+        document.getElementById('btn-submit-checkout').disabled = false;
+    }
+}
+
+function incrementTicket(billetId) {
+    selectTicket(billetId);
+}
+
+function decrementTicket(billetId) {
+    if (selectedBilletId === billetId) {
+        // If we decrement the active one, clear quantity and disable checkout
+        const qtyEl = document.getElementById('qty-' + billetId);
+        if (qtyEl) qtyEl.textContent = '0';
+        
+        const activeOpt = document.querySelector(`.ticket-option[data-billet-id="${billetId}"]`);
+        if (activeOpt) {
+            activeOpt.classList.remove('border-indigo-600');
+            activeOpt.style.background = '#f8fafc';
+        }
+        
+        selectedBilletId = null;
+        document.getElementById('selected_billet_id').value = '';
+        document.getElementById('total-price-display').textContent = '0 FCFA';
+        document.getElementById('btn-submit-checkout').disabled = true;
+    }
+}
+
+function formatPrice(price) {
+    return new Intl.NumberFormat('fr-FR').format(price);
+}
+</script>
 
 @endsection

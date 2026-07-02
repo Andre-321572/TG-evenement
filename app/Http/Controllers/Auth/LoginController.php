@@ -35,7 +35,7 @@ class LoginController extends Controller
                 return '/organisateur/';
                 break;
             case 'utilisateur':
-                return 'index';
+                return '/';
                 break;
             default:
                 return '/';

@@ -203,11 +203,30 @@ class PublicController extends Controller
         // Filtre par catégorie
         if ($request->filled('categorie')) {
             $query->where('categorie', $request->categorie);
+        } elseif ($request->has('categories') && is_array($request->categories)) {
+            $query->whereIn('categorie', $request->categories);
         }
 
         // Filtre par lieu
         if ($request->filled('lieu')) {
             $query->where('lieu', 'LIKE', "%{$request->lieu}%");
+        }
+
+        // Filtre par prix max
+        if ($request->filled('prix_max')) {
+            $prixMax = intval($request->prix_max);
+            if ($prixMax === 0) {
+                $query->where(function($q) {
+                    $q->whereDoesntHave('billets')
+                      ->orWhereHas('billets', function($sq) {
+                          $sq->where('prix', 0);
+                      });
+                });
+            } else {
+                $query->whereHas('billets', function($q) use ($prixMax) {
+                    $q->where('prix', '<=', $prixMax);
+                });
+            }
         }
 
         // Filtre par date
