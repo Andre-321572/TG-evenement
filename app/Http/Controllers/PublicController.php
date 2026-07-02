@@ -311,7 +311,7 @@ class PublicController extends Controller
     public function faq($parameter = null)
     {
         $faqs = Faq::all();
-        return view('P.faq', compact('faqs'));
+        return view('p.faq', compact('faqs'));
     }
 
     public function fete()
