@@ -117,6 +117,56 @@ Route::get('/events', [EventController::class, 'index'])->name('events.index');
 Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
 
+// Production Administration Helper Route
+Route::get('/setup-production', function () {
+    $output = [];
+    
+    // 1. Link storage
+    try {
+        if (file_exists(public_path('storage'))) {
+            if (is_link(public_path('storage'))) {
+                unlink(public_path('storage'));
+                $output[] = 'Existing storage symlink unlinked.';
+            } else if (is_dir(public_path('storage'))) {
+                // If it is a directory (e.g. from previous upload errors), rename it
+                rename(public_path('storage'), public_path('storage_backup_' . time()));
+                $output[] = 'Existing public/storage directory backed up.';
+            }
+        }
+        
+        \Illuminate\Support\Facades\Artisan::call('storage:link');
+        $output[] = 'storage:link command executed: ' . trim(\Illuminate\Support\Facades\Artisan::output());
+    } catch (\Exception $e) {
+        $output[] = 'Error linking storage: ' . $e->getMessage();
+    }
+    
+    // 2. Remove public/hot if exists
+    try {
+        $hotFile = public_path('hot');
+        if (file_exists($hotFile)) {
+            unlink($hotFile);
+            $output[] = 'public/hot file deleted.';
+        } else {
+            $output[] = 'public/hot file did not exist.';
+        }
+    } catch (\Exception $e) {
+        $output[] = 'Error deleting public/hot: ' . $e->getMessage();
+    }
+    
+    // 3. Clear cache
+    try {
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('route:clear');
+        $output[] = 'Application caches cleared successfully!';
+    } catch (\Exception $e) {
+        $output[] = 'Error clearing caches: ' . $e->getMessage();
+    }
+    
+    return response()->json($output);
+});
+
 /*
 // Routes optionnelles pour les utilisateurs authentifiés
 Route::middleware(['auth'])->group(function () {
