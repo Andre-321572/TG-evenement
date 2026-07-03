@@ -1,5 +1,18 @@
 <?php
 
+// Ensure Laravel framework directories exist dynamically on the server at runtime
+$frameworkDirs = [
+    __DIR__ . '/../storage/framework/cache',
+    __DIR__ . '/../storage/framework/cache/data',
+    __DIR__ . '/../storage/framework/sessions',
+    __DIR__ . '/../storage/framework/views',
+];
+foreach ($frameworkDirs as $dir) {
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0775, true);
+    }
+}
+
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;

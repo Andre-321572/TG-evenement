@@ -35,13 +35,8 @@ jobs:
           **/.git*/**
           **/node_modules/**
           **/storage/framework/cache/**
-          !**/storage/framework/cache/.keep
-          **/storage/framework/cache/data/**
-          !**/storage/framework/cache/data/.keep
           **/storage/framework/sessions/**
-          !**/storage/framework/sessions/.keep
           **/storage/framework/views/**
-          !**/storage/framework/views/.keep
           **/public/hot
           .env 
           .env.example
