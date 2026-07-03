@@ -153,7 +153,15 @@ Route::get('/setup-production', function () {
         $output[] = 'Error deleting public/hot: ' . $e->getMessage();
     }
     
-    // 3. Clear cache
+    // 3. Run migrations
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $output[] = 'Database migrations executed: ' . trim(\Illuminate\Support\Facades\Artisan::output());
+    } catch (\Exception $e) {
+        $output[] = 'Error running database migrations: ' . $e->getMessage();
+    }
+
+    // 4. Clear cache
     try {
         \Illuminate\Support\Facades\Artisan::call('view:clear');
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
