@@ -50,6 +50,7 @@
     <link rel="stylesheet" href="{{ asset('asset/bootstrap/styles.css') }}">
     <link rel="stylesheet" href="{{ asset('asset/bootstrap/animate.css') }}">
     <link rel="stylesheet" href="{{ asset('asset/bootstrap/responsive.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
@@ -289,15 +290,14 @@
     <!-- Bootstrap & Popper JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="{{ asset('asset/bootstrap/bootstrap.min.js') }}"></script>
 
-    <!-- JS Helpers (js.js moved AFTER Bootstrap so d-none class is available) -->
     <script src="{{ asset('asset/bootstrap/all.js') }}"></script>
-    <script src="{{ asset('asset/bootstrap/jquery.js') }}"></script>
     <script src="{{ asset('asset/bootstrap/build-bootstrap.js') }}"></script>
     <script src="{{ asset('asset/bootstrap/aos.js') }}"></script>
-    <script src="{{ asset('asset/bootstrap/js.js') }}"></script>
-    <script src="{{ asset('asset/bootstrap/main.js') }}"></script>
+    <script src="{{ asset('asset/bootstrap/js.js') }}?v=3"></script>
+    <script src="{{ asset('asset/bootstrap/main.js') }}?v=3"></script>
 </body>
 </html>
 

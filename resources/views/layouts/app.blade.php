@@ -14,6 +14,7 @@
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
@@ -44,14 +45,14 @@
 
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="{{ asset('asset/bootstrap/bootstrap.min.js') }}"></script>
 
     <!-- Font Awesome JS -->
     <script src="{{ asset('asset/bootstrap/all.js') }}"></script>
-    <script src="{{ asset('asset/bootstrap/js.js') }}"></script>
-    <script src="{{ asset('asset/bootstrap/jquery.js') }}"></script>
+    <script src="{{ asset('asset/bootstrap/js.js') }}?v=3"></script>
     <script src="{{ asset('asset/bootstrap/build-bootstrap.js') }}"></script>
-    <script src="{{ asset('asset/bootstrap/main.js') }}"></script>
+    <script src="{{ asset('asset/bootstrap/main.js') }}?v=3"></script>
     <script src="{{ asset('asset/bootstrap/aos.js') }}"></script>
     <style>
         a {

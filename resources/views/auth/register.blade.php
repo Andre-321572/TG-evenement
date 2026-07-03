@@ -148,13 +148,27 @@
 <script>
 function togglePasswordVisibility(fieldId, btnEl) {
     const input = document.getElementById(fieldId);
-    const icon = btnEl.querySelector('i');
+    const icon = btnEl.querySelector('i') || btnEl.querySelector('svg');
+    if (!icon) return;
+    
     if (input.type === 'password') {
         input.type = 'text';
-        icon.className = 'far fa-eye-slash';
+        if (icon.tagName.toLowerCase() === 'svg') {
+            icon.setAttribute('data-icon', 'eye-slash');
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            icon.className = 'far fa-eye-slash';
+        }
     } else {
         input.type = 'password';
-        icon.className = 'far fa-eye';
+        if (icon.tagName.toLowerCase() === 'svg') {
+            icon.setAttribute('data-icon', 'eye');
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        } else {
+            icon.className = 'far fa-eye';
+        }
     }
 }
 

@@ -24,6 +24,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('asset/bootstrap/organisateur/styles.css') }}">
     <link rel="stylesheet" href="{{asset('asset/bootstrap/organisateur/tooplate-artxibition.css')}}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
 
     <!-- Google Web Fonts -->
@@ -51,14 +52,14 @@
 
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="{{ asset('asset/bootstrap/bootstrap.min.js') }}"></script>
 
     <!-- Font Awesome JS -->
     <script src="{{ asset('asset/bootstrap/all.js') }}"></script>
-    <script src="{{ asset('asset/bootstrap/js.js') }}"></script>
-    <script src="{{ asset('asset/bootstrap/jquery.js') }}"></script>
+    <script src="{{ asset('asset/bootstrap/js.js') }}?v=3"></script>
     <script src="{{ asset('asset/bootstrap/build-bootstrap.js') }}"></script>
-    <script src="{{ asset('asset/bootstrap/main.js') }}"></script>
+    <script src="{{ asset('asset/bootstrap/main.js') }}?v=3"></script>
     <script src="{{ asset('asset/bootstrap/aos.js') }}"></script>
     <script src="{{ asset('asset/bootstrap/organisateur/script.js') }}"></script>
     <script src="{{ asset('asset/bootstrap/organisateur/Chart.min.js') }}"></script>
