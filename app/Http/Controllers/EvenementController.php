@@ -148,8 +148,8 @@ class EvenementController extends Controller
             $evenement->lien_google_map = $validatedData['lien_google_map'] ?? null;
             $evenement->description = $validatedData['description'] ?? null;
             $evenement->nom_proprietaire = $validatedData['nom_proprietaire'];
-            $evenement->telephone = $validatedData['telephone'] ?? null;
-            $evenement->email = $validatedData['email'] ?? null;
+            $evenement->telephone = $validatedData['telephone'] ?? Auth::user()->phone;
+            $evenement->email = $validatedData['email'] ?? Auth::user()->email;
             $evenement->facebook = $validatedData['facebook'] ?? null;
             $evenement->whatsapp = $validatedData['whatsapp'] ?? null;
             $evenement->statut = $validatedData['statut'];
@@ -269,6 +269,8 @@ class EvenementController extends Controller
 
         try {
             // Mise à jour des champs
+            $validatedData['telephone'] = $validatedData['telephone'] ?? Auth::user()->phone;
+            $validatedData['email'] = $validatedData['email'] ?? Auth::user()->email;
             $evenement->fill($validatedData);
 
             // Gestion de la photo
