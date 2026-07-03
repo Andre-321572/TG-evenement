@@ -190,3 +190,12 @@ Route::middleware(['auth'])->group(function () {
     <p>Veuillez <a href="{{ route('login') }}">vous connecter</a> pour accéder à cette page.</p>
 @endauth
 */
+
+// Route de secours pour servir les images/médias si les liens symboliques sont désactivés ou mal configurés sur LWS
+Route::get('/storage/{path}', function ($path) {
+    $filePath = storage_path('app/public/' . $path);
+    if (!file_exists($filePath)) {
+        abort(404);
+    }
+    return response()->file($filePath);
+})->where('path', '.*');
