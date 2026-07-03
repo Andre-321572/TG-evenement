@@ -72,6 +72,30 @@
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider border-slate-100"></li>
+                                @elseif(Auth::user()->role == 'scanner')
+                                    <li>
+                                        <a class="dropdown-item text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded py-2" href="{{ route('scanner.dashboard') }}">
+                                            <i class="fa fa-qrcode me-2 text-indigo-500"></i>Scanner
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider border-slate-100"></li>
+                                @else
+                                    <li>
+                                        <a class="dropdown-item text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded py-2" href="{{ route('dashboard', ['tab' => 'tickets']) }}">
+                                            <i class="fas fa-ticket-alt me-2 text-[#d9383a]"></i>Mes Tickets
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded py-2" href="{{ route('dashboard', ['tab' => 'favoris']) }}">
+                                            <i class="far fa-heart me-2 text-pink-500"></i>Favoris
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded py-2" href="{{ route('dashboard', ['tab' => 'historique']) }}">
+                                            <i class="fas fa-history me-2 text-indigo-500"></i>Historique
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider border-slate-100"></li>
                                 @endif
                                 <li>
                                     <a class="dropdown-item text-red-600 hover:bg-red-50 rounded py-2" href="{{ route('logout') }}"

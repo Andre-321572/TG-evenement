@@ -22,6 +22,15 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $now = now();
+        $activeTickets = $tickets->filter(function ($ticket) use ($now) {
+            return $ticket->evenement && \Carbon\Carbon::parse($ticket->evenement->date)->gte($now);
+        });
+
+        $pastTickets = $tickets->filter(function ($ticket) use ($now) {
+            return $ticket->evenement && \Carbon\Carbon::parse($ticket->evenement->date)->lt($now);
+        });
+
         // Fetch recommendations (based on interests / upcoming events)
         $recommendations = Evenement::where('date', '>=', now())
             ->where('statut', 'publier')
@@ -29,6 +38,6 @@ class DashboardController extends Controller
             ->take(3)
             ->get();
 
-        return view('dashboard', compact('user', 'tickets', 'recommendations'));
+        return view('dashboard', compact('user', 'activeTickets', 'pastTickets', 'recommendations'));
     }
 }
