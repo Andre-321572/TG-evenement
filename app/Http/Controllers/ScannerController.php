@@ -16,7 +16,24 @@ class ScannerController extends Controller
     public function dashboard()
     {
         $evenements = Evenement::publie()->orderBy('date', 'desc')->get();
-        return view('scanner.dashboard', compact('evenements'));
+        
+        foreach ($evenements as $ev) {
+            $total = \App\Models\TicketCode::where('evenement_id', $ev->id)->count();
+            $scanned = \App\Models\TicketCode::where('evenement_id', $ev->id)->where('is_scanned', true)->count();
+            $ev->total_tickets = $total;
+            $ev->scanned_tickets = $scanned;
+            $ev->percentage = $total > 0 ? round(($scanned / $total) * 100, 1) : 0;
+        }
+
+        // Fetch the 5 most recent scans of this scanner
+        $recentScans = \App\Models\TicketCode::with(['evenement', 'billet'])
+            ->where('is_scanned', true)
+            ->where('scanned_by', auth()->id())
+            ->orderBy('scanned_at', 'desc')
+            ->take(5)
+            ->get();
+
+        return view('scanner.dashboard', compact('evenements', 'recentScans'));
     }
 
     /**
@@ -64,21 +81,78 @@ class ScannerController extends Controller
     }
 
     /**
-     * Stats: scanned tickets count for an event today.
+     * Stats: complete statistics for an event (attendance, ticket breakdown, hourly check-ins).
      */
     public function stats(Request $request)
     {
         $evenementId = $request->evenement_id;
 
-        $query = TicketCode::where('is_scanned', true)
-            ->whereDate('scanned_at', today());
+        if (!$evenementId) {
+            $firstEvent = Evenement::publie()->first();
+            $evenementId = $firstEvent ? $firstEvent->id : null;
+        }
 
-        if ($evenementId) {
-            $query->where('evenement_id', $evenementId);
+        if (!$evenementId) {
+            return response()->json(['error' => 'Aucun événement disponible.'], 404);
+        }
+
+        $evenement = Evenement::findOrFail($evenementId);
+
+        $total = \App\Models\TicketCode::where('evenement_id', $evenementId)->count();
+        $scanned = \App\Models\TicketCode::where('evenement_id', $evenementId)->where('is_scanned', true)->count();
+        $percentage = $total > 0 ? round(($scanned / $total) * 100, 1) : 0;
+
+        // Breakdown by billet types
+        $billets = \App\Models\Billet::where('evenement_id', $evenementId)->get();
+        $breakdown = [];
+        foreach ($billets as $b) {
+            $bTotal = \App\Models\TicketCode::where('billet_id', $b->id)->count();
+            $bScanned = \App\Models\TicketCode::where('billet_id', $b->id)->where('is_scanned', true)->count();
+            $bPercentage = $bTotal > 0 ? round(($bScanned / $bTotal) * 100) : 0;
+
+            // Flow label algorithm
+            $label = 'Steady';
+            if ($bPercentage >= 85) {
+                $label = 'High Flow';
+            } elseif ($bPercentage > 0 && $bPercentage < 30) {
+                $label = 'Queue Peak';
+            }
+
+            $breakdown[] = [
+                'type' => $b->type,
+                'total' => $bTotal,
+                'scanned' => $bScanned,
+                'percentage' => $bPercentage,
+                'label' => $label
+            ];
+        }
+
+        // Peak hour check-ins (16:00 to 20:00)
+        $hours = ['16:00', '17:00', '18:00', '19:00', '20:00'];
+        $hourlyData = [];
+        foreach ($hours as $h) {
+            $hourInt = (int) substr($h, 0, 2);
+            $count = \App\Models\TicketCode::where('evenement_id', $evenementId)
+                ->where('is_scanned', true)
+                ->whereHour('scanned_at', $hourInt)
+                ->count();
+            $hourlyData[] = [
+                'hour' => $h,
+                'count' => $count
+            ];
         }
 
         return response()->json([
-            'count' => $query->count(),
+            'evenement' => [
+                'id' => $evenement->id,
+                'titre' => $evenement->titre,
+                'lieu' => $evenement->lieu,
+            ],
+            'total' => $total,
+            'scanned' => $scanned,
+            'percentage' => $percentage,
+            'breakdown' => $breakdown,
+            'hourly' => $hourlyData
         ]);
     }
 

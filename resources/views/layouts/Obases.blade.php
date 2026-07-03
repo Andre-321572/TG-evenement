@@ -43,11 +43,7 @@
     <div>
         <div id="contenu" class="container-scroller bg-white">
             @include('organisateur.include.navbar')
-            <div class="main-panel text-black controlers w-100 " style="margin-left: 20vh;" style="
-                    max-width: 300%;
-
-                "
-            >
+            <div class="main-panel text-black controlers w-100" style="margin-left: 20vh; max-width: 300%;">
                 @yield('content')
             </div>
         </div>

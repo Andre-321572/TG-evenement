@@ -26,9 +26,9 @@ class RedirectIfAuthenticated
                     if ($user->role === 'admin') {
                         return redirect()->route('organisateur.dashboard');
                     } elseif ($user->role === 'utilisateur') {
-                        return redirect()->route('index');
+                        return redirect()->route('dashboard');
                     } else {
-                        return redirect('/');
+                        return redirect()->route('dashboard');
                     }
                 }
             }

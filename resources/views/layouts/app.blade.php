@@ -32,7 +32,7 @@
 
         <div id="contenu" class="d-none">
             @include('layouts.navbar')
-            <div class="" style="padding-left: 30px;" style="padding-right: 30px">
+            <div class="" style="padding-left: 30px; padding-right: 30px;">
                 @yield('content')
 
             </div>
