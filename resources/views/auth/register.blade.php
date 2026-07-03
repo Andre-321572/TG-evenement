@@ -106,22 +106,7 @@
                         </div>
                     </div>
 
-                    <!-- Profile Type Selection -->
-                    <div class="mb-4">
-                        <label class="form-label text-slate-500 font-semibold small mb-2">Type de profil</label>
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <button type="button" id="type-participant" onclick="setProfileType('participant')" class="btn w-100 py-2.5 rounded-xl border border-indigo-600 bg-indigo-50/10 text-indigo-700 font-semibold text-sm d-flex align-items-center justify-content-center gap-2 transition-all">
-                                    <i class="far fa-user"></i> Participant
-                                </button>
-                            </div>
-                            <div class="col-6">
-                                <button type="button" id="type-organisateur" onclick="setProfileType('organisateur')" class="btn w-100 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm d-flex align-items-center justify-content-center gap-2 transition-all">
-                                    <i class="fas fa-briefcase"></i> Organisateur
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+
 
                     <!-- Submit Button -->
                     <div class="d-grid mb-3">
@@ -173,18 +158,6 @@ function togglePasswordVisibility(fieldId, btnEl) {
     }
 }
 
-function setProfileType(type) {
-    const participantBtn = document.getElementById('type-participant');
-    const organisateurBtn = document.getElementById('type-organisateur');
-    
-    if (type === 'participant') {
-        participantBtn.className = 'btn w-100 py-2.5 rounded-xl border border-indigo-600 bg-indigo-50/10 text-indigo-700 font-semibold text-sm d-flex align-items-center justify-content-center gap-2 transition-all';
-        organisateurBtn.className = 'btn w-100 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm d-flex align-items-center justify-content-center gap-2 transition-all';
-    } else {
-        organisateurBtn.className = 'btn w-100 py-2.5 rounded-xl border border-indigo-600 bg-indigo-50/10 text-indigo-700 font-semibold text-sm d-flex align-items-center justify-content-center gap-2 transition-all';
-        participantBtn.className = 'btn w-100 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm d-flex align-items-center justify-content-center gap-2 transition-all';
-    }
-}
 
 document.addEventListener('DOMContentLoaded', function() {
     const registerForm = document.getElementById('register-form');
