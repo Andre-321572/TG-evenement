@@ -181,7 +181,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const fullname = nomCompletInput.value.trim();
         const parts = fullname.split(/\s+/);
         const prenom = parts[0] || '';
-        const nom = parts.slice(1).join(' ') || ' ';
+        let nom = parts.slice(1).join(' ') || '';
+        
+        // If only a single name is provided, duplicate it for 'nom' to satisfy database constraint
+        if (prenom && !nom) {
+            nom = prenom;
+        }
+        
         document.getElementById('prenom').value = prenom;
         document.getElementById('nom').value = nom;
     }

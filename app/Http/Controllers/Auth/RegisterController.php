@@ -62,6 +62,11 @@ class RegisterController extends Controller
        try {
            Log::info('Données reçues :', $request->all());
 
+           // Handle single name fallback if nom is not filled
+           if ($request->filled('prenom') && !$request->filled('nom')) {
+               $request->merge(['nom' => $request->input('prenom')]);
+           }
+
            $validator = $this->validator($request->all());
 
            if ($validator->fails()) {
