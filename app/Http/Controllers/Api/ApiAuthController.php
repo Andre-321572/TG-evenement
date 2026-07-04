@@ -95,7 +95,7 @@ class ApiAuthController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Connexion réussie.',
-            'user' => $user,
+            'user' => $user->load('assignedEvenement'),
             'token' => $token
         ], 200);
     }
@@ -120,7 +120,7 @@ class ApiAuthController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'user' => $request->user()
+            'user' => $request->user()->load('assignedEvenement')
         ], 200);
     }
 

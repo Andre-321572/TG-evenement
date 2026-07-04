@@ -15,7 +15,12 @@ class ScannerController extends Controller
      */
     public function dashboard()
     {
-        $evenements = Evenement::publie()->orderBy('date', 'desc')->get();
+        $scanner = auth()->user();
+        if ($scanner->evenement_id) {
+            $evenements = Evenement::where('id', $scanner->evenement_id)->get();
+        } else {
+            $evenements = Evenement::publie()->orderBy('date', 'desc')->get();
+        }
         
         foreach ($evenements as $ev) {
             $total = \App\Models\TicketCode::where('evenement_id', $ev->id)->count();

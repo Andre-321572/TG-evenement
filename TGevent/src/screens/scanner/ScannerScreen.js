@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, Text, View, Button, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
+import { AuthContext } from '../../context/AuthContext';
 import apiClient from '../../api/client';
 
 export default function ScannerScreen() {
+  const { user } = useContext(AuthContext);
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [scanResult, setScanResult] = useState(null);
@@ -72,6 +74,24 @@ export default function ScannerScreen() {
             barcodeTypes: ['qr'],
           }}
         >
+          {/* Scanner Header Banner showing assigned event */}
+          <View style={styles.scannerHeader}>
+            <Text style={styles.scannerTitle}>Interface de Scan</Text>
+            <View style={styles.assignedEventBadge}>
+              <Ionicons 
+                name={user?.assigned_evenement ? "checkmark-circle-outline" : "globe-outline"} 
+                size={14} 
+                color="#ffffff" 
+                style={{ marginRight: 6 }} 
+              />
+              <Text style={styles.assignedEventText} numberOfLines={1}>
+                {user?.assigned_evenement 
+                  ? `Événement : ${user.assigned_evenement.titre}` 
+                  : "Scanner Universel (Tous les événements)"}
+              </Text>
+            </View>
+          </View>
+
           <View style={styles.overlay}>
             <View style={styles.unfocusedContainer}></View>
             <View style={styles.middleContainer}>
@@ -259,5 +279,41 @@ const styles = StyleSheet.create({
     color: '#0f172a',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  scannerHeader: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    right: 20,
+    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    borderRadius: 12,
+    padding: 14,
+    alignItems: 'center',
+    zIndex: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  scannerTitle: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  assignedEventBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(37, 99, 235, 0.3)',
+    borderRadius: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    marginTop: 2,
+    maxWidth: '100%',
+  },
+  assignedEventText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '600',
   },
 });
