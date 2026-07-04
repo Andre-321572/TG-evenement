@@ -130,7 +130,11 @@ export default function EventListScreen({ navigation }) {
     <View style={styles.container}>
       {/* App Custom Premium Header */}
       <View style={styles.appHeader}>
-        <Text style={styles.logoText}>TGevent</Text>
+        <Image 
+          source={require('../../assets/logo.png')} 
+          style={styles.logoImage} 
+          resizeMode="contain" 
+        />
         <TouchableOpacity 
           style={styles.menuButton}
           onPress={() => navigation.navigate('Notifications')}
@@ -248,11 +252,9 @@ const styles = StyleSheet.create({
   menuButton: {
     padding: 4,
   },
-  logoText: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#1e3a8a',
-    letterSpacing: 0.5,
+  logoImage: {
+    height: 32,
+    width: 110,
   },
   profileAvatar: {
     width: 36,

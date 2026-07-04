@@ -3,7 +3,7 @@
         <div class="row g-4">
             <!-- Brand Column -->
             <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
-                <h4 class="fw-bold text-white tracking-wider mb-3">TGEvent</h4>
+                <img src="{{ asset('images/logo.png') }}" alt="TGEvent" style="height: 38px; width: auto; margin-bottom: 1rem; filter: brightness(0) invert(1);">
                 <p class="text-slate-400 leading-relaxed small mb-0" style="max-width: 320px;">
                     La destination numéro un pour vos billets d'événements préférés. Fiable, rapide et sécurisé.
                 </p>
