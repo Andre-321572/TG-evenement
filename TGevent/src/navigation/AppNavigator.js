@@ -72,8 +72,6 @@ const ParticipantTabNavigator = () => (
           iconName = focused ? 'search' : 'search-outline';
         } else if (route.name === 'Billets') {
           iconName = focused ? 'ticket' : 'ticket-outline';
-        } else if (route.name === 'Notifications') {
-          iconName = focused ? 'notifications' : 'notifications-outline';
         } else if (route.name === 'Profil') {
           iconName = focused ? 'person' : 'person-outline';
         }
@@ -84,7 +82,6 @@ const ParticipantTabNavigator = () => (
     <Tab.Screen name="Découvrir" component={ExploreStack} />
     <Tab.Screen name="Recherche" component={SearchScreen} />
     <Tab.Screen name="Billets" component={TicketListScreen} options={{ headerShown: true, headerTitle: 'Mes Billets', headerStyle: { backgroundColor: '#ffffff' }, headerTintColor: '#1e3a8a', headerTitleStyle: { fontWeight: 'bold' } }} />
-    <Tab.Screen name="Notifications" component={NotificationsScreen} />
     <Tab.Screen name="Profil" component={ProfileScreen} />
   </Tab.Navigator>
 );
@@ -178,6 +175,19 @@ const AppNavigator = () => {
         {/* Écrans de connexion / inscription accessibles en pile (modals) */}
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
+        
+        {/* Écran de Notifications hors de la Tab Bar */}
+        <Stack.Screen 
+          name="Notifications" 
+          component={NotificationsScreen} 
+          options={{ 
+            headerShown: true, 
+            title: 'Notifications', 
+            headerStyle: { backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9', elevation: 0, shadowOpacity: 0 }, 
+            headerTintColor: '#1e3a8a', 
+            headerTitleStyle: { fontWeight: 'bold' } 
+          }} 
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

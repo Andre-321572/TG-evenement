@@ -93,7 +93,9 @@ export default function OrgDashboardScreen({ navigation }) {
       <Image source={{ uri: item.photo_url }} style={styles.eventImage} />
       <View style={styles.eventBody}>
         <Text style={styles.eventTitle}>{item.titre}</Text>
-        <Text style={styles.eventInfo}>📅 {item.date} - 📍 {item.lieu}</Text>
+        <Text style={styles.eventInfo}>
+          <Ionicons name="calendar-outline" size={13} color="#64748b" /> {item.date} - <Ionicons name="location-outline" size={13} color="#64748b" /> {item.lieu}
+        </Text>
         <View style={styles.statusRow}>
           <Text
             style={[

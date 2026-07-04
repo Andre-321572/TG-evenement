@@ -116,10 +116,18 @@ export default function ScannerScreen() {
 
           {scanResult.ticket && (
             <View style={styles.ticketDetails}>
-              <Text style={styles.detailText}>👤 Acheteur : {scanResult.ticket.buyer_name}</Text>
-              <Text style={styles.detailText}>🎫 Type : {scanResult.ticket.billet_type}</Text>
-              <Text style={styles.detailText}>📅 Événement : {scanResult.ticket.evenement}</Text>
-              <Text style={styles.detailText}>📍 Lieu : {scanResult.ticket.lieu}</Text>
+              <Text style={styles.detailText}>
+                <Ionicons name="person-outline" size={14} color="#64748b" /> Acheteur : {scanResult.ticket.buyer_name}
+              </Text>
+              <Text style={styles.detailText}>
+                <Ionicons name="ticket-outline" size={14} color="#64748b" /> Type : {scanResult.ticket.billet_type}
+              </Text>
+              <Text style={styles.detailText}>
+                <Ionicons name="calendar-outline" size={14} color="#64748b" /> Événement : {scanResult.ticket.evenement}
+              </Text>
+              <Text style={styles.detailText}>
+                <Ionicons name="location-outline" size={14} color="#64748b" /> Lieu : {scanResult.ticket.lieu}
+              </Text>
             </View>
           )}
 

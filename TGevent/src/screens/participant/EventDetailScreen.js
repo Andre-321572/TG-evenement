@@ -84,10 +84,16 @@ export default function EventDetailScreen({ route, navigation }) {
 
         <Text style={styles.sectionTitle}>Infos Pratiques</Text>
         <View style={styles.infoBox}>
-          <Text style={styles.infoText}>📅 Date : {event.date} à {event.start_heure}</Text>
-          <Text style={styles.infoText}>📍 Lieu : {event.lieu}</Text>
+          <Text style={styles.infoText}>
+            <Ionicons name="calendar-outline" size={16} color="#1e3a8a" /> Date : {event.date} à {event.start_heure}
+          </Text>
+          <Text style={styles.infoText}>
+            <Ionicons name="location-outline" size={16} color="#1e3a8a" /> Lieu : {event.lieu}
+          </Text>
           {event.nom_proprietaire && (
-            <Text style={styles.infoText}>👤 Organisé par : {event.nom_proprietaire}</Text>
+            <Text style={styles.infoText}>
+              <Ionicons name="person-outline" size={16} color="#1e3a8a" /> Organisé par : {event.nom_proprietaire}
+            </Text>
           )}
         </View>
 
