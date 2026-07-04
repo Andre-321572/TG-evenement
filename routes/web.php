@@ -224,16 +224,74 @@ Route::get('/debug-files', function () {
     }
     
     if (request()->has('fix')) {
-        $destDir = dirname(public_path()) . '/images';
-        if (!file_exists($destDir)) {
-            mkdir($destDir, 0755, true);
+        $docroot = dirname($_SERVER['SCRIPT_FILENAME']);
+        $publicPath = public_path();
+        
+        $sync_dirs = ['images', 'downloads', 'build', 'asset', 'assets'];
+        $copied_files = [];
+        $errors = [];
+        
+        $sync_fn = function ($src, $dst) use (&$sync_fn, &$copied_files, &$errors) {
+            if (!file_exists($src)) return;
+            if (!file_exists($dst)) {
+                if (!mkdir($dst, 0755, true)) {
+                    $errors[] = "Failed to create directory $dst";
+                    return;
+                }
+            }
+            $dir = opendir($src);
+            if ($dir === false) {
+                $errors[] = "Failed to open directory $src";
+                return;
+            }
+            while (false !== ($file = readdir($dir))) {
+                if ($file != '.' && $file != '..') {
+                    $srcFile = $src . '/' . $file;
+                    $dstFile = $dst . '/' . $file;
+                    if (is_dir($srcFile)) {
+                        $sync_fn($srcFile, $dstFile);
+                    } else {
+                        if ($file === 'index.php' || $file === '.htaccess') {
+                            continue;
+                        }
+                        if (!file_exists($dstFile) || filesize($srcFile) !== filesize($dstFile)) {
+                            if (copy($srcFile, $dstFile)) {
+                                $copied_files[] = basename($src) . '/' . $file;
+                            } else {
+                                $errors[] = "Failed to copy $srcFile to $dstFile";
+                            }
+                        }
+                    }
+                }
+            }
+            closedir($dir);
+        };
+
+        foreach ($sync_dirs as $dirName) {
+            $srcDir = $publicPath . '/' . $dirName;
+            $dstDir = $docroot . '/' . $dirName;
+            if (file_exists($srcDir)) {
+                $sync_fn($srcDir, $dstDir);
+            }
         }
-        if (file_exists(public_path('images/logo.png'))) {
-            copy(public_path('images/logo.png'), $destDir . '/logo.png');
-            $output['fix_status'] = 'Copied logo.png to ' . $destDir . '/logo.png. File exists: ' . file_exists($destDir . '/logo.png');
-        } else {
-            $output['fix_status'] = 'Source logo.png not found!';
+        
+        foreach (['favicon.ico', 'robots.txt'] as $flatFile) {
+            $srcFile = $publicPath . '/' . $flatFile;
+            $dstFile = $docroot . '/' . $flatFile;
+            if (file_exists($srcFile)) {
+                if (!file_exists($dstFile) || filesize($srcFile) !== filesize($dstFile)) {
+                    if (copy($srcFile, $dstFile)) {
+                        $copied_files[] = $flatFile;
+                    } else {
+                        $errors[] = "Failed to copy $srcFile to $dstFile";
+                    }
+                }
+            }
         }
+        
+        $output['fix_status'] = 'Sync completed.';
+        $output['copied_files'] = $copied_files;
+        $output['errors'] = $errors;
     }
     
     $publicPath = public_path();
