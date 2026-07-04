@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -86,7 +86,10 @@ export default function NotificationsScreen({ navigation }) {
               <Text style={styles.exclusivityText}>{item.category}</Text>
             </View>
             <Text style={styles.bannerTitle}>{item.title}</Text>
-            <TouchableOpacity style={styles.bannerButton}>
+            <TouchableOpacity 
+              style={styles.bannerButton}
+              onPress={() => navigation.navigate('Découvrir')}
+            >
               <Text style={styles.bannerButtonText}>Voir</Text>
             </TouchableOpacity>
           </View>
@@ -146,7 +149,7 @@ export default function NotificationsScreen({ navigation }) {
       {/* Title Header with mark all as read button */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Notifications</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => Alert.alert('Notifications', 'Toutes les notifications ont été marquées comme lues !')}>
           <Text style={styles.markAllRead}>Tout marquer comme lu</Text>
         </TouchableOpacity>
       </View>
@@ -397,6 +400,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#1e3a8a',
     marginBottom: 10,
+    textAlign: 'center',
+    alignSelf: 'stretch',
   },
   guestSubtitle: {
     fontSize: 14,
@@ -417,5 +422,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
+    width: '100%',
   },
 });

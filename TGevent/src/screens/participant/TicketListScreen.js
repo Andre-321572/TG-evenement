@@ -250,6 +250,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#1e3a8a',
     marginBottom: 10,
+    textAlign: 'center',
+    alignSelf: 'stretch',
   },
   guestSubtitle: {
     fontSize: 14,
@@ -270,5 +272,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
+    width: '100%',
   },
 });

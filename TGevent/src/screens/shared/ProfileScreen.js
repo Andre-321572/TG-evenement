@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Image, ScrollView, Switch } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Image, ScrollView, Switch, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -11,11 +11,20 @@ export default function ProfileScreen({ navigation }) {
   };
 
   // Profile section helper row
-  const ProfileRow = ({ icon, label, value, onPress, hasChevron = true, isSwitch = false, switchValue = false, onSwitchChange = null }) => (
+  const ProfileRow = ({ 
+    icon, 
+    label, 
+    value, 
+    onPress = () => Alert.alert('Profil', `La modification de "${label}" sera bientôt disponible !`), 
+    hasChevron = true, 
+    isSwitch = false, 
+    switchValue = false, 
+    onSwitchChange = null 
+  }) => (
     <TouchableOpacity 
       style={styles.row} 
       onPress={onPress}
-      disabled={!onPress || isSwitch}
+      disabled={isSwitch}
     >
       <View style={styles.rowLeft}>
         <Ionicons name={icon} size={20} color="#64748b" style={styles.rowIcon} />
@@ -82,7 +91,10 @@ export default function ProfileScreen({ navigation }) {
               </Text>
             </View>
           )}
-          <TouchableOpacity style={styles.editAvatarButton}>
+          <TouchableOpacity 
+            style={styles.editAvatarButton}
+            onPress={() => Alert.alert('Photo de profil', 'La modification de la photo de profil sera bientôt disponible !')}
+          >
             <Ionicons name="pencil" size={12} color="#fff" />
           </TouchableOpacity>
         </View>
@@ -341,6 +353,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#1e3a8a',
     marginBottom: 10,
+    textAlign: 'center',
+    alignSelf: 'stretch',
   },
   guestSubtitle: {
     fontSize: 14,
@@ -362,6 +376,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
+    width: '100%',
   },
   registerButton: {
     backgroundColor: '#fff',
@@ -377,5 +393,7 @@ const styles = StyleSheet.create({
     color: '#2563eb',
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
+    width: '100%',
   },
 });

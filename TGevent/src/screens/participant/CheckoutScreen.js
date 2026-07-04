@@ -7,7 +7,7 @@ export default function CheckoutScreen({ route, navigation }) {
   const { evenementId, billetId, user } = route.params;
   const webViewRef = useRef(null);
 
-  // Conversion de l'url d'API (ex: http://10.0.2.2:8000/api) en URL de base web (ex: http://10.0.2.2:8000)
+  // Conversion de l'url d'API (ex: https://tgevent.digitalforges.org/api) en URL de base web (ex: https://tgevent.digitalforges.org)
   const baseUrl = API_URL.replace('/api', '');
 
   // Charger le process de paiement du Laravel web en injectant les IDs en paramètres GET

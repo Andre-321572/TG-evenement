@@ -1,9 +1,8 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Remplacer par l'adresse IP locale de votre machine ou domaine en production
-// http://10.0.2.2:8000 est l'adresse par défaut de l'hôte dans l'émulateur Android
-const API_URL = 'http://10.0.2.2:8000/api';
+// URL de l'API en production
+const API_URL = 'https://tgevent.digitalforges.org/api';
 
 const apiClient = axios.create({
   baseURL: API_URL,

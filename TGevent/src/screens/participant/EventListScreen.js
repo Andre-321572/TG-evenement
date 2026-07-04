@@ -126,31 +126,7 @@ export default function EventListScreen({ navigation }) {
     <View style={styles.container}>
       {/* App Custom Premium Header */}
       <View style={styles.appHeader}>
-        <TouchableOpacity style={styles.menuButton}>
-          <Ionicons name="menu-outline" size={26} color="#1e3a8a" />
-        </TouchableOpacity>
         <Text style={styles.logoText}>TGevent</Text>
-        <TouchableOpacity 
-          style={styles.profileAvatar}
-          onPress={() => navigation.navigate('Profil')}
-        >
-          {user ? (
-            user.img_profil ? (
-              <Image source={{ uri: user.img_profil }} style={styles.avatarImage} />
-            ) : (
-              <View style={styles.avatarFallback}>
-                <Text style={styles.avatarFallbackText}>
-                  {user.prenom?.charAt(0).toUpperCase()}
-                  {user.nom?.charAt(0).toUpperCase()}
-                </Text>
-              </View>
-            )
-          ) : (
-            <View style={styles.avatarFallbackGuest}>
-              <Ionicons name="person" size={18} color="#fff" />
-            </View>
-          )}
-        </TouchableOpacity>
       </View>
 
       {/* Main Scroll Content */}
@@ -276,7 +252,7 @@ const styles = StyleSheet.create({
   },
   appHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 16,
