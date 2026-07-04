@@ -194,6 +194,33 @@ Route::middleware(['auth'])->group(function () {
 @endauth
 */
 
+// Route de diagnostic pour inspecter les fichiers publics et d'images
+Route::get('/debug-files', function () {
+    $output = [];
+    
+    $publicPath = public_path();
+    $output['public_path'] = $publicPath;
+    $output['public_exists'] = file_exists($publicPath);
+    
+    if (file_exists($publicPath)) {
+        $output['public_files'] = array_map(function($file) {
+            return basename($file) . (is_dir($file) ? '/' : '') . ' - ' . (is_dir($file) ? 'dir' : filesize($file) . ' bytes');
+        }, glob($publicPath . '/*'));
+    }
+    
+    $imagesPath = public_path('images');
+    $output['images_path'] = $imagesPath;
+    $output['images_exists'] = file_exists($imagesPath);
+    
+    if (file_exists($imagesPath)) {
+        $output['images_files'] = array_map(function($file) {
+            return basename($file) . (is_dir($file) ? '/' : '') . ' - ' . (is_dir($file) ? 'dir' : filesize($file) . ' bytes');
+        }, glob($imagesPath . '/*'));
+    }
+    
+    return response()->json($output);
+});
+
 // Route de secours pour servir les images/médias si les liens symboliques sont désactivés ou mal configurés sur LWS
 Route::get('/storage/{path}', function ($path) {
     $filePath = storage_path('app/public/' . $path);
@@ -202,3 +229,4 @@ Route::get('/storage/{path}', function ($path) {
     }
     return response()->file($filePath);
 })->where('path', '.*');
+
