@@ -162,7 +162,7 @@ export default function RegisterScreen({ navigation }) {
               {isLoading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.buttonText}>S'inscrire</Text>
+                <Text style={styles.buttonText} numberOfLines={1}>S'inscrire</Text>
               )}
             </TouchableOpacity>
 
@@ -282,6 +282,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
+    width: '100%',
   },
   loginLink: {
     alignItems: 'center',

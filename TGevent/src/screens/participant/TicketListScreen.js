@@ -67,8 +67,12 @@ export default function TicketListScreen({ navigation }) {
         <View style={styles.ticketDetails}>
           <Text style={styles.codeText}>Code : {item.code}</Text>
           <Text style={styles.detailText}>Type : {item.billet?.type}</Text>
-          <Text style={styles.detailText}>📍 Lieu : {item.evenement?.lieu}</Text>
-          <Text style={styles.detailText}>📅 Date : {item.evenement?.date}</Text>
+          <Text style={styles.detailText}>
+            <Ionicons name="location-outline" size={14} color="#64748b" /> Lieu : {item.evenement?.lieu}
+          </Text>
+          <Text style={styles.detailText}>
+            <Ionicons name="calendar-outline" size={14} color="#64748b" /> Date : {item.evenement?.date}
+          </Text>
         </View>
       </View>
     </View>
@@ -90,7 +94,7 @@ export default function TicketListScreen({ navigation }) {
             style={styles.loginButton}
             onPress={() => navigation.navigate('Login')}
           >
-            <Text style={styles.loginButtonText}>Se connecter</Text>
+            <Text style={styles.loginButtonText} numberOfLines={1}>Se connecter</Text>
           </TouchableOpacity>
         </View>
       </View>

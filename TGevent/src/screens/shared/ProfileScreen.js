@@ -65,7 +65,7 @@ export default function ProfileScreen({ navigation }) {
                 style={styles.guestLoginBtn}
                 onPress={() => navigation.navigate('Login')}
               >
-                <Text style={styles.guestLoginBtnText}>Se connecter</Text>
+                <Text style={styles.guestLoginBtnText} numberOfLines={1}>Se connecter</Text>
               </TouchableOpacity>
               
               <TouchableOpacity 
@@ -406,6 +406,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     letterSpacing: 0.5,
+    textAlign: 'center',
+    width: '100%',
   },
   guestRegisterLink: {
     paddingVertical: 10,

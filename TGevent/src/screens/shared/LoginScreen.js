@@ -94,7 +94,7 @@ export default function LoginScreen({ navigation }) {
               {isLoading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.buttonText}>Se connecter</Text>
+                <Text style={styles.buttonText} numberOfLines={1}>Se connecter</Text>
               )}
             </TouchableOpacity>
 
@@ -214,6 +214,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
+    width: '100%',
   },
   registerLink: {
     alignItems: 'center',

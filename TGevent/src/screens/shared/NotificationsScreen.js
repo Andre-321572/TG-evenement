@@ -137,7 +137,7 @@ export default function NotificationsScreen({ navigation }) {
             style={styles.loginButton}
             onPress={() => navigation.navigate('Login')}
           >
-            <Text style={styles.loginButtonText}>Se connecter</Text>
+            <Text style={styles.loginButtonText} numberOfLines={1}>Se connecter</Text>
           </TouchableOpacity>
         </View>
       </View>
