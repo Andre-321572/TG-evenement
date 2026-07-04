@@ -18,12 +18,18 @@ class TicketCode extends Model
         'is_scanned',
         'scanned_at',
         'scanned_by',
+        'user_id',
     ];
 
     protected $casts = [
         'scanned_at' => 'datetime',
         'is_scanned'  => 'boolean',
     ];
+
+    public function buyerUser()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     public function evenement()
     {

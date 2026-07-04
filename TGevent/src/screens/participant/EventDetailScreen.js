@@ -8,7 +8,7 @@ const { width } = Dimensions.get('window');
 
 export default function EventDetailScreen({ route, navigation }) {
   const { eventId } = route.params;
-  const { token } = useContext(AuthContext);
+  const { token, user } = useContext(AuthContext);
   const [event, setEvent] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -52,6 +52,7 @@ export default function EventDetailScreen({ route, navigation }) {
     navigation.navigate('Checkout', {
       evenementId: event.id,
       billetId: billet.id,
+      user: user,
     });
   };
 

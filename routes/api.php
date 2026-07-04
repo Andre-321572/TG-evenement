@@ -32,8 +32,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/my-tickets', [ApiTicketController::class, 'myTickets']);
     
     // Fonctionnalités du Scanner
-    Route::post('/scanner/verify', [ApiScannerController::class, 'verify']);
-    Route::get('/scanner/stats', [ApiScannerController::class, 'stats']);
+    Route::post('/scanner/verify', [ApiScannerController::class, 'verify'])->middleware('scanner');
+    Route::get('/scanner/stats', [ApiScannerController::class, 'stats'])->middleware('scanner');
     
     // Fonctionnalités de l'Organisateur
     Route::get('/organisateur/dashboard', [ApiEventController::class, 'organizerDashboard']);

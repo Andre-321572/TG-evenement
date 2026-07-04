@@ -16,9 +16,10 @@ class ApiTicketController extends Controller
     {
         $user = $request->user();
 
-        // Les tickets achetés sont reliés par l'email de l'acheteur
+        // Les tickets achetés sont reliés par le user_id de l'acheteur, ou son email (repli de compatibilité)
         $tickets = TicketCode::with(['evenement', 'billet'])
-            ->where('buyer_email', $user->email)
+            ->where('user_id', $user->id)
+            ->orWhere('buyer_email', $user->email)
             ->orderBy('created_at', 'desc')
             ->get();
 

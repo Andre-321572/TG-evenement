@@ -4,14 +4,14 @@ import { WebView } from 'react-native-webview';
 import { API_URL } from '../../api/client';
 
 export default function CheckoutScreen({ route, navigation }) {
-  const { evenementId, billetId } = route.params;
+  const { evenementId, billetId, user } = route.params;
   const webViewRef = useRef(null);
 
   // Conversion de l'url d'API (ex: http://10.0.2.2:8000/api) en URL de base web (ex: http://10.0.2.2:8000)
   const baseUrl = API_URL.replace('/api', '');
 
   // Charger le process de paiement du Laravel web en injectant les IDs en paramètres GET
-  const checkoutUrl = `${baseUrl}/p/payement/process?evenement_id=${evenementId}&billet_id=${billetId}`;
+  const checkoutUrl = `${baseUrl}/p/payement/process?evenement_id=${evenementId}&billet_id=${billetId}&email=${encodeURIComponent(user?.email || '')}&user_id=${user?.id || 0}`;
 
   const handleNavigationStateChange = (navState) => {
     const { url } = navState;
@@ -26,7 +26,7 @@ export default function CheckoutScreen({ route, navigation }) {
             text: 'Voir mes billets',
             onPress: () => {
               // Naviguer vers la liste des tickets
-              navigation.navigate('Mes Tickets');
+              navigation.navigate('Billets');
             },
           },
         ]

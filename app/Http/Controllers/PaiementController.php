@@ -26,6 +26,8 @@ class PaiementController extends Controller
         $request->validate([
             'evenement_id' => 'required|exists:evenements,id',
             'billet_id'    => 'required|exists:billets,id',
+            'email'        => 'nullable|email',
+            'user_id'      => 'nullable|integer',
         ]);
 
         $evenement = Evenement::with('billets')->findOrFail($request->evenement_id);
@@ -41,6 +43,9 @@ class PaiementController extends Controller
         Stripe::setApiKey(config('services.stripe.secret'));
 
         try {
+            $customerEmail = $request->input('email') ?? Auth::user()?->email;
+            $buyerUserId = $request->input('user_id') ?? Auth::id() ?? 0;
+
             $session = StripeSession::create([
                 'payment_method_types' => ['card'],
                 'line_items' => [[
@@ -65,9 +70,9 @@ class PaiementController extends Controller
                 'metadata'    => [
                     'evenement_id' => $evenement->id,
                     'billet_id'    => $billet->id,
-                    'user_id'      => Auth::id() ?? 0,
+                    'user_id'      => $buyerUserId,
                 ],
-                'customer_email' => Auth::user()?->email,
+                'customer_email' => $customerEmail,
             ]);
 
             return redirect($session->url, 303);
@@ -101,6 +106,11 @@ class PaiementController extends Controller
             // Générer un code unique de ticket
             $code = strtoupper('TGE-' . substr(md5($sessionId . $billetId), 0, 8));
 
+            // Récupérer le user_id depuis les metadata Stripe
+            $buyerUserId = isset($session->metadata->user_id) && (int) $session->metadata->user_id > 0 
+                ? (int) $session->metadata->user_id 
+                : null;
+
             // Persister le code en base (idempotent via firstOrCreate)
             \App\Models\TicketCode::firstOrCreate(
                 ['code' => $code],
@@ -110,6 +120,7 @@ class PaiementController extends Controller
                     'stripe_session_id' => $sessionId,
                     'buyer_email'       => $session->customer_details?->email ?? '',
                     'buyer_name'        => $session->customer_details?->name ?? '',
+                    'user_id'           => $buyerUserId,
                 ]
             );
 
