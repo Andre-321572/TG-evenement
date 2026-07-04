@@ -21,13 +21,19 @@ class User extends Authenticatable  // Changez Model par Authenticatable
         'lien_facebook',
         'lien_instagram',
         'lien_web',
-        'img_profil'
+        'img_profil',
+        'evenement_id'
     ];
 
     // Le reste de votre code reste identique
     public function Evenement()
     {
         return $this->hasMany(Evenement::class);
+    }
+
+    public function assignedEvenement()
+    {
+        return $this->belongsTo(Evenement::class, 'evenement_id');
     }
 
     // ... autres méthodes ...

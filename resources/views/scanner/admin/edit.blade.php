@@ -10,8 +10,8 @@
                   display:inline-flex; align-items:center; gap:.3rem; margin-bottom:.8rem;">
             <i class="fas fa-arrow-left" style="font-size:.75rem;"></i> Retour à la liste
         </a>
-        <h2 class="text-xl font-bold" style="color:#0f172a;">Créer un compte scanner</h2>
-        <p style="color:#64748b; font-size:.85rem;">Le compte pourra se connecter et scanner les billets via l'interface dédiée.</p>
+        <h2 class="text-xl font-bold" style="color:#0f172a;">Modifier le compte scanner</h2>
+        <p style="color:#64748b; font-size:.85rem;">Modifiez les détails de l'agent scanner ou son affectation à un événement.</p>
     </div>
 
     {{-- Form --}}
@@ -29,15 +29,16 @@
         </div>
         @endif
 
-        <form method="POST" action="{{ route('organisateur.scanner-store') }}">
+        <form method="POST" action="{{ route('organisateur.scanner-update', $user->id) }}">
             @csrf
+            @method('PUT')
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
                 {{-- Nom --}}
                 <div>
                     <label style="color:#475569; font-size:.78rem; font-weight:700; text-transform:uppercase;
                                   letter-spacing:.07em; display:block; margin-bottom:.35rem;">Nom *</label>
-                    <input type="text" name="nom" value="{{ old('nom') }}" required
+                    <input type="text" name="nom" value="{{ old('nom', $user->nom) }}" required
                            style="width:100%; background:#ffffff; border:1px solid rgba(59,130,246,0.15);
                                   border-radius:8px; padding:.6rem .85rem; color:#0f172a; font-size:.9rem;
                                   box-sizing:border-box; outline:none;">
@@ -46,7 +47,7 @@
                 <div>
                     <label style="color:#475569; font-size:.78rem; font-weight:700; text-transform:uppercase;
                                   letter-spacing:.07em; display:block; margin-bottom:.35rem;">Prénom *</label>
-                    <input type="text" name="prenom" value="{{ old('prenom') }}" required
+                    <input type="text" name="prenom" value="{{ old('prenom', $user->prenom) }}" required
                            style="width:100%; background:#ffffff; border:1px solid rgba(59,130,246,0.15);
                                   border-radius:8px; padding:.6rem .85rem; color:#0f172a; font-size:.9rem;
                                   box-sizing:border-box; outline:none;">
@@ -57,7 +58,7 @@
             <div style="margin-bottom:1rem;">
                 <label style="color:#475569; font-size:.78rem; font-weight:700; text-transform:uppercase;
                               letter-spacing:.07em; display:block; margin-bottom:.35rem;">Email *</label>
-                <input type="email" name="email" value="{{ old('email') }}" required
+                <input type="email" name="email" value="{{ old('email', $user->email) }}" required
                        style="width:100%; background:#ffffff; border:1px solid rgba(59,130,246,0.15);
                               border-radius:8px; padding:.6rem .85rem; color:#0f172a; font-size:.9rem;
                               box-sizing:border-box; outline:none;">
@@ -67,14 +68,14 @@
             <div style="margin-bottom:1rem;">
                 <label style="color:#475569; font-size:.78rem; font-weight:700; text-transform:uppercase;
                               letter-spacing:.07em; display:block; margin-bottom:.35rem;">Téléphone *</label>
-                <input type="text" name="phone" value="{{ old('phone') }}" required
+                <input type="text" name="phone" value="{{ old('phone', $user->phone) }}" required
                        style="width:100%; background:#ffffff; border:1px solid rgba(59,130,246,0.15);
                               border-radius:8px; padding:.6rem .85rem; color:#0f172a; font-size:.9rem;
                               box-sizing:border-box; outline:none;">
             </div>
 
             {{-- Événement à scanner --}}
-            <div style="margin-bottom:1rem;">
+            <div style="margin-bottom:1.5rem;">
                 <label style="color:#475569; font-size:.78rem; font-weight:700; text-transform:uppercase;
                               letter-spacing:.07em; display:block; margin-bottom:.35rem;">Événement attribué</label>
                 <select name="evenement_id"
@@ -83,30 +84,35 @@
                                box-sizing:border-box; outline:none;">
                     <option value="">-- Aucun (Peut scanner tous les événements) --</option>
                     @foreach($evenements as $ev)
-                        <option value="{{ $ev->id }}" {{ old('evenement_id') == $ev->id ? 'selected' : '' }}>
+                        <option value="{{ $ev->id }}" {{ old('evenement_id', $user->evenement_id) == $ev->id ? 'selected' : '' }}>
                             {{ $ev->titre }} ({{ $ev->date ? \Carbon\Carbon::parse($ev->date)->format('d/m/Y') : '' }})
                         </option>
                     @endforeach
                 </select>
             </div>
 
-            {{-- Mot de passe --}}
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
-                <div>
-                    <label style="color:#475569; font-size:.78rem; font-weight:700; text-transform:uppercase;
-                                  letter-spacing:.07em; display:block; margin-bottom:.35rem;">Mot de passe *</label>
-                    <input type="password" name="password" required minlength="8"
-                           style="width:100%; background:#ffffff; border:1px solid rgba(59,130,246,0.15);
-                                  border-radius:8px; padding:.6rem .85rem; color:#0f172a; font-size:.9rem;
-                                  box-sizing:border-box; outline:none;">
-                </div>
-                <div>
-                    <label style="color:#475569; font-size:.78rem; font-weight:700; text-transform:uppercase;
-                                  letter-spacing:.07em; display:block; margin-bottom:.35rem;">Confirmer *</label>
-                    <input type="password" name="password_confirmation" required minlength="8"
-                           style="width:100%; background:#ffffff; border:1px solid rgba(59,130,246,0.15);
-                                  border-radius:8px; padding:.6rem .85rem; color:#0f172a; font-size:.9rem;
-                                  box-sizing:border-box; outline:none;">
+            {{-- Mot de passe (optionnel) --}}
+            <div style="border-top:1px dashed rgba(59,130,246,0.1); padding-top:1rem; margin-bottom:1.5rem;">
+                <h4 style="font-size:.85rem; font-weight:700; color:#1e3a8a; margin:0 0 .5rem 0;">Changer le mot de passe (optionnel)</h4>
+                <p style="color:#64748b; font-size:.75rem; margin:0 0 1rem 0;">Laissez ces champs vides si vous ne souhaitez pas modifier le mot de passe actuel.</p>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <div>
+                        <label style="color:#475569; font-size:.75rem; font-weight:700; text-transform:uppercase;
+                                      letter-spacing:.07em; display:block; margin-bottom:.35rem;">Nouveau mot de passe</label>
+                        <input type="password" name="password" minlength="8"
+                               style="width:100%; background:#ffffff; border:1px solid rgba(59,130,246,0.15);
+                                      border-radius:8px; padding:.6rem .85rem; color:#0f172a; font-size:.9rem;
+                                      box-sizing:border-box; outline:none;">
+                    </div>
+                    <div>
+                        <label style="color:#475569; font-size:.75rem; font-weight:700; text-transform:uppercase;
+                                      letter-spacing:.07em; display:block; margin-bottom:.35rem;">Confirmer</label>
+                        <input type="password" name="password_confirmation" minlength="8"
+                               style="width:100%; background:#ffffff; border:1px solid rgba(59,130,246,0.15);
+                                      border-radius:8px; padding:.6rem .85rem; color:#0f172a; font-size:.9rem;
+                                      box-sizing:border-box; outline:none;">
+                    </div>
                 </div>
             </div>
 
@@ -114,7 +120,7 @@
                     style="background:#4f46e5; color:#ffffff; border:none; border-radius:10px;
                            padding:.75rem 2rem; font-weight:700; font-size:.95rem; cursor:pointer;
                            width:100%; transition:background .2s;">
-                Créer le compte scanner
+                Enregistrer les modifications
             </button>
         </form>
     </div>

@@ -52,6 +52,15 @@ class ApiScannerController extends Controller
             ], 400);
         }
 
+        // Restriction d'événement pour le scanner assigné
+        $scanner = $request->user();
+        if ($scanner->evenement_id && $ticket->evenement_id != $scanner->evenement_id) {
+            return response()->json([
+                'status' => 'invalid',
+                'message' => 'Accès refusé. Vous n\'êtes pas autorisé à scanner pour cet événement.'
+            ], 403);
+        }
+
         if ($ticket->is_scanned) {
             return response()->json([
                 'status' => 'already_scanned',
@@ -108,7 +117,7 @@ class ApiScannerController extends Controller
             ], 403);
         }
 
-        $scanners = User::where('role', 'scanner')->orderBy('created_at', 'desc')->get();
+        $scanners = User::with('assignedEvenement')->where('role', 'scanner')->orderBy('created_at', 'desc')->get();
 
         return response()->json([
             'status' => 'success',
@@ -134,6 +143,7 @@ class ApiScannerController extends Controller
             'email' => 'required|email|unique:users,email',
             'phone' => 'required|string|unique:users,phone',
             'password' => 'required|string|min:8|confirmed',
+            'evenement_id' => 'nullable|exists:evenements,id',
         ]);
 
         if ($validator->fails()) {
@@ -150,6 +160,7 @@ class ApiScannerController extends Controller
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
             'role' => 'scanner',
+            'evenement_id' => $request->evenement_id,
         ]);
 
         return response()->json([

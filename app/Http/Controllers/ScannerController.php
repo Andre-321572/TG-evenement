@@ -58,6 +58,15 @@ class ScannerController extends Controller
             ]);
         }
 
+        // Restriction d'événement pour le scanner assigné
+        $scanner = auth()->user();
+        if ($scanner->evenement_id && $ticket->evenement_id != $scanner->evenement_id) {
+            return response()->json([
+                'status'  => 'invalid',
+                'message' => 'Accès refusé. Vous n\'êtes pas autorisé à scanner pour cet événement.',
+            ]);
+        }
+
         if ($ticket->is_scanned) {
             return response()->json([
                 'status'  => 'already_scanned',
@@ -163,7 +172,7 @@ class ScannerController extends Controller
      */
     public function listScanners()
     {
-        $scanners = User::where('role', 'scanner')->orderBy('created_at', 'desc')->get();
+        $scanners = User::with('assignedEvenement')->where('role', 'scanner')->orderBy('created_at', 'desc')->get();
         return view('scanner.admin.list', compact('scanners'));
     }
 
@@ -172,7 +181,8 @@ class ScannerController extends Controller
      */
     public function createScanner()
     {
-        return view('scanner.admin.create');
+        $evenements = Evenement::orderBy('titre', 'asc')->get();
+        return view('scanner.admin.create', compact('evenements'));
     }
 
     /**
@@ -186,15 +196,17 @@ class ScannerController extends Controller
             'email'                 => 'required|email|unique:users,email',
             'phone'                 => 'required|string|unique:users,phone',
             'password'              => 'required|string|min:8|confirmed',
+            'evenement_id'          => 'nullable|exists:evenements,id',
         ]);
 
         User::create([
-            'nom'      => $request->nom,
-            'prenom'   => $request->prenom,
-            'email'    => $request->email,
-            'phone'    => $request->phone,
-            'password' => Hash::make($request->password),
-            'role'     => 'scanner',
+            'nom'          => $request->nom,
+            'prenom'       => $request->prenom,
+            'email'        => $request->email,
+            'phone'        => $request->phone,
+            'password'     => Hash::make($request->password),
+            'role'         => 'scanner',
+            'evenement_id' => $request->evenement_id,
         ]);
 
         return redirect()->route('organisateur.scanners')
@@ -202,11 +214,64 @@ class ScannerController extends Controller
     }
 
     /**
+     * Show scanner profile and scan stats.
+     */
+    public function showScanner(User $user)
+    {
+        $user->load('assignedEvenement');
+        $scans = \App\Models\TicketCode::with(['evenement', 'billet'])
+            ->where('scanned_by', $user->id)
+            ->orderBy('scanned_at', 'desc')
+            ->paginate(15);
+
+        return view('scanner.admin.show', compact('user', 'scans'));
+    }
+
+    /**
+     * Show edit scanner form.
+     */
+    public function editScanner(User $user)
+    {
+        $evenements = Evenement::orderBy('titre', 'asc')->get();
+        return view('scanner.admin.edit', compact('user', 'evenements'));
+    }
+
+    /**
+     * Update scanner account.
+     */
+    public function updateScanner(Request $request, User $user)
+    {
+        $request->validate([
+            'nom'          => 'required|string|max:255',
+            'prenom'       => 'required|string|max:255',
+            'email'        => 'required|email|unique:users,email,' . $user->id,
+            'phone'        => 'required|string|unique:users,phone,' . $user->id,
+            'password'     => 'nullable|string|min:8|confirmed',
+            'evenement_id' => 'nullable|exists:evenements,id',
+        ]);
+
+        $user->nom = $request->nom;
+        $user->prenom = $request->prenom;
+        $user->email = $request->email;
+        $user->phone = $request->phone;
+        $user->evenement_id = $request->evenement_id;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return redirect()->route('organisateur.scanners')
+            ->with('success', 'Compte scanner mis à jour avec succès.');
+    }
+
+    /**
      * Revoke scanner role (back to utilisateur).
      */
     public function deleteScanner(User $user)
     {
-        $user->update(['role' => 'utilisateur']);
+        $user->update(['role' => 'utilisateur', 'evenement_id' => null]);
         return redirect()->route('organisateur.scanners')
             ->with('success', 'Accès scanner révoqué pour ' . $user->nom . ' ' . $user->prenom . '.');
     }

@@ -22,6 +22,11 @@ class Evenement extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function scanners()
+    {
+        return $this->hasMany(User::class, 'evenement_id')->where('role', 'scanner');
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class, 'categorie_id');

@@ -108,6 +108,9 @@ Route::prefix('organisateur')->name('organisateur.')->middleware(['auth'])->grou
     Route::get('/scanners', [ScannerController::class, 'listScanners'])->name('scanners');
     Route::get('/scanners/creer', [ScannerController::class, 'createScanner'])->name('scanner-create');
     Route::post('/scanners/creer', [ScannerController::class, 'storeScanner'])->name('scanner-store');
+    Route::get('/scanners/{user}', [ScannerController::class, 'showScanner'])->name('scanner-show');
+    Route::get('/scanners/{user}/modifier', [ScannerController::class, 'editScanner'])->name('scanner-edit');
+    Route::put('/scanners/{user}', [ScannerController::class, 'updateScanner'])->name('scanner-update');
     Route::delete('/scanners/{user}', [ScannerController::class, 'deleteScanner'])->name('scanner-delete');
 });
 
