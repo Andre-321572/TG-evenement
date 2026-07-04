@@ -168,4 +168,95 @@ class ApiAuthController extends Controller
             'user' => $user
         ], 200);
     }
+
+    /**
+     * Obtenir les notifications dynamiques du participant.
+     */
+    public function getNotifications(Request $request)
+    {
+        $user = $request->user();
+        $notifications = [];
+
+        // 1. Charger les billets de l'utilisateur pour générer des notifications d'achat réelles
+        $tickets = \App\Models\TicketCode::where('user_id', $user->id)
+            ->orWhere('buyer_email', $user->email)
+            ->with('evenement')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        foreach ($tickets as $ticket) {
+            if ($ticket->evenement) {
+                // Notification de confirmation d'achat
+                $notifications[] = [
+                    'id' => 'purchase_' . $ticket->id,
+                    'category' => 'ACHAT',
+                    'title' => 'Confirmation d\'achat : ' . $ticket->evenement->titre,
+                    'message' => 'Votre paiement pour l\'événement ' . $ticket->evenement->titre . ' a été validé. Votre billet est disponible dans l\'onglet Billets.',
+                    'time' => $ticket->created_at ? $ticket->created_at->diffForHumans() : 'Récemment',
+                    'isNew' => !$ticket->is_scanned,
+                    'iconName' => 'receipt',
+                    'iconColor' => '#10b981',
+                    'iconBg' => '#ecfdf5',
+                    'filterType' => 'Achats',
+                ];
+
+                // Si l'événement n'est pas encore scanné, ajouter un rappel
+                if (!$ticket->is_scanned) {
+                    $notifications[] = [
+                        'id' => 'reminder_' . $ticket->id,
+                        'category' => 'RAPPEL',
+                        'title' => 'Votre événement ' . $ticket->evenement->titre . ' commence bientôt !',
+                        'message' => 'L\'ouverture des portes est proche à ' . $ticket->evenement->lieu . '. Préparez votre code QR pour fluidifier l\'accès.',
+                        'time' => 'Prochainement',
+                        'isNew' => true,
+                        'iconName' => 'time',
+                        'iconColor' => '#3b82f6',
+                        'iconBg' => '#eff6ff',
+                        'filterType' => 'Événements',
+                    ];
+                }
+            }
+        }
+
+        // 2. Récupérer les derniers événements publiés sur le serveur pour des exclusivités réelles
+        $recentEvents = \App\Models\Evenement::where('statut', 'publier')
+            ->orderBy('created_at', 'desc')
+            ->limit(2)
+            ->get();
+
+        foreach ($recentEvents as $event) {
+            $notifications[] = [
+                'id' => 'promo_' . $event->id,
+                'category' => 'EXCLUSIVITÉ',
+                'title' => 'Nouveau sur TGevent : ' . $event->titre,
+                'message' => 'Les billets pour ' . $event->titre . ' sont disponibles dès maintenant à partir de ' . ($event->min_price ?: '0') . ' FCFA.',
+                'time' => 'Annonce',
+                'isNew' => false,
+                'hasBanner' => true,
+                'bannerUrl' => $event->photo_url,
+                'filterType' => 'Annonces',
+            ];
+        }
+
+        // Compléter avec une notification de bienvenue si la liste est vide
+        if (empty($notifications)) {
+            $notifications[] = [
+                'id' => 'welcome',
+                'category' => 'SYSTÈME',
+                'title' => 'Bienvenue sur TGevent !',
+                'message' => 'Explorez nos événements recommandés, achetez des billets et restez informé des nouveautés.',
+                'time' => 'Maintenant',
+                'isNew' => true,
+                'iconName' => 'sparkles',
+                'iconColor' => '#f59e0b',
+                'iconBg' => '#fef3c7',
+                'filterType' => 'Annonces',
+            ];
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'notifications' => $notifications
+        ], 200);
+    }
 }

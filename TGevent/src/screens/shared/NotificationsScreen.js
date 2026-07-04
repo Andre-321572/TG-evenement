@@ -1,76 +1,50 @@
-import React, { useState, useContext } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image, ScrollView, Alert, ActivityIndicator, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../../context/AuthContext';
+import apiClient from '../../api/client';
 
 export default function NotificationsScreen({ navigation }) {
   const { token } = useContext(AuthContext);
   const [selectedFilter, setSelectedFilter] = useState('Toutes'); // 'Toutes', 'Événements', 'Achats', 'Annonces'
-  
-  // Mock data matching the premium notifications screen exactly
-  const mockNotifications = [
-    {
-      id: '1',
-      category: 'RAPPEL',
-      title: 'Votre événement Indigo Nights commence bientôt !',
-      message: 'L\'ouverture des portes est prévue dans 2 heures. Préparez votre code QR pour fluidifier l\'accès.',
-      time: 'Il y a 2h',
-      isNew: true,
-      iconName: 'time',
-      iconColor: '#3b82f6',
-      iconBg: '#eff6ff',
-      filterType: 'Événements',
-    },
-    {
-      id: '2',
-      category: 'ACHAT',
-      title: 'Confirmation d\'achat : Urban Jazz Festival',
-      message: 'Votre paiement de 45,00 € a été validé. Vos billets sont désormais disponibles dans votre profil.',
-      time: 'Hier',
-      isNew: false,
-      iconName: 'receipt',
-      iconColor: '#10b981',
-      iconBg: '#ecfdf5',
-      filterType: 'Achats',
-    },
-    {
-      id: '3',
-      category: 'EXCLUSIVITÉ',
-      title: 'Nouvelle annonce : The Lumineers',
-      message: 'Les billets pour la tournée européenne de The Lumineers sont en prévente exclusive dès maintenant.',
-      time: 'Il y a 4h',
-      isNew: false,
-      hasBanner: true,
-      bannerUrl: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&q=80&w=600',
-      filterType: 'Annonces',
-    },
-    {
-      id: '4',
-      category: 'ARTISTE',
-      title: 'Nouvelle date pour M83 à Paris',
-      message: 'L\'artiste que vous suivez vient d\'ajouter une date au Zénith. Soyez le premier à réserver votre place !',
-      time: 'Il y a 4h',
-      isNew: true,
-      iconName: 'star',
-      iconColor: '#f59e0b',
-      iconBg: '#fef3c7',
-      filterType: 'Événements',
-    },
-    {
-      id: '5',
-      category: 'SYSTÈME',
-      title: 'Mise à jour EventPro 2.4',
-      message: 'Découvrez le nouveau mode "Plan de salle interactif" pour vos prochaines réservations de places assises.',
-      time: 'Il y a 2j',
-      isNew: false,
-      iconName: 'information-circle',
-      iconColor: '#6b7280',
-      iconBg: '#f3f4f6',
-      filterType: 'Annonces',
-    },
-  ];
+  const [notifications, setNotifications] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const filteredNotifications = mockNotifications.filter(notif => {
+  useEffect(() => {
+    if (token) {
+      fetchNotifications();
+    } else {
+      setIsLoading(false);
+    }
+  }, [token]);
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await apiClient.get('/notifications');
+      if (response.data.status === 'success') {
+        setNotifications(response.data.notifications);
+      }
+    } catch (e) {
+      console.error('Erreur chargement notifications', e);
+    } finally {
+      setIsLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchNotifications();
+  };
+
+  const markAllAsRead = () => {
+    const updated = notifications.map(notif => ({ ...notif, isNew: false }));
+    setNotifications(updated);
+    Alert.alert('Notifications', 'Toutes les notifications ont été marquées comme lues !');
+  };
+
+  const filteredNotifications = notifications.filter(notif => {
     if (selectedFilter === 'Toutes') return true;
     return notif.filterType === selectedFilter;
   });
@@ -99,13 +73,13 @@ export default function NotificationsScreen({ navigation }) {
 
     return (
       <View style={[styles.notificationCard, item.isNew && styles.newCardBorder]}>
-        <View style={[styles.iconContainer, { backgroundColor: item.iconBg }]}>
-          <Ionicons name={item.iconName} size={22} color={item.iconColor} />
+        <View style={[styles.iconContainer, { backgroundColor: item.iconBg || '#f3f4f6' }]}>
+          <Ionicons name={item.iconName || 'notifications-outline'} size={22} color={item.iconColor || '#6b7280'} />
         </View>
 
         <View style={styles.textContainer}>
           <View style={styles.cardHeader}>
-            <Text style={[styles.categoryText, { color: item.iconColor }]}>{item.category}</Text>
+            <Text style={[styles.categoryText, { color: item.iconColor || '#6b7280' }]}>{item.category}</Text>
             <Text style={styles.timeText}>{item.time}</Text>
           </View>
           <Text style={styles.cardTitle}>{item.title}</Text>
@@ -144,12 +118,20 @@ export default function NotificationsScreen({ navigation }) {
     );
   }
 
+  if (isLoading && !refreshing) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#1e3a8a" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       {/* Title Header with mark all as read button */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Notifications</Text>
-        <TouchableOpacity onPress={() => Alert.alert('Notifications', 'Toutes les notifications ont été marquées comme lues !')}>
+        <TouchableOpacity onPress={markAllAsRead}>
           <Text style={styles.markAllRead}>Tout marquer comme lu</Text>
         </TouchableOpacity>
       </View>
@@ -185,6 +167,15 @@ export default function NotificationsScreen({ navigation }) {
         keyExtractor={(item) => item.id}
         renderItem={renderNotificationItem}
         contentContainerStyle={styles.listContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#1e3a8a" />
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Ionicons name="notifications-off-outline" size={48} color="#94a3b8" />
+            <Text style={styles.emptyText}>Aucune notification</Text>
+          </View>
+        }
       />
     </View>
   );
@@ -424,5 +415,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     width: '100%',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f8fafc',
+  },
+  emptyContainer: {
+    padding: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    color: '#94a3b8',
+    fontSize: 15,
+    marginTop: 12,
+    textAlign: 'center',
   },
 });

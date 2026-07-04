@@ -6,17 +6,34 @@ import apiClient from '../../api/client';
 export default function SearchScreen({ navigation }) {
   const [search, setSearch] = useState('');
   const [showFilters, setShowFilters] = useState(true);
-  const [selectedWhen, setSelectedWhen] = useState('Ce weekend'); // 'Aujourd'hui', 'Ce weekend', 'Choisir...'
+  const [selectedWhen, setSelectedWhen] = useState(''); // '' (Tout) par défaut pour charger tous les événements au départ
   const [radius, setRadius] = useState(25);
-  const [priceFilter, setPriceFilter] = useState('Paid'); // 'Gratuit', 'Paid', 'Premium'
+  const [priceFilter, setPriceFilter] = useState(''); // '' (Tout), 'Gratuit', 'Paid', 'Premium'
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
   
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [resultsCount, setResultsCount] = useState(0);
 
   useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
     fetchSearchResults();
-  }, [search, selectedWhen, priceFilter]);
+  }, [search, selectedWhen, priceFilter, selectedCategory]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await apiClient.get('/categories');
+      if (response.data.status === 'success') {
+        setCategories(response.data.categories);
+      }
+    } catch (e) {
+      console.error('Erreur categories recherche', e);
+    }
+  };
 
   const fetchSearchResults = async () => {
     setIsLoading(true);
@@ -25,6 +42,10 @@ export default function SearchScreen({ navigation }) {
       const params = {
         search: search,
       };
+
+      if (selectedCategory) {
+        params.categorie = selectedCategory;
+      }
 
       // Simuler le filtre de date pour l'API
       if (selectedWhen === "Aujourd'hui") {
@@ -82,7 +103,9 @@ export default function SearchScreen({ navigation }) {
       <View style={styles.cardBody}>
         <Text style={styles.title}>{item.titre}</Text>
         <Text style={styles.dateTime}>📅 {item.formatted_date || item.date} - {item.start_heure}</Text>
-        <Text style={styles.location}>📍 {item.lieu}</Text>
+        <Text style={styles.location}>
+          <Ionicons name="location-outline" size={13} color="#64748b" /> {item.lieu}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -114,11 +137,18 @@ export default function SearchScreen({ navigation }) {
         </TouchableOpacity>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.quickTags}>
-          {['Musique', 'Tech', 'Festivals', 'Sport'].map((tag) => (
-            <TouchableOpacity key={tag} style={styles.tagButton}>
-              <Text style={styles.tagButtonText}>{tag}</Text>
-            </TouchableOpacity>
-          ))}
+          {(categories.length > 0 ? categories.map(c => c.name) : ['Musique', 'Gastronomie', 'Spectacles', 'Sports', 'Conférences', 'Familles']).map((tag) => {
+            const isSelected = selectedCategory === tag;
+            return (
+              <TouchableOpacity 
+                key={tag} 
+                style={[styles.tagButton, isSelected && styles.tagButtonActive]}
+                onPress={() => setSelectedCategory(isSelected ? '' : tag)}
+              >
+                <Text style={[styles.tagButtonText, isSelected && styles.tagButtonTextActive]}>{tag}</Text>
+              </TouchableOpacity>
+            );
+          })}
         </ScrollView>
       </View>
 
@@ -126,30 +156,38 @@ export default function SearchScreen({ navigation }) {
       {showFilters && (
         <View style={styles.filtersPanel}>
           {/* Quand */}
-          <Text style={styles.filterSectionTitle}>📅 Quand</Text>
+          <Text style={styles.filterSectionTitle}>
+            <Ionicons name="calendar-outline" size={14} color="#0f172a" /> Quand
+          </Text>
           <View style={styles.buttonsRow}>
-            {["Aujourd'hui", "Ce weekend", "Choisir..."].map((option) => (
-              <TouchableOpacity
-                key={option}
-                style={[
-                  styles.filterOptionButton,
-                  selectedWhen === option && styles.filterOptionButtonActive
-                ]}
-                onPress={() => setSelectedWhen(option)}
-              >
-                <Text style={[
-                  styles.filterOptionButtonText,
-                  selectedWhen === option && styles.filterOptionButtonTextActive
-                ]}>
-                  {option}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            {["Tout", "Aujourd'hui", "Ce weekend", "Choisir..."].map((option) => {
+              const displayOption = option === "Tout" ? "" : option;
+              const isActive = selectedWhen === displayOption;
+              return (
+                <TouchableOpacity
+                  key={option}
+                  style={[
+                    styles.filterOptionButton,
+                    isActive && styles.filterOptionButtonActive
+                  ]}
+                  onPress={() => setSelectedWhen(displayOption)}
+                >
+                  <Text style={[
+                    styles.filterOptionButtonText,
+                    isActive && styles.filterOptionButtonTextActive
+                  ]}>
+                    {option}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
 
           {/* Lieu */}
           <View style={styles.locationHeader}>
-            <Text style={styles.filterSectionTitle}>📍 Lieu</Text>
+            <Text style={styles.filterSectionTitle}>
+              <Ionicons name="location-outline" size={14} color="#0f172a" /> Lieu
+            </Text>
             <Text style={styles.locationRadius}>Rayon : {radius} km</Text>
           </View>
           <View style={styles.sliderContainer}>
@@ -169,9 +207,12 @@ export default function SearchScreen({ navigation }) {
           </View>
 
           {/* Prix */}
-          <Text style={styles.filterSectionTitle}>💵 Prix</Text>
+          <Text style={styles.filterSectionTitle}>
+            <Ionicons name="cash-outline" size={14} color="#0f172a" /> Prix
+          </Text>
           <View style={styles.buttonsRow}>
             {[
+              { label: 'Tout', val: '' },
               { label: 'Gratuit', val: 'Gratuit' },
               { label: 'Payant', val: 'Paid' },
               { label: 'Premium', val: 'Premium' }
@@ -298,10 +339,16 @@ const styles = StyleSheet.create({
     borderRadius: 99,
     marginRight: 8,
   },
+  tagButtonActive: {
+    backgroundColor: '#1e3a8a',
+  },
   tagButtonText: {
     color: '#475569',
     fontSize: 13,
     fontWeight: '500',
+  },
+  tagButtonTextActive: {
+    color: '#fff',
   },
   filtersPanel: {
     backgroundColor: '#fff',

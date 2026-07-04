@@ -28,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [ApiAuthController::class, 'logout']);
     Route::get('/auth/me', [ApiAuthController::class, 'me']);
     Route::post('/auth/update-profile', [ApiAuthController::class, 'updateProfile']);
+    Route::get('/notifications', [ApiAuthController::class, 'getNotifications']);
     
     // Tickets du participant
     Route::get('/my-tickets', [ApiTicketController::class, 'myTickets']);

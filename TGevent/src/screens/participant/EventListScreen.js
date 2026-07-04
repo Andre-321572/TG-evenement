@@ -76,7 +76,9 @@ export default function EventListScreen({ navigation }) {
           <Text style={styles.popularText}>POPULAIRE</Text>
         </View>
         <Text style={styles.featuredTitle}>{item.titre}</Text>
-        <Text style={styles.featuredLocation}>📍 {item.lieu}</Text>
+        <Text style={styles.featuredLocation}>
+          <Ionicons name="location-outline" size={13} color="#cbd5e1" /> {item.lieu}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -108,7 +110,9 @@ export default function EventListScreen({ navigation }) {
         
         <View style={styles.recommendedInfo}>
           <Text style={styles.recommendedTitle} numberOfLines={1}>{item.titre}</Text>
-          <Text style={styles.recommendedLocation} numberOfLines={1}>📍 {item.lieu}</Text>
+          <Text style={styles.recommendedLocation} numberOfLines={1}>
+            <Ionicons name="location-outline" size={13} color="#64748b" /> {item.lieu}
+          </Text>
           <View style={styles.recommendedBottom}>
             <Text style={styles.recommendedPrice}>
               {item.min_price === 0 ? 'Gratuit' : `${item.min_price} FCFA`}
@@ -127,6 +131,12 @@ export default function EventListScreen({ navigation }) {
       {/* App Custom Premium Header */}
       <View style={styles.appHeader}>
         <Text style={styles.logoText}>TGevent</Text>
+        <TouchableOpacity 
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('Notifications')}
+        >
+          <Ionicons name="notifications-outline" size={24} color="#1e3a8a" />
+        </TouchableOpacity>
       </View>
 
       {/* Main Scroll Content */}
@@ -136,20 +146,6 @@ export default function EventListScreen({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#2563eb" />
         }
       >
-        {/* Search Bar */}
-        <View style={styles.searchBar}>
-          <View style={styles.searchInputContainer}>
-            <Ionicons name="search" size={20} color="#94a3b8" style={styles.searchIcon} />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Rechercher des événements, artistes..."
-              placeholderTextColor="#94a3b8"
-              value={search}
-              onChangeText={setSearch}
-              onSubmitEditing={handleSearchSubmit}
-            />
-          </View>
-        </View>
 
         {/* Categories Horizontal List */}
         <View style={styles.categoriesContainer}>
@@ -228,19 +224,7 @@ export default function EventListScreen({ navigation }) {
         )}
       </ScrollView>
 
-      {/* Floating Action Button (FAB) + to simulate the mockup */}
-      <TouchableOpacity 
-        style={styles.fab}
-        onPress={() => {
-          if (user?.role === 'admin' || user?.role === 'organisateur') {
-            navigation.navigate('OrganizerHome', { screen: 'Créer Événement' });
-          } else {
-            Alert.alert('Créer un événement', 'Devenez organisateur sur notre site web pour publier vos événements !');
-          }
-        }}
-      >
-        <Ionicons name="add" size={28} color="#fff" />
-      </TouchableOpacity>
+
     </View>
   );
 }
@@ -252,7 +236,7 @@ const styles = StyleSheet.create({
   },
   appHeader: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 16,
