@@ -198,6 +198,9 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/debug-files', function () {
     $output = [];
     
+    $output['document_root'] = $_SERVER['DOCUMENT_ROOT'] ?? 'unknown';
+    $output['script_filename'] = $_SERVER['SCRIPT_FILENAME'] ?? 'unknown';
+    
     if (request()->has('fix')) {
         $destDir = dirname(public_path()) . '/images';
         if (!file_exists($destDir)) {
