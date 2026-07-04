@@ -93,8 +93,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUserProfile = async (updatedUser) => {
+    try {
+      await AsyncStorage.setItem('user_profile', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+    } catch (e) {
+      console.error('Erreur stockage profil mis a jour', e);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, isLoading, login, register, logout, updateUserProfile }}>
       {children}
     </AuthContext.Provider>
   );
