@@ -243,9 +243,14 @@ Route::get('/debug-files', function () {
     // Inspecter le dossier parent du projet
     $parentPath = dirname($publicPath);
     $output['parent_path'] = $parentPath;
+    $output['parent_perms'] = file_exists($parentPath) ? substr(sprintf('%o', fileperms($parentPath)), -4) : 'unknown';
+    $output['public_perms'] = file_exists($publicPath) ? substr(sprintf('%o', fileperms($publicPath)), -4) : 'unknown';
+    $output['images_perms'] = file_exists($imagesPath) ? substr(sprintf('%o', fileperms($imagesPath)), -4) : 'unknown';
+    
     if (file_exists($parentPath)) {
         $output['parent_files'] = array_map(function($file) {
-            return basename($file) . (is_dir($file) ? '/' : '');
+            $perms = file_exists($file) ? substr(sprintf('%o', fileperms($file)), -4) : 'unknown';
+            return basename($file) . (is_dir($file) ? '/' : '') . ' - Perms: ' . $perms;
         }, glob($parentPath . '/*'));
         
         // Vérifier spécifiquement s'il y a un .htaccess caché dans le parent
