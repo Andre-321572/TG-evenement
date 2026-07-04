@@ -214,7 +214,9 @@ Route::get('/debug-files', function () {
     
     if (file_exists($imagesPath)) {
         $output['images_files'] = array_map(function($file) {
-            return basename($file) . (is_dir($file) ? '/' : '') . ' - ' . (is_dir($file) ? 'dir' : filesize($file) . ' bytes');
+            $perms = file_exists($file) ? substr(sprintf('%o', fileperms($file)), -4) : 'unknown';
+            $owner = file_exists($file) ? fileowner($file) : 'unknown';
+            return basename($file) . (is_dir($file) ? '/' : '') . ' - ' . (is_dir($file) ? 'dir' : filesize($file) . ' bytes') . ' - Perms: ' . $perms . ' - Owner: ' . $owner;
         }, glob($imagesPath . '/*'));
     }
     
