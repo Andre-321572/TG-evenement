@@ -198,6 +198,19 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/debug-files', function () {
     $output = [];
     
+    if (request()->has('fix')) {
+        $destDir = dirname(public_path()) . '/images';
+        if (!file_exists($destDir)) {
+            mkdir($destDir, 0755, true);
+        }
+        if (file_exists(public_path('images/logo.png'))) {
+            copy(public_path('images/logo.png'), $destDir . '/logo.png');
+            $output['fix_status'] = 'Copied logo.png to ' . $destDir . '/logo.png. File exists: ' . file_exists($destDir . '/logo.png');
+        } else {
+            $output['fix_status'] = 'Source logo.png not found!';
+        }
+    }
+    
     $publicPath = public_path();
     $output['public_path'] = $publicPath;
     $output['public_exists'] = file_exists($publicPath);
