@@ -202,6 +202,25 @@ Route::get('/debug-files', function () {
     $output['script_filename'] = $_SERVER['SCRIPT_FILENAME'] ?? 'unknown';
     if (isset($_SERVER['SCRIPT_FILENAME']) && file_exists($_SERVER['SCRIPT_FILENAME'])) {
         $output['script_content'] = file_get_contents($_SERVER['SCRIPT_FILENAME']);
+        $docroot = dirname($_SERVER['SCRIPT_FILENAME']);
+        $output['docroot_path'] = $docroot;
+        $output['docroot_files'] = array_map(function($file) {
+            return basename($file) . (is_dir($file) ? '/' : '') . ' - ' . (is_dir($file) ? 'dir' : filesize($file) . ' bytes');
+        }, glob($docroot . '/*'));
+        
+        $docrootImages = $docroot . '/images';
+        if (file_exists($docrootImages)) {
+            $output['docroot_images_files'] = array_map(function($file) {
+                return basename($file) . (is_dir($file) ? '/' : '') . ' - ' . (is_dir($file) ? 'dir' : filesize($file) . ' bytes');
+            }, glob($docrootImages . '/*'));
+        }
+        
+        $docrootDownloads = $docroot . '/downloads';
+        if (file_exists($docrootDownloads)) {
+            $output['docroot_downloads_files'] = array_map(function($file) {
+                return basename($file) . (is_dir($file) ? '/' : '') . ' - ' . (is_dir($file) ? 'dir' : filesize($file) . ' bytes');
+            }, glob($docrootDownloads . '/*'));
+        }
     }
     
     if (request()->has('fix')) {
