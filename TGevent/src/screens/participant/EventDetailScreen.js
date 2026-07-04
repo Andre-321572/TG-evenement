@@ -138,43 +138,39 @@ export default function EventDetailScreen({ route, navigation }) {
           <Text style={styles.noTickets}>Aucun billet configuré pour cet événement.</Text>
         )}
 
-        {/* Médias de l'événement */}
-        {(event.photo_url || event.video_url) && (
-          <>
-            <Text style={styles.sectionTitle}>Médias de l'événement</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mediaList}>
-              {event.photo_url && (
-                <View style={styles.mediaCard}>
-                  <Image source={{ uri: event.photo_url }} style={styles.mediaThumbnail} />
-                  <View style={styles.mediaBadge}>
-                    <Ionicons name="image-outline" size={12} color="#fff" />
-                    <Text style={styles.mediaBadgeText}> Photo</Text>
-                  </View>
-                </View>
-              )}
-              {event.video_url && (
-                <View style={styles.mediaCardVideo}>
-                  <WebView
-                    style={styles.mediaVideo}
-                    javaScriptEnabled={true}
-                    domStorageEnabled={true}
-                    allowsFullscreenVideo={true}
-                    source={{ html: `
-                      <html>
-                        <body style="margin:0;padding:0;background-color:#000;display:flex;justify-content:center;align-items:center;">
-                          <video src="${event.video_url}" controls style="width:100%;height:100%;object-fit:contain;" playsinline></video>
-                        </body>
-                      </html>
-                    ` }}
-                  />
-                  <View style={styles.mediaBadgeVideo}>
-                    <Ionicons name="play-circle-outline" size={12} color="#fff" />
-                    <Text style={styles.mediaBadgeText}> Vidéo</Text>
-                  </View>
-                </View>
-              )}
-            </ScrollView>
-          </>
+        {/* Vidéo de présentation — pleine largeur comme sur le site web */}
+        {event.video_url && (
+          <View style={styles.videoSection}>
+            <View style={styles.videoHeader}>
+              <Ionicons name="play-circle" size={20} color="#d9383a" />
+              <Text style={styles.videoTitle}>Vidéo de présentation</Text>
+            </View>
+            <View style={styles.videoWrapper}>
+              <WebView
+                style={styles.videoPlayer}
+                javaScriptEnabled={true}
+                domStorageEnabled={true}
+                allowsFullscreenVideo={true}
+                mediaPlaybackRequiresUserAction={false}
+                source={{
+                  html: `<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#000; display:flex; align-items:center; justify-content:center; height:100vh; }
+    video { width:100%; height:100%; object-fit:contain; }
+  </style>
+</head>
+<body>
+  <video src="${event.video_url}" controls playsinline preload="metadata"></video>
+</body>
+</html>`,
+                }}
+              />
+            </View>
+          </View>
         )}
 
         {/* Sponsors Section */}
@@ -359,68 +355,40 @@ const styles = StyleSheet.create({
     marginTop: 6,
     textAlign: 'center',
   },
-  mediaList: {
-    flexDirection: 'row',
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  mediaCard: {
+  videoSection: {
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 16,
+    marginBottom: 20,
     overflow: 'hidden',
-    marginRight: 12,
-    width: 160,
-    height: 110,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
-    position: 'relative',
+    borderColor: '#f1f5f9',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  mediaCardVideo: {
-    backgroundColor: '#000',
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginRight: 12,
-    width: 200,
-    height: 110,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    position: 'relative',
-  },
-  mediaThumbnail: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  mediaVideo: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#000',
-  },
-  mediaBadge: {
-    position: 'absolute',
-    bottom: 6,
-    left: 6,
-    backgroundColor: 'rgba(15, 23, 42, 0.65)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+  videoHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 12,
   },
-  mediaBadgeVideo: {
-    position: 'absolute',
-    bottom: 6,
-    left: 6,
-    backgroundColor: 'rgba(239, 68, 68, 0.85)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-    flexDirection: 'row',
-    alignItems: 'center',
+  videoTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#0f172a',
+    marginLeft: 8,
   },
-  mediaBadgeText: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: 'bold',
+  videoWrapper: {
+    width: '100%',
+    aspectRatio: 16 / 9,
+    backgroundColor: '#000',
+  },
+  videoPlayer: {
+    flex: 1,
+    backgroundColor: '#000',
   },
 });
