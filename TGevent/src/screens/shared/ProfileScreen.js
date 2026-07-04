@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Image, ScrollView, Switch, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Image, ScrollView, Switch, Alert, ImageBackground } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -46,32 +46,38 @@ export default function ProfileScreen({ navigation }) {
     </TouchableOpacity>
   );
 
-  // État invité (non connecté)
+  // État invité (non connecté) - Écran 1
   if (!token) {
     return (
-      <View style={styles.guestContainer}>
-        <View style={styles.guestCard}>
-          <View style={styles.guestIconBg}>
-            <Ionicons name="person-outline" size={48} color="#2563eb" />
+      <ImageBackground 
+        source={{ uri: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80&w=800' }} 
+        style={styles.guestBackground}
+        resizeMode="cover"
+      >
+        <View style={styles.guestOverlay}>
+          <View style={styles.guestContentContainer}>
+            <Text style={styles.guestWelcomeTitle}>
+              La meilleure{"\n"}application pour{"\n"}vos événements
+            </Text>
+            
+            <View style={styles.guestActionsContainer}>
+              <TouchableOpacity 
+                style={styles.guestLoginBtn}
+                onPress={() => navigation.navigate('Login')}
+              >
+                <Text style={styles.guestLoginBtnText}>Se connecter</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.guestRegisterLink}
+                onPress={() => navigation.navigate('Register')}
+              >
+                <Text style={styles.guestRegisterLinkText}>Créer un compte</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          <Text style={styles.guestTitle}>Votre espace TGevent</Text>
-          <Text style={styles.guestSubtitle}>
-            Connectez-vous pour gérer vos informations personnelles, sécuriser votre compte, et voir vos commandes.
-          </Text>
-          <TouchableOpacity 
-            style={styles.loginButton}
-            onPress={() => navigation.navigate('Login')}
-          >
-            <Text style={styles.loginButtonText}>Se connecter</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.registerButton}
-            onPress={() => navigation.navigate('Register')}
-          >
-            <Text style={styles.registerButtonText}>Créer un compte</Text>
-          </TouchableOpacity>
         </View>
-      </View>
+      </ImageBackground>
     );
   }
 
@@ -348,52 +354,66 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  guestTitle: {
-    fontSize: 20,
+  guestBackground: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  guestOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 32, 24, 0.45)', // Botanical dark tint overlay
+    justifyContent: 'space-between',
+    padding: 32,
+    paddingTop: 80,
+    paddingBottom: 60,
+  },
+  guestContentContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  guestWelcomeTitle: {
+    fontSize: 36,
     fontWeight: 'bold',
-    color: '#1e3a8a',
-    marginBottom: 10,
-    textAlign: 'center',
-    alignSelf: 'stretch',
+    color: '#ffffff',
+    lineHeight: 46,
+    marginTop: 20,
+    textShadowColor: 'rgba(0, 0, 0, 0.25)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
-  guestSubtitle: {
-    fontSize: 14,
-    color: '#64748b',
-    textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: 24,
-  },
-  loginButton: {
-    backgroundColor: '#2563eb',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
+  guestActionsContainer: {
     width: '100%',
     alignItems: 'center',
-    marginBottom: 12,
   },
-  loginButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
+  guestLoginBtn: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderWidth: 1.5,
+    borderColor: '#ffffff',
+    borderRadius: 28,
+    height: 56,
     width: '100%',
-  },
-  registerButton: {
-    backgroundColor: '#fff',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    width: '100%',
+    justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#2563eb',
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  registerButtonText: {
-    color: '#2563eb',
+  guestLoginBtnText: {
+    color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
-    width: '100%',
+    letterSpacing: 0.5,
+  },
+  guestRegisterLink: {
+    paddingVertical: 10,
+  },
+  guestRegisterLinkText: {
+    color: 'rgba(255, 255, 255, 0.95)',
+    fontSize: 15,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
 });
