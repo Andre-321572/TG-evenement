@@ -11,7 +11,7 @@ export default function CheckoutScreen({ route, navigation }) {
   const baseUrl = API_URL.replace('/api', '');
 
   // Charger le process de paiement du Laravel web en injectant les IDs en paramètres GET
-  const checkoutUrl = `${baseUrl}/p/payement/process?evenement_id=${evenementId}&billet_id=${billetId}&email=${encodeURIComponent(user?.email || '')}&user_id=${user?.id || 0}`;
+  const checkoutUrl = `${baseUrl}/p/payement/process?evenement_id=${evenementId}&billet_id=${billetId}&email=${encodeURIComponent(user?.email || '')}&user_id=${user?.id || 0}&hide_layout=1`;
 
   const handleNavigationStateChange = (navState) => {
     const { url } = navState;

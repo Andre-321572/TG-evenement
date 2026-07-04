@@ -26,10 +26,10 @@
             @endphp
 
             <div id="ticket-wrapper" style="max-width:780px; margin:0 auto 2.5rem; filter:drop-shadow(0 20px 50px rgba(0,0,0,0.28));">
-                <div style="display:flex; border-radius:16px; overflow:hidden;">
+                <div class="ticket-container" style="display:flex; border-radius:16px; overflow:hidden;">
 
                     {{-- ══ Partie gauche ══ --}}
-                    <div style="flex:1; background:#1e1154; display:flex; flex-direction:column; min-width:0;">
+                    <div class="ticket-left" style="flex:1; background:#1e1154; display:flex; flex-direction:column; min-width:0;">
 
                         {{-- Photo événement --}}
                         <div style="position:relative; height:190px; overflow:hidden; flex-shrink:0;">
@@ -135,17 +135,17 @@
                     </div>
 
                     {{-- ══ Séparateur perforé ══ --}}
-                    <div style="width:28px; background:#1e1154; position:relative; flex-shrink:0;
+                    <div class="ticket-separator" style="width:28px; background:#1e1154; position:relative; flex-shrink:0;
                                 display:flex; align-items:stretch; justify-content:center;">
-                        <div style="position:absolute; top:-1px; left:2px; width:24px; height:14px;
+                        <div class="perf-top" style="position:absolute; top:-1px; left:2px; width:24px; height:14px;
                                     background:#f0f7ff; border-radius:0 0 14px 14px; z-index:3;"></div>
-                        <div style="position:absolute; bottom:-1px; left:2px; width:24px; height:14px;
+                        <div class="perf-bottom" style="position:absolute; bottom:-1px; left:2px; width:24px; height:14px;
                                     background:#f0f7ff; border-radius:14px 14px 0 0; z-index:3;"></div>
-                        <div style="width:0; margin:14px 0; border-left:2px dashed rgba(255,255,255,0.16); align-self:stretch;"></div>
+                        <div class="dashed-line" style="width:0; margin:14px 0; border-left:2px dashed rgba(255,255,255,0.16); align-self:stretch;"></div>
                     </div>
 
                     {{-- ══ Talon QR ══ --}}
-                    <div style="width:210px; background:#1e1154; padding:1.8rem 1.2rem;
+                    <div class="ticket-right" style="width:210px; background:#1e1154; padding:1.8rem 1.2rem;
                                 display:flex; flex-direction:column; align-items:center;
                                 justify-content:center; gap:1.1rem; flex-shrink:0;
                                 position:relative; overflow:hidden;">
@@ -250,6 +250,49 @@ function downloadTicket() {
     #ticket-wrapper { filter:none !important; max-width:100% !important; }
     main { padding:0 !important; }
     .container { max-width:100% !important; padding:0 !important; }
+}
+
+@media (max-width: 767px) {
+    .ticket-container {
+        flex-direction: column !important;
+    }
+    .ticket-left {
+        width: 100% !important;
+    }
+    .ticket-separator {
+        width: 100% !important;
+        height: 28px !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    .perf-top {
+        top: 2px !important;
+        left: -1px !important;
+        width: 14px !important;
+        height: 24px !important;
+        border-radius: 0 14px 14px 0 !important;
+    }
+    .perf-bottom {
+        bottom: 2px !important;
+        right: -1px !important;
+        left: auto !important;
+        width: 14px !important;
+        height: 24px !important;
+        border-radius: 14px 0 0 14px !important;
+    }
+    .dashed-line {
+        width: calc(100% - 28px) !important;
+        height: 0 !important;
+        border-top: 2px dashed rgba(255,255,255,0.16) !important;
+        border-left: none !important;
+        margin: 0 14px !important;
+        align-self: center !important;
+    }
+    .ticket-right {
+        width: 100% !important;
+        padding: 1.5rem !important;
+    }
 }
 </style>
 @endsection

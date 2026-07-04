@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
+import { useFocusEffect } from '@react-navigation/native';
 import apiClient from '../../api/client';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -11,13 +12,15 @@ export default function TicketListScreen({ navigation }) {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    if (token) {
-      fetchTickets();
-    } else {
-      setIsLoading(false);
-    }
-  }, [token]);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (token) {
+        fetchTickets();
+      } else {
+        setIsLoading(false);
+      }
+    }, [token])
+  );
 
   const fetchTickets = async () => {
     try {

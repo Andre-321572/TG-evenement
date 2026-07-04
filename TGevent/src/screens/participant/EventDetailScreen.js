@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { WebView } from 'react-native-webview';
 import apiClient from '../../api/client';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -135,6 +136,45 @@ export default function EventDetailScreen({ route, navigation }) {
           ))
         ) : (
           <Text style={styles.noTickets}>Aucun billet configuré pour cet événement.</Text>
+        )}
+
+        {/* Médias de l'événement */}
+        {(event.photo_url || event.video_url) && (
+          <>
+            <Text style={styles.sectionTitle}>Médias de l'événement</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mediaList}>
+              {event.photo_url && (
+                <View style={styles.mediaCard}>
+                  <Image source={{ uri: event.photo_url }} style={styles.mediaThumbnail} />
+                  <View style={styles.mediaBadge}>
+                    <Ionicons name="image-outline" size={12} color="#fff" />
+                    <Text style={styles.mediaBadgeText}> Photo</Text>
+                  </View>
+                </View>
+              )}
+              {event.video_url && (
+                <View style={styles.mediaCardVideo}>
+                  <WebView
+                    style={styles.mediaVideo}
+                    javaScriptEnabled={true}
+                    domStorageEnabled={true}
+                    allowsFullscreenVideo={true}
+                    source={{ html: `
+                      <html>
+                        <body style="margin:0;padding:0;background-color:#000;display:flex;justify-content:center;align-items:center;">
+                          <video src="${event.video_url}" controls style="width:100%;height:100%;object-fit:contain;" playsinline></video>
+                        </body>
+                      </html>
+                    ` }}
+                  />
+                  <View style={styles.mediaBadgeVideo}>
+                    <Ionicons name="play-circle-outline" size={12} color="#fff" />
+                    <Text style={styles.mediaBadgeText}> Vidéo</Text>
+                  </View>
+                </View>
+              )}
+            </ScrollView>
+          </>
         )}
 
         {/* Sponsors Section */}
@@ -318,5 +358,69 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 6,
     textAlign: 'center',
+  },
+  mediaList: {
+    flexDirection: 'row',
+    marginTop: 8,
+    marginBottom: 16,
+  },
+  mediaCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginRight: 12,
+    width: 160,
+    height: 110,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    position: 'relative',
+  },
+  mediaCardVideo: {
+    backgroundColor: '#000',
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginRight: 12,
+    width: 200,
+    height: 110,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    position: 'relative',
+  },
+  mediaThumbnail: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  mediaVideo: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#000',
+  },
+  mediaBadge: {
+    position: 'absolute',
+    bottom: 6,
+    left: 6,
+    backgroundColor: 'rgba(15, 23, 42, 0.65)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  mediaBadgeVideo: {
+    position: 'absolute',
+    bottom: 6,
+    left: 6,
+    backgroundColor: 'rgba(239, 68, 68, 0.85)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  mediaBadgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
   },
 });

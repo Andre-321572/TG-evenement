@@ -65,8 +65,8 @@ class PaiementController extends Controller
                     'quantity' => 1,
                 ]],
                 'mode'        => 'payment',
-                'success_url' => route('p.paiement.success') . '?session_id={CHECKOUT_SESSION_ID}&billet_id=' . $billet->id . '&evenement_id=' . $evenement->id,
-                'cancel_url'  => route('p.paiement.cancel', $evenement->id),
+                'success_url' => route('p.paiement.success') . '?session_id={CHECKOUT_SESSION_ID}&billet_id=' . $billet->id . '&evenement_id=' . $evenement->id . '&hide_layout=1',
+                'cancel_url'  => route('p.paiement.cancel', $evenement->id) . '?hide_layout=1',
                 'metadata'    => [
                     'evenement_id' => $evenement->id,
                     'billet_id'    => $billet->id,

@@ -262,12 +262,16 @@
         <!-- #contenu: hidden via native CSS (NO Bootstrap d-none dependency) -->
         <div id="contenu" style="display:none;" class="min-h-screen flex flex-col justify-between">
             <div>
-                @include('layouts.publicnavbar')
-                <div class="pt-[76px]">
+                @unless(request()->has('hide_layout'))
+                    @include('layouts.publicnavbar')
+                @endunless
+                <div class="@unless(request()->has('hide_layout')) pt-[76px] @endunless">
                     @yield('content')
                 </div>
             </div>
-            @include('layouts.footer')
+            @unless(request()->has('hide_layout'))
+                @include('layouts.footer')
+            @endunless
         </div>
     </div>
 
