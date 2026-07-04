@@ -200,6 +200,9 @@ Route::get('/debug-files', function () {
     
     $output['document_root'] = $_SERVER['DOCUMENT_ROOT'] ?? 'unknown';
     $output['script_filename'] = $_SERVER['SCRIPT_FILENAME'] ?? 'unknown';
+    if (isset($_SERVER['SCRIPT_FILENAME']) && file_exists($_SERVER['SCRIPT_FILENAME'])) {
+        $output['script_content'] = file_get_contents($_SERVER['SCRIPT_FILENAME']);
+    }
     
     if (request()->has('fix')) {
         $destDir = dirname(public_path()) . '/images';
