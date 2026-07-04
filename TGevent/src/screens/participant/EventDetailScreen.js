@@ -220,8 +220,9 @@ const styles = StyleSheet.create({
   },
   image: {
     width: width,
-    height: 250,
-    resizeMode: 'cover',
+    height: width * (9 / 16),
+    resizeMode: 'contain',
+    backgroundColor: '#000',
   },
   content: {
     padding: 20,
@@ -383,12 +384,13 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   videoWrapper: {
-    width: '100%',
-    aspectRatio: 16 / 9,
+    width: width - 40,
+    height: (width - 40) * (9 / 16),
     backgroundColor: '#000',
   },
   videoPlayer: {
-    flex: 1,
+    width: width - 40,
+    height: (width - 40) * (9 / 16),
     backgroundColor: '#000',
   },
 });
