@@ -227,6 +227,21 @@ Route::get('/debug-files', function () {
         }, glob($imagesPath . '/*'));
     }
     
+    // Inspecter le dossier parent du projet
+    $parentPath = dirname($publicPath);
+    $output['parent_path'] = $parentPath;
+    if (file_exists($parentPath)) {
+        $output['parent_files'] = array_map(function($file) {
+            return basename($file) . (is_dir($file) ? '/' : '');
+        }, glob($parentPath . '/*'));
+        
+        // Vérifier spécifiquement s'il y a un .htaccess caché dans le parent
+        $output['parent_htaccess_exists'] = file_exists($parentPath . '/.htaccess');
+        if ($output['parent_htaccess_exists']) {
+            $output['parent_htaccess_content'] = file_get_contents($parentPath . '/.htaccess');
+        }
+    }
+    
     return response()->json($output);
 });
 
