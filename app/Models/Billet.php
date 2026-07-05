@@ -21,7 +21,8 @@ class Billet extends Model
         'quantite_vendue',
         'evenement_id',
         'description',
-        'statut'
+        'statut',
+        'ticket_couleur',
     ];
 
     protected $casts = [

@@ -53,6 +53,64 @@ class OrganisateurController extends Controller
     }
 
     /**
+     * Liste de tous les utilisateurs inscrits (web + mobile)
+     */
+    public function listUsers(Request $request)
+    {
+        $search = $request->input('search');
+        $role   = $request->input('role');
+
+        $query = User::query()->orderBy('created_at', 'desc');
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('nom', 'like', "%{$search}%")
+                  ->orWhere('prenom', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        if ($role) {
+            $query->where('role', $role);
+        }
+
+        $users = $query->paginate(20)->withQueryString();
+
+        $stats = [
+            'total'        => User::count(),
+            'participants' => User::where('role', 'utilisateur')->count(),
+            'organisateurs'=> User::whereIn('role', ['organisateur', 'admin'])->count(),
+            'scanners'     => User::where('role', 'scanner')->count(),
+            'mobile'       => User::whereHas('tokens')->count(),
+        ];
+
+        return view('organisateur.utilisateurs', compact('users', 'stats', 'search', 'role'));
+    }
+
+    /**
+     * Changer le rôle d'un utilisateur
+     */
+    public function updateUserRole(Request $request, $id)
+    {
+        $request->validate(['role' => 'required|in:utilisateur,organisateur,scanner,admin']);
+        $user = User::findOrFail($id);
+        $user->update(['role' => $request->role]);
+        return back()->with('success', "Rôle de {$user->nom} mis à jour : {$request->role}");
+    }
+
+    /**
+     * Supprimer un utilisateur
+     */
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->tokens()->delete(); // Révoquer tokens mobile
+        $user->delete();
+        return back()->with('success', 'Utilisateur supprimé avec succès.');
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()

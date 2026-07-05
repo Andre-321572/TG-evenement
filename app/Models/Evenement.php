@@ -17,6 +17,11 @@ class Evenement extends Model
     ];
 
     // Relations
+    public function ticketDesign()
+    {
+        return $this->hasOne(\App\Models\TicketDesign::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

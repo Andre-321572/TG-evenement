@@ -93,6 +93,16 @@ Route::prefix('organisateur')->name('organisateur.')->middleware(['auth'])->grou
     Route::match(['get', 'post', 'put'], '/billet/form', [BilletController::class, 'create'])->name('billet-form');
     Route::match(['get'], '/billet/all', [BilletController::class, 'allBillets'])->name('billet-all');
 
+    // Utilisateurs inscrits
+    Route::get('/utilisateurs', [OrganisateurController::class, 'listUsers'])->name('utilisateurs');
+    Route::post('/utilisateurs/{id}/role', [OrganisateurController::class, 'updateUserRole'])->name('utilisateur-role');
+    Route::delete('/utilisateurs/{id}', [OrganisateurController::class, 'deleteUser'])->name('utilisateur-delete');
+
+    // Design des tickets
+    Route::get('/ticket-design/{evenementId}', [\App\Http\Controllers\TicketDesignController::class, 'edit'])->name('ticket-design-edit');
+    Route::post('/ticket-design/{evenementId}', [\App\Http\Controllers\TicketDesignController::class, 'store'])->name('ticket-design-store');
+    Route::delete('/ticket-design/{evenementId}/logo', [\App\Http\Controllers\TicketDesignController::class, 'deleteLogo'])->name('ticket-design-delete-logo');
+    Route::delete('/ticket-design/{evenementId}/fond', [\App\Http\Controllers\TicketDesignController::class, 'deleteFond'])->name('ticket-design-delete-fond');
 
 });
 
