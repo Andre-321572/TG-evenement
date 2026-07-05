@@ -26,12 +26,18 @@ class PaiementController extends Controller
         $request->validate([
             'evenement_id' => 'required|exists:evenements,id',
             'billet_id'    => 'required|exists:billets,id',
+            'quantity'     => 'nullable|integer|min:1|max:100',
             'email'        => 'nullable|email',
             'user_id'      => 'nullable|integer',
         ]);
 
         $evenement = Evenement::with('billets')->findOrFail($request->evenement_id);
         $billet    = Billet::findOrFail($request->billet_id);
+        $quantity  = (int) $request->input('quantity', 1);
+
+        if ($billet->quantite_disponible < $quantity) {
+            return redirect()->back()->with('error', 'Quantité demandée supérieure au stock disponible.');
+        }
 
         // Le prix Stripe doit être en centimes (CFA → centimes fictifs : 1 CFA = 1 centime)
         $amountCents = (int) ($billet->prix * 100);
@@ -62,7 +68,7 @@ class PaiementController extends Controller
                         ],
                         'unit_amount' => $amountCents,
                     ],
-                    'quantity' => 1,
+                    'quantity' => $quantity,
                 ]],
                 'mode'        => 'payment',
                 'success_url' => route('p.paiement.success') . '?session_id={CHECKOUT_SESSION_ID}&billet_id=' . $billet->id . '&evenement_id=' . $evenement->id . '&hide_layout=1',
@@ -71,6 +77,7 @@ class PaiementController extends Controller
                     'evenement_id' => $evenement->id,
                     'billet_id'    => $billet->id,
                     'user_id'      => $buyerUserId,
+                    'quantity'     => $quantity,
                 ],
                 'customer_email' => $customerEmail,
             ]);
@@ -103,28 +110,40 @@ class PaiementController extends Controller
             $evenement = Evenement::with('billets')->findOrFail($evenementId);
             $billet    = Billet::findOrFail($billetId);
 
-            // Générer un code unique de ticket
-            $code = strtoupper('TGE-' . substr(md5($sessionId . $billetId), 0, 8));
-
             // Récupérer le user_id depuis les metadata Stripe
             $buyerUserId = isset($session->metadata->user_id) && (int) $session->metadata->user_id > 0 
                 ? (int) $session->metadata->user_id 
                 : null;
 
-            // Persister le code en base (idempotent via firstOrCreate)
-            \App\Models\TicketCode::firstOrCreate(
-                ['code' => $code],
-                [
-                    'evenement_id'      => $evenementId,
-                    'billet_id'         => $billetId,
-                    'stripe_session_id' => $sessionId,
-                    'buyer_email'       => $session->customer_details?->email ?? '',
-                    'buyer_name'        => $session->customer_details?->name ?? '',
-                    'user_id'           => $buyerUserId,
-                ]
-            );
+            $quantity = isset($session->metadata->quantity) ? (int)$session->metadata->quantity : 1;
 
-            return view('p.payement.success', compact('evenement', 'billet', 'session', 'code'));
+            // Décrémenter la quantité disponible de billets
+            $billet->vendre($quantity);
+
+            $codes = [];
+            for ($i = 0; $i < $quantity; $i++) {
+                // Générer un code unique de ticket (indexé par $i pour éviter les doublons md5)
+                $code = strtoupper('TGE-' . substr(md5($sessionId . $billetId . $i), 0, 8));
+                $codes[] = $code;
+
+                // Persister le code en base
+                \App\Models\TicketCode::firstOrCreate(
+                    ['code' => $code],
+                    [
+                        'evenement_id'      => $evenementId,
+                        'billet_id'         => $billetId,
+                        'stripe_session_id' => $sessionId,
+                        'buyer_email'       => $session->customer_details?->email ?? '',
+                        'buyer_name'        => $session->customer_details?->name ?? '',
+                        'user_id'           => $buyerUserId,
+                    ]
+                );
+            }
+
+            // Pour la vue, utiliser le premier code ou la liste des codes
+            $code = $codes[0] ?? '';
+
+            return view('p.payement.success', compact('evenement', 'billet', 'session', 'code', 'codes', 'quantity'));
 
         } catch (\Exception $e) {
             Log::error('Stripe success page error: ' . $e->getMessage());

@@ -14,18 +14,20 @@
                 </div>
                 <h1 class="fw-bold mb-1" style="color:#1e293b; font-size:1.4rem;">Paiement confirmé !</h1>
                 <p style="color:#64748b; font-size:.9rem;">Votre billet a été généré. Conservez-le précieusement pour l'entrée.</p>
-            </div>
-
-            {{-- ═══════════════════ TICKET ═══════════════════ --}}
+                     {{-- ═══════════════════ TICKET ═══════════════════ --}}
             @php
                 $date    = \Carbon\Carbon::parse($evenement->date);
                 $moisFr  = ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'];
                 $photoUrl = $evenement->photo
                     ? asset('storage/evenement/photo/' . $evenement->photo)
                     : null;
+                $codesList = isset($codes) && count($codes) > 0 ? $codes : [$code];
             @endphp
 
-            <div id="ticket-wrapper" style="max-width:780px; margin:0 auto 2.5rem; filter:drop-shadow(0 20px 50px rgba(0,0,0,0.28));">
+            <div id="ticket-wrapper">
+            @foreach($codesList as $idx => $currentCode)
+            <div class="ticket-wrapper-item" style="max-width:780px; margin:0 auto 2.5rem; filter:drop-shadow(0 20px 50px rgba(0,0,0,0.28)); page-break-after: always;">
+
                 <div class="ticket-container" style="display:flex; border-radius:16px; overflow:hidden;">
 
                     {{-- ══ Partie gauche ══ --}}
@@ -74,7 +76,7 @@
                             {{-- Date + Heure --}}
                             <div style="display:flex; flex-wrap:wrap; gap:.45rem; margin-bottom:.9rem;">
                                 <div style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15);
-                                            border-radius:.4rem; padding:.3rem .8rem; text-align:center;">
+                                             border-radius:.4rem; padding:.3rem .8rem; text-align:center;">
                                     <span style="color:#ffffff; font-size:1.1rem; font-weight:900; display:block; line-height:1.1;">{{ $date->format('d') }}</span>
                                     <span style="color:rgba(255,255,255,0.55); font-size:.56rem; font-weight:800;
                                                  text-transform:uppercase; letter-spacing:.07em;">
@@ -82,8 +84,8 @@
                                     </span>
                                 </div>
                                 <div style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15);
-                                            border-radius:.4rem; padding:.3rem .8rem;
-                                            display:flex; align-items:center; gap:.4rem;">
+                                             border-radius:.4rem; padding:.3rem .8rem;
+                                             display:flex; align-items:center; gap:.4rem;">
                                     <i class="fas fa-clock" style="color:rgba(255,255,255,0.45); font-size:.7rem;"></i>
                                     <span style="color:#ffffff; font-size:.82rem; font-weight:700;">
                                         {{ \Carbon\Carbon::parse($evenement->start_heure)->format('H:i') }}
@@ -109,7 +111,7 @@
                                     <span style="display:inline-block; background:#16a34a; color:#ffffff;
                                                  font-size:.72rem; font-weight:800; padding:.2rem .65rem;
                                                  border-radius:9999px; margin-top:.2rem;">
-                                        {{ $billet->type }}
+                                        {{ $billet->type }} ({{ $idx + 1 }}/{{ count($codesList) }})
                                     </span>
                                 </div>
 
@@ -134,7 +136,7 @@
                         </div>
                     </div>
 
-                    {{-- ══ Séparateur perforé ══ --}}
+                    {{-- ══ Partie séparateur perforé ══ --}}
                     <div class="ticket-separator" style="width:28px; background:#1e1154; position:relative; flex-shrink:0;
                                 display:flex; align-items:stretch; justify-content:center;">
                         <div class="perf-top" style="position:absolute; top:-1px; left:2px; width:24px; height:14px;
@@ -161,8 +163,8 @@
                         {{-- QR Code --}}
                         <div style="background:#ffffff; padding:8px; border-radius:10px;
                                     line-height:0; position:relative; z-index:1; flex-shrink:0;">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ urlencode($code) }}&size=150x150&color=1e1154&bgcolor=ffffff&margin=3&qzone=1"
-                                 alt="{{ $code }}"
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ urlencode($currentCode) }}&size=150x150&color=1e1154&bgcolor=ffffff&margin=3&qzone=1"
+                                 alt="{{ $currentCode }}"
                                  data-no-cover
                                  width="150"
                                  height="150"
@@ -178,7 +180,7 @@
                                          text-transform:uppercase; letter-spacing:.12em; display:block;
                                          margin-bottom:.35rem;">Code billet</span>
                             <span style="color:#ffffff; font-size:.88rem; font-weight:900;
-                                         letter-spacing:.07em; display:block;">{{ $code }}</span>
+                                         letter-spacing:.07em; display:block;">{{ $currentCode }}</span>
                         </div>
 
                         {{-- Ticket ID vertical --}}
@@ -186,14 +188,16 @@
                                     writing-mode:vertical-rl; text-orientation:mixed;">
                             <span style="color:rgba(255,255,255,0.12); font-size:.48rem;
                                          letter-spacing:.04em; white-space:nowrap;">
-                                TICKET ID: {{ $code }}-{{ substr(md5($session->id ?? ''), 0, 6) }}
+                                TICKET ID: {{ $currentCode }}-{{ substr(md5($session->id ?? ''), 0, 6) }}
                             </span>
                         </div>
                     </div>
 
                 </div>
+            @endforeach
             </div>
             {{-- ═══════════ FIN TICKET ═══════════ --}}
+
 
             {{-- Boutons --}}
             <div class="d-flex flex-wrap gap-3 justify-content-center">

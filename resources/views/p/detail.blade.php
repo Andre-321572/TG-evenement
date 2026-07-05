@@ -188,6 +188,7 @@
                             @csrf
                             <input type="hidden" name="evenement_id" value="{{ $detail_evenement->id }}">
                             <input type="hidden" name="billet_id" id="selected_billet_id" value="">
+                            <input type="hidden" name="quantity" id="selected_quantity" value="0">
 
                             <div class="d-flex flex-column gap-3 mb-4">
                                 @foreach($detail_evenement->billets as $idx => $billet)
@@ -280,17 +281,18 @@
 
 <script>
 let selectedBilletId = null;
+let currentQuantity = 0;
 
 document.addEventListener('DOMContentLoaded', function() {
     // Pre-select the first available ticket option on page load
     const firstOption = document.querySelector('.ticket-option');
     if (firstOption) {
         const billetId = firstOption.dataset.billetId;
-        selectTicket(billetId);
+        selectTicket(billetId, 1);
     }
 });
 
-function selectTicket(billetId) {
+function selectTicket(billetId, quantity = 1) {
     // Reset other options style and quantities
     document.querySelectorAll('.ticket-option').forEach(opt => {
         opt.classList.remove('border-indigo-600');
@@ -301,7 +303,9 @@ function selectTicket(billetId) {
     });
 
     selectedBilletId = billetId;
+    currentQuantity = quantity;
     document.getElementById('selected_billet_id').value = billetId;
+    document.getElementById('selected_quantity').value = quantity;
 
     const activeOpt = document.querySelector(`.ticket-option[data-billet-id="${billetId}"]`);
     if (activeOpt) {
@@ -310,33 +314,44 @@ function selectTicket(billetId) {
         const price = parseFloat(activeOpt.dataset.price);
         
         const qtyEl = document.getElementById('qty-' + billetId);
-        if (qtyEl) qtyEl.textContent = '1';
+        if (qtyEl) qtyEl.textContent = quantity;
         
-        document.getElementById('total-price-display').textContent = formatPrice(price) + ' FCFA';
+        const total = price * quantity;
+        document.getElementById('total-price-display').textContent = formatPrice(total) + ' FCFA';
         document.getElementById('btn-submit-checkout').disabled = false;
     }
 }
 
 function incrementTicket(billetId) {
-    selectTicket(billetId);
+    if (selectedBilletId !== billetId) {
+        selectTicket(billetId, 1);
+    } else {
+        selectTicket(billetId, currentQuantity + 1);
+    }
 }
 
 function decrementTicket(billetId) {
     if (selectedBilletId === billetId) {
-        // If we decrement the active one, clear quantity and disable checkout
-        const qtyEl = document.getElementById('qty-' + billetId);
-        if (qtyEl) qtyEl.textContent = '0';
-        
-        const activeOpt = document.querySelector(`.ticket-option[data-billet-id="${billetId}"]`);
-        if (activeOpt) {
-            activeOpt.classList.remove('border-indigo-600');
-            activeOpt.style.background = '#f8fafc';
+        if (currentQuantity > 1) {
+            selectTicket(billetId, currentQuantity - 1);
+        } else {
+            // Deselect
+            const qtyEl = document.getElementById('qty-' + billetId);
+            if (qtyEl) qtyEl.textContent = '0';
+            
+            const activeOpt = document.querySelector(`.ticket-option[data-billet-id="${billetId}"]`);
+            if (activeOpt) {
+                activeOpt.classList.remove('border-indigo-600');
+                activeOpt.style.background = '#f8fafc';
+            }
+            
+            selectedBilletId = null;
+            currentQuantity = 0;
+            document.getElementById('selected_billet_id').value = '';
+            document.getElementById('selected_quantity').value = '0';
+            document.getElementById('total-price-display').textContent = '0 FCFA';
+            document.getElementById('btn-submit-checkout').disabled = true;
         }
-        
-        selectedBilletId = null;
-        document.getElementById('selected_billet_id').value = '';
-        document.getElementById('total-price-display').textContent = '0 FCFA';
-        document.getElementById('btn-submit-checkout').disabled = true;
     }
 }
 
@@ -346,3 +361,4 @@ function formatPrice(price) {
 </script>
 
 @endsection
+

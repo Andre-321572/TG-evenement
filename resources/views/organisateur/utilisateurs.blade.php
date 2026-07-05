@@ -8,7 +8,7 @@
     {{-- Header --}}
     <div style="background:linear-gradient(135deg,#1e1b4b,#312e81); padding:2rem 2rem 1.5rem; margin-bottom:2rem;">
         <h1 style="color:#fff; font-size:1.6rem; font-weight:800; margin:0 0 .25rem;">
-            👥 Utilisateurs inscrits
+             Utilisateurs inscrits
         </h1>
         <p style="color:#a5b4fc; margin:0; font-size:.9rem;">Tous les comptes créés sur le site web et l'application mobile</p>
     </div>

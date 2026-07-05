@@ -12,6 +12,7 @@ export default function EventDetailScreen({ route, navigation }) {
   const { token, user } = useContext(AuthContext);
   const [event, setEvent] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [ticketQuantities, setTicketQuantities] = useState({});
 
   useEffect(() => {
     fetchEventDetails();
@@ -31,7 +32,7 @@ export default function EventDetailScreen({ route, navigation }) {
     }
   };
 
-  const handleBuyTicket = (billet) => {
+  const handleBuyTicket = (billet, quantity) => {
     if (!token) {
       Alert.alert(
         'Connexion requise',
@@ -54,6 +55,7 @@ export default function EventDetailScreen({ route, navigation }) {
       evenementId: event.id,
       billetId: billet.id,
       user: user,
+      quantity: quantity || 1,
     });
   };
 
@@ -108,32 +110,61 @@ export default function EventDetailScreen({ route, navigation }) {
         {/* Tickets Section */}
         <Text style={styles.sectionTitle}>Billets Disponibles</Text>
         {event.billets && event.billets.length > 0 ? (
-          event.billets.map((billet) => (
-            <View key={billet.id} style={styles.ticketCard}>
-              <View style={styles.ticketInfo}>
-                <Text style={styles.ticketType}>{billet.type}</Text>
-                <Text style={styles.ticketDesc}>{billet.description || 'Accès standard à l\'événement'}</Text>
-                <Text style={styles.ticketAvailability}>
-                  Reste : {billet.quantite_disponible} / {billet.quantite_totale}
-                </Text>
-              </View>
-              <View style={styles.ticketAction}>
-                <Text style={styles.ticketPrice}>{billet.prix} FCFA</Text>
-                <TouchableOpacity
-                  style={[
-                    styles.buyButton,
-                    billet.quantite_disponible <= 0 && styles.buyButtonDisabled,
-                  ]}
-                  onPress={() => handleBuyTicket(billet)}
-                  disabled={billet.quantite_disponible <= 0}
-                >
-                  <Text style={styles.buyButtonText}>
-                    {billet.quantite_disponible <= 0 ? 'Complet' : 'Réserver'}
+          event.billets.map((billet) => {
+            const qty = ticketQuantities[billet.id] || 1;
+            const max = billet.quantite_disponible ?? 99;
+            return (
+              <View key={billet.id} style={styles.ticketCard}>
+                <View style={styles.ticketInfo}>
+                  <Text style={styles.ticketType}>{billet.type}</Text>
+                  <Text style={styles.ticketDesc}>{billet.description || 'Accès standard à l\'événement'}</Text>
+                  <Text style={styles.ticketAvailability}>
+                    Reste : {billet.quantite_disponible} / {billet.quantite_totale}
                   </Text>
-                </TouchableOpacity>
+                </View>
+                <View style={styles.ticketAction}>
+                  <Text style={styles.ticketPrice}>{billet.prix} FCFA</Text>
+                  {billet.quantite_disponible > 0 && (
+                    <View style={styles.quantityRow}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          if (qty > 1) {
+                            setTicketQuantities({ ...ticketQuantities, [billet.id]: qty - 1 });
+                          }
+                        }}
+                        style={styles.qtyBtn}
+                      >
+                        <Text style={styles.qtyBtnText}>-</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.qtyText}>{qty}</Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          if (qty < max) {
+                            setTicketQuantities({ ...ticketQuantities, [billet.id]: qty + 1 });
+                          }
+                        }}
+                        style={styles.qtyBtn}
+                      >
+                        <Text style={styles.qtyBtnText}>+</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                  <TouchableOpacity
+                    style={[
+                      styles.buyButton,
+                      billet.quantite_disponible <= 0 && styles.buyButtonDisabled,
+                    ]}
+                    onPress={() => handleBuyTicket(billet, qty)}
+                    disabled={billet.quantite_disponible <= 0}
+                  >
+                    <Text style={styles.buyButtonText}>
+                      {billet.quantite_disponible <= 0 ? 'Complet' : 'Réserver'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          ))
+            );
+          })
         ) : (
           <Text style={styles.noTickets}>Aucun billet configuré pour cet événement.</Text>
         )}
@@ -392,5 +423,31 @@ const styles = StyleSheet.create({
     width: width - 40,
     height: (width - 40) * (9 / 16),
     backgroundColor: '#000',
+  },
+  quantityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  qtyBtn: {
+    backgroundColor: '#f1f5f9',
+    borderRadius: 6,
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+  },
+  qtyBtnText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#475569',
+  },
+  qtyText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#0f172a',
+    marginHorizontal: 12,
   },
 });

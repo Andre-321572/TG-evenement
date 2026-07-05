@@ -69,6 +69,14 @@
                             </label>
                             @endforeach
                         </div>
+                            {{-- Quantité --}}
+                    <div class="mb-4">
+                        <label for="quantity" class="fw-semibold small mb-2" style="color:#475569;">Quantité de billets</label>
+                        <select name="quantity" id="quantity-select" class="form-select rounded-xl" style="border-color:rgba(203,213,225,0.7); color:#1e293b; max-width:160px; font-weight:700;">
+                            @for($i = 1; $i <= 10; $i++)
+                                <option value="{{ $i }}">{{ $i }}</option>
+                            @endfor
+                        </select>
                     </div>
 
                     {{-- Coordonnées --}}
@@ -117,7 +125,7 @@
 
                 <div class="card-thumb rounded-2xl mb-3" style="height:150px;">
                     <img src="{{ $evenement->photo ? asset('storage/evenement/photo/' . $evenement->photo) : asset('images/default-event.jpg') }}"
-                         alt="{{ $evenement->titre }}">
+                          alt="{{ $evenement->titre }}">
                 </div>
 
                 <h4 class="fw-bold mb-3" style="color:#1e293b; font-size:.97rem;">{{ $evenement->titre }}</h4>
@@ -150,6 +158,7 @@
                         <span style="color:#1e293b;">Total</span>
                         <span style="color:#4f46e5;" id="recapTotal">—</span>
                     </div>
+
                 </div>
 
                 <div class="mt-4 text-center">
@@ -174,9 +183,11 @@
     function setRecap(id) {
         var b = billets.find(function(x){ return String(x.id) === String(id); });
         if (!b) return;
-        document.getElementById('recapType').textContent  = b.type;
-        document.getElementById('recapTotal').textContent = fmt(b.prix);
-        document.getElementById('payBtnText').textContent = 'Payer ' + fmt(b.prix) + ' avec Stripe';
+        var qty = parseInt(document.getElementById('quantity-select').value) || 1;
+        var total = b.prix * qty;
+        document.getElementById('recapType').textContent  = b.type + ' (x' + qty + ')';
+        document.getElementById('recapTotal').textContent = fmt(total);
+        document.getElementById('payBtnText').textContent = 'Payer ' + fmt(total) + ' avec Stripe';
     }
 
     document.querySelectorAll('.billet-radio').forEach(function(radio) {
@@ -191,6 +202,11 @@
         });
     });
 
+    document.getElementById('quantity-select').addEventListener('change', function() {
+        var checked = document.querySelector('.billet-radio:checked');
+        if (checked) setRecap(checked.value);
+    });
+
     var checked = document.querySelector('.billet-radio:checked');
     if (checked) setRecap(checked.value);
 
@@ -202,3 +218,4 @@
 })();
 </script>
 @endsection
+
