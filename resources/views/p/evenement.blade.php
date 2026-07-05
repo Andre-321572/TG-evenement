@@ -5,168 +5,237 @@
 @section('content')
 
 <style>
+    /* Styling overrides for premium feel */
     body {
-        background-color: #fafbfc !important;
+        background-color: #f8fafc !important;
     }
     
-    /* Custom range slider styling */
-    .range-slider {
+    /* Range slider customize */
+    .range-slider-premium {
         -webkit-appearance: none;
         width: 100%;
-        height: 5px;
+        height: 6px;
         border-radius: 999px;
         background: #e2e8f0;
         outline: none;
     }
-    .range-slider::-webkit-slider-thumb {
+    .range-slider-premium::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
-        width: 16px;
-        height: 16px;
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
-        background: #d9383a;
+        background: #4f46e5;
         cursor: pointer;
-        transition: transform 0.15s;
-        border: none;
+        transition: transform 0.15s ease, background-color 0.15s ease;
+        border: 2px solid #ffffff;
+        box-shadow: 0 2px 6px rgba(79, 70, 229, 0.4);
     }
-    .range-slider::-webkit-slider-thumb:hover {
-        transform: scale(1.25);
+    .range-slider-premium::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+        background: #4338ca;
     }
-    .range-slider::-moz-range-thumb {
-        width: 16px;
-        height: 16px;
+    .range-slider-premium::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
-        background: #d9383a;
+        background: #4f46e5;
         cursor: pointer;
-        transition: transform 0.15s;
-        border: none;
+        transition: transform 0.15s ease, background-color 0.15s ease;
+        border: 2px solid #ffffff;
+        box-shadow: 0 2px 6px rgba(79, 70, 229, 0.4);
     }
-    .range-slider::-moz-range-thumb:hover {
-        transform: scale(1.25);
+    .range-slider-premium::-moz-range-thumb:hover {
+        transform: scale(1.2);
+        background: #4338ca;
     }
 
-    /* Checkbox styling */
-    .filter-checkbox {
-        width: 1.15rem;
-        height: 1.15rem;
-        border-radius: 4px !important;
-        border-color: #cbd5e1 !important;
+    /* Premium Checkbox style */
+    .custom-cb {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #cbd5e1;
+        border-radius: 5px;
         cursor: pointer;
-    }
-    .filter-checkbox:checked {
-        background-color: #d9383a !important;
-        border-color: #d9383a !important;
+        transition: all 0.2s ease;
+        accent-color: #4f46e5;
     }
 
-    /* Hearts */
-    .btn-heart:hover {
-        color: #d9383a !important;
-        background-color: rgba(255,255,255,0.9) !important;
+    /* Card visual enhancements */
+    .premium-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .premium-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    }
+    .premium-card:hover img {
+        transform: scale(1.06);
+    }
+    .heart-btn {
+        transition: all 0.2s ease;
+    }
+    .heart-btn:hover {
+        background: #ffffff !important;
+        color: #ef4444 !important;
+        transform: scale(1.1);
     }
 </style>
 
-<div class="container py-5 text-slate-800">
-    <div class="mb-4">
-        <h1 class="fw-bold text-slate-900 fs-3 mb-4" style="font-family: 'Outfit', sans-serif;">Trouver un événement</h1>
-    </div>
+{{-- Hero Section --}}
+<div class="w-full bg-gradient-to-r from-blue-50 to-indigo-100/50 py-10 md:py-14 border-b border-indigo-100/30 overflow-hidden relative">
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        
+        {{-- Hero Text & Search Box --}}
+        <div class="lg:col-span-8 z-10 space-y-6">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">
+                    Trouvez l'événement<br>
+                    <span class="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">qui vous inspire</span>
+                </h1>
+                <p class="text-slate-500 text-base md:text-lg mt-3 font-medium">
+                    Conférences, ateliers, concerts et plus encore près de chez vous.
+                </p>
+            </div>
 
-    <!-- Main search & filter form -->
-    <form method="GET" action="{{ route('p.evenement') }}" id="filter-form">
-        <!-- Hidden inputs for dates set by buttons -->
-        <input type="hidden" name="date_debut" id="date_debut" value="{{ request('date_debut') }}">
-        <input type="hidden" name="date_fin" id="date_fin" value="{{ request('date_fin') }}">
+            {{-- Overlapping Search overlay --}}
+            <form method="GET" action="{{ route('p.evenement') }}" class="bg-white p-3 rounded-2xl md:rounded-full shadow-lg border border-slate-100 grid grid-cols-1 md:grid-cols-12 gap-2 items-center max-w-3xl">
+                <input type="hidden" name="date_debut" id="date_debut" value="{{ request('date_debut') }}">
+                <input type="hidden" name="date_fin" id="date_fin" value="{{ request('date_fin') }}">
+                
+                {{-- Search query input --}}
+                <div class="md:col-span-5 flex items-center px-4 border-b md:border-b-0 md:border-r border-slate-100 pb-2 md:pb-0">
+                    <i class="fas fa-search text-slate-400 mr-3 text-lg"></i>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Rechercher des concerts, conférences, workshops..." 
+                           class="w-full bg-transparent border-0 focus:outline-none focus:ring-0 text-slate-800 placeholder-slate-400 text-sm">
+                </div>
 
-        <!-- Top Search Bar Container -->
-        <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm mb-5">
-            <div class="row g-3 align-items-center">
-                <!-- Search query -->
-                <div class="col-md-5 d-flex align-items-center px-4 border-end border-slate-100 last:border-end-0">
-                    <i class="fas fa-search text-slate-400 me-2.5 fs-5"></i>
-                    <input type="text" name="search" id="search-input" value="{{ request('search') }}" placeholder="Rechercher des concerts, conférences, sports..." class="form-control bg-transparent border-0 shadow-none text-slate-800 text-sm py-1.5 focus:ring-0 focus:outline-none w-100">
+                {{-- Location input --}}
+                <div class="md:col-span-4 flex items-center px-4 pb-2 md:pb-0">
+                    <i class="fas fa-map-marker-alt text-slate-400 mr-3 text-lg"></i>
+                    <input type="text" name="lieu" value="{{ request('lieu') }}" placeholder="Ville ou région" 
+                           class="w-full bg-transparent border-0 focus:outline-none focus:ring-0 text-slate-800 placeholder-slate-400 text-sm">
                 </div>
-                <!-- Location -->
-                <div class="col-md-4 d-flex align-items-center px-4">
-                    <i class="fas fa-map-marker-alt text-slate-400 me-2.5 fs-5"></i>
-                    <input type="text" name="lieu" id="lieu-input" value="{{ request('lieu') }}" placeholder="Ville ou région" class="form-control bg-transparent border-0 shadow-none text-slate-800 text-sm py-1.5 focus:ring-0 focus:outline-none w-100">
-                </div>
-                <!-- Submit button -->
-                <div class="col-md-3">
-                    <button type="submit" class="btn w-100 py-2.5 text-white font-semibold rounded-xl border-0 shadow-sm transition-all duration-200" style="background: #1c2434; hover: background: #121824;">
+
+                {{-- Submit button --}}
+                <div class="md:col-span-3">
+                    <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl md:rounded-full transition-colors shadow-md hover:shadow-indigo-500/20">
                         Rechercher
                     </button>
                 </div>
-            </div>
+            </form>
         </div>
 
-        <div class="row g-4 mt-2">
-            <!-- Sidebar - Filters -->
-            <div class="col-lg-3 col-md-4">
-                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sticky-top" style="top: 96px; z-index: 10;">
+        {{-- Hero Illustration/Image --}}
+        <div class="hidden lg:block lg:col-span-4 relative">
+            <div class="w-72 h-72 bg-gradient-to-tr from-indigo-500/20 to-violet-500/20 rounded-full absolute -top-4 -left-4 blur-2xl"></div>
+            <img src="{{ asset('asset/image/hero-img.png') }}" alt="TGEvent illustration" class="relative z-10 w-full max-h-72 object-contain mx-auto">
+        </div>
+
+    </div>
+</div>
+
+{{-- Main Section: Filters and Events list --}}
+<div class="max-w-7xl mx-auto px-6 py-10">
+    <form method="GET" action="{{ route('p.evenement') }}" id="filter-form">
+        <input type="hidden" name="search" value="{{ request('search') }}">
+        <input type="hidden" name="lieu" value="{{ request('lieu') }}">
+        <input type="hidden" name="date_debut" id="hidden_date_debut" value="{{ request('date_debut') }}">
+        <input type="hidden" name="date_fin" id="hidden_date_fin" value="{{ request('date_fin') }}">
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            {{-- 1. LEFT SIDEBAR FILTERS --}}
+            <div class="lg:col-span-3">
+                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 sticky top-24 space-y-6">
                     
-                    <!-- Categories filter -->
-                    <div class="mb-4">
-                        <h6 class="text-slate-500 font-bold uppercase tracking-wider mb-3" style="font-size: 0.75rem; letter-spacing: 0.05em;">Catégories</h6>
-                        <div class="d-flex flex-column gap-2.5">
+                    {{-- Header filter --}}
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <span class="font-extrabold text-slate-900 text-base">Filtres</span>
+                        <a href="{{ route('p.evenement') }}" class="text-xs font-bold text-indigo-600 hover:text-indigo-700">
+                            Réinitialiser
+                        </a>
+                    </div>
+
+                    {{-- Categories --}}
+                    <div>
+                        <h6 class="text-slate-500 font-extrabold text-xs uppercase tracking-wider mb-3">Catégories</h6>
+                        <div class="flex flex-col gap-2.5">
                             @foreach($categories as $cat)
                                 @php
                                     $isChecked = (is_array(request('categories')) && in_array($cat, request('categories'))) || request('categorie') == $cat;
                                 @endphp
-                                <label class="d-flex align-items-center gap-2.5 cursor-pointer text-slate-700 text-sm hover:text-indigo-600 mb-0 font-medium">
-                                    <input type="checkbox" name="categories[]" value="{{ $cat }}" {{ $isChecked ? 'checked' : '' }} class="form-check-input filter-checkbox">
+                                <label class="flex items-center gap-3 cursor-pointer text-slate-700 text-sm font-semibold hover:text-indigo-600 transition-colors">
+                                    <input type="checkbox" name="categories[]" value="{{ $cat }}" {{ $isChecked ? 'checked' : '' }} class="custom-cb">
                                     <span>{{ ucfirst($cat) }}</span>
                                 </label>
                             @endforeach
                         </div>
                     </div>
 
-                    <!-- Price Filter -->
-                    <div class="mb-4">
-                        <h6 class="text-slate-500 font-bold uppercase tracking-wider mb-3" style="font-size: 0.75rem; letter-spacing: 0.05em;">Prix</h6>
+                    {{-- Price Slider --}}
+                    <div>
+                        <h6 class="text-slate-500 font-extrabold text-xs uppercase tracking-wider mb-3">Prix</h6>
                         @php
-                            $currentPrixMax = request('prix_max', 350);
+                            $currentPrixMax = request('prix_max', 5000);
                         @endphp
-                        <div class="px-1">
-                            <input type="range" name="prix_max" id="prix_max_range" min="0" max="500" step="10" value="{{ $currentPrixMax }}" class="range-slider">
-                            <div class="d-flex justify-content-between text-slate-500 font-semibold mt-2" style="font-size: 0.78rem;">
-                                <span id="price-display-label">Jusqu'à {{ $currentPrixMax }}F</span>
-                                <span>500F+</span>
+                        <input type="range" name="prix_max" id="prix_max_range" min="0" max="5000" step="100" value="{{ $currentPrixMax }}" class="range-slider-premium">
+                        <div class="flex justify-between text-slate-500 font-bold text-xs mt-2">
+                            <span id="price-display-label">Jusqu'à {{ number_format($currentPrixMax, 0, ',', ' ') }} FCFA</span>
+                            <span>5000+ FCFA</span>
+                        </div>
+                    </div>
+
+                    {{-- Custom Dates Inputs --}}
+                    <div>
+                        <h6 class="text-slate-500 font-extrabold text-xs uppercase tracking-wider mb-3">Date</h6>
+                        <div class="space-y-2">
+                            <div>
+                                <label class="text-[11px] font-bold text-slate-400 block mb-1">Date début</label>
+                                <input type="date" name="custom_date_debut" id="custom_date_debut" value="{{ request('date_debut') }}"
+                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-slate-400 block mb-1">Date fin</label>
+                                <input type="date" name="custom_date_fin" id="custom_date_fin" value="{{ request('date_fin') }}"
+                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             </div>
                         </div>
                     </div>
 
-                    <!-- Date Quick Filters -->
-                    <div class="mb-4">
-                        <h6 class="text-slate-500 font-bold uppercase tracking-wider mb-3" style="font-size: 0.75rem; letter-spacing: 0.05em;">Date</h6>
-                        <div class="d-flex gap-2">
-                            <button type="button" id="btn-weekend" onclick="setDateRange('weekend')" class="btn btn-sm flex-fill py-2 px-3 rounded-xl border border-slate-200 text-slate-700 font-semibold bg-slate-50 hover:bg-slate-100 text-xs transition-colors">
-                                Ce week-end
-                            </button>
-                            <button type="button" id="btn-month" onclick="setDateRange('month')" class="btn btn-sm flex-fill py-2 px-3 rounded-xl border border-slate-200 text-slate-700 font-semibold bg-slate-50 hover:bg-slate-100 text-xs transition-colors">
-                                Ce mois
-                            </button>
+                    {{-- Location Filter input box --}}
+                    <div>
+                        <h6 class="text-slate-500 font-extrabold text-xs uppercase tracking-wider mb-2">Lieu</h6>
+                        <div class="relative">
+                            <i class="fas fa-map-marker-alt absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" name="filter_lieu" value="{{ request('lieu') }}" placeholder="Lieu ou région"
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
                     </div>
 
-                    <!-- Reset Button -->
-                    <div class="pt-2">
-                        <a href="{{ route('p.evenement') }}" class="btn w-100 py-2 border border-[#d9383a] text-[#d9383a] bg-white hover:bg-red-50 font-bold rounded-xl text-sm transition-colors text-decoration-none d-flex justify-content-center align-items-center border-2">
-                            Réinitialiser
-                        </a>
-                    </div>
+                    {{-- Apply button --}}
+                    <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition-colors shadow-sm">
+                        Appliquer les filtres
+                    </button>
                 </div>
             </div>
 
-            <!-- Main grid list -->
-            <div class="col-lg-9 col-md-8">
-                <div class="d-flex justify-content-between align-items-center mb-4 pb-2">
-                    <span class="text-slate-600 font-medium text-sm">
-                        {{ $events->total() }} résultat{{ $events->total() > 1 ? 's' : '' }} trouvé{{ $events->total() > 1 ? 's' : '' }}
-                    </span>
-                    
-                    <!-- Sorting -->
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="text-slate-500 text-sm whitespace-nowrap">Trier par:</span>
-                        <select name="sort" id="sort-select" class="form-select bg-transparent border-0 text-slate-800 font-bold text-sm py-1 pe-8 focus:ring-0 cursor-pointer shadow-none">
+            {{-- 2. EVENTS LIST AREA --}}
+            <div class="lg:col-span-9">
+                
+                {{-- Header count and sorting --}}
+                <div class="flex justify-between items-center mb-6 pb-2 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-xl font-bold text-slate-900">Événements à ne pas manquer</h2>
+                        <span class="bg-indigo-50 text-indigo-700 border border-indigo-100 text-[11px] font-bold px-2 py-0.5 rounded-full">
+                            {{ $events->total() }} événement{{ $events->total() > 1 ? 's' : '' }}
+                        </span>
+                    </div>
+
+                    {{-- Sorting select --}}
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-400 text-xs font-semibold">Trier par:</span>
+                        <select name="sort" id="sort-select" onchange="this.form.submit()" class="bg-transparent border-0 text-slate-800 font-bold text-xs py-1 cursor-pointer focus:ring-0">
                             <option value="priority" {{ request('sort') == 'priority' || !request('sort') ? 'selected' : '' }}>Pertinence</option>
                             <option value="date_asc" {{ request('sort') == 'date_asc' ? 'selected' : '' }}>Le plus proche</option>
                             <option value="date_desc" {{ request('sort') == 'date_desc' ? 'selected' : '' }}>Le plus lointain</option>
@@ -176,10 +245,10 @@
                 </div>
 
                 @if($events->count() > 0)
-                    <div class="row g-4" id="events-grid-container">
+                    {{-- Cards Grid --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="events-grid-container">
                         @foreach($events as $event)
                             @php
-                                // Category detection
                                 $catName = strtolower($event->categorie ?? '');
                                 $catDisplay = '📅 ÉVÉNEMENT';
                                 if (str_contains($catName, 'concert') || str_contains($catName, 'musique')) {
@@ -191,193 +260,167 @@
                                 } elseif (str_contains($catName, 'art') || str_contains($catName, 'cult') || str_contains($catName, 'fete') || str_contains($catName, 'fête')) {
                                     $catDisplay = '🎨 ART & CULTURE';
                                 }
+                                $isFeatured = $loop->first || $event->is_upcoming;
                             @endphp
-                            <div class="col-md-6 col-lg-4">
-                                <div class="bg-white rounded-2xl border border-slate-100 hover:shadow-lg transition-all duration-300 h-100 flex flex-col justify-between overflow-hidden shadow-sm">
-                                    <!-- Image Container -->
-                                    <div class="position-relative overflow-hidden" style="height: 180px;">
-                                        <img src="{{ $event->photo_url }}" alt="{{ $event->titre }}" class="w-100 h-100 object-cover" style="transition: transform 0.5s ease;">
-                                        
-                                        <!-- Date Badge -->
-                                        <div class="position-absolute top-3 start-3 bg-white rounded-xl shadow-md d-flex flex-column align-items-center justify-content-center p-2" style="width: 46px; height: 50px; line-height: 1.1;">
-                                            <span class="fw-bold text-slate-900 fs-5 mb-0">{{ \Carbon\Carbon::parse($event->date)->format('d') }}</span>
-                                            <span class="text-[#d9383a] font-extrabold uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">
+
+                            <div class="bg-white rounded-2xl border border-slate-100 premium-card overflow-hidden flex flex-col justify-between shadow-sm relative">
+                                
+                                {{-- Card Image wrapper --}}
+                                <div class="relative overflow-hidden h-44">
+                                    <img src="{{ $event->photo_url }}" alt="{{ $event->titre }}" class="w-full h-full object-cover transition-transform duration-500">
+                                    
+                                    {{-- Featured Badge --}}
+                                    @if($isFeatured)
+                                        <span class="absolute top-3.5 left-3.5 bg-blue-600 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-md tracking-wider uppercase">
+                                            Featured
+                                        </span>
+                                    @endif
+
+                                    {{-- Heart Action Button --}}
+                                    <button type="button" class="absolute top-3.5 right-3.5 w-9 h-9 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white heart-btn border-0">
+                                        <i class="far fa-heart text-sm"></i>
+                                    </button>
+
+                                    {{-- Date Badge (Floating top-left style) --}}
+                                    @if(!$isFeatured)
+                                        <div class="absolute top-3.5 left-3.5 bg-white/95 backdrop-blur-xs rounded-xl shadow-md flex flex-col items-center justify-center p-1.5" style="width: 44px; height: 46px; line-height: 1.1;">
+                                            <span class="font-extrabold text-slate-900 text-base">{{ \Carbon\Carbon::parse($event->date)->format('d') }}</span>
+                                            <span class="text-indigo-600 font-extrabold uppercase text-[9px] tracking-wider">
                                                 {{ substr(Str::ascii(\Carbon\Carbon::parse($event->date)->isoFormat('MMM')), 0, 3) }}
                                             </span>
                                         </div>
+                                    @endif
+                                </div>
 
-                                        <!-- Heart Icon Button -->
-                                        <div class="position-absolute top-3 end-3 w-9 h-9 rounded-full bg-black/40 backdrop-blur-xs d-flex align-items-center justify-content-center text-white cursor-pointer btn-heart transition-all duration-200">
-                                            <i class="far fa-heart"></i>
-                                        </div>
-                                    </div>
-
-                                    <!-- Content Body -->
-                                    <div class="p-3 flex-grow-1 flex flex-col justify-between">
-                                        <div>
-                                            <!-- Category & Time Row -->
-                                            <div class="d-flex align-items-center gap-2 mb-2 text-xs">
-                                                <span class="text-indigo-600 font-bold uppercase tracking-wider">{{ $event->categorie ?? 'Événement' }}</span>
-                                                <span class="text-slate-400">•</span>
-                                                <span class="text-slate-500 d-flex align-items-center">
-                                                    <i class="far fa-clock me-1 text-slate-400"></i>
-                                                    {{ \Carbon\Carbon::parse($event->start_heure)->format('H:i') }}
-                                                </span>
-                                            </div>
-                                            
-                                            <!-- Title -->
-                                            <h5 class="fw-bold text-slate-900 mb-2 fs-6 line-clamp-1" style="font-family: 'Outfit', sans-serif;">
-                                                <a href="{{ route('p.detail', $event->id) }}" class="text-slate-900 text-decoration-none hover:text-indigo-600">{{ $event->titre }}</a>
-                                            </h5>
-                                            
-                                            <!-- Description -->
-                                            <p class="text-slate-500 text-xs mb-3 line-clamp-2 leading-relaxed">{{ $event->truncated_description }}</p>
-                                        </div>
-
-                                        <!-- Location & Price Row -->
-                                        <div class="d-flex justify-content-between align-items-center border-t border-slate-100 pt-3 mt-auto">
-                                            <div class="d-flex align-items-center text-slate-500 text-xs text-truncate me-2">
-                                                <i class="fas fa-map-marker-alt me-1.5 text-slate-400"></i>
-                                                <span class="text-truncate">{{ $event->lieu }}</span>
-                                            </div>
-                                            <span class="fw-bold text-indigo-900 text-sm shrink-0">
-                                                @if($event->min_price > 0)
-                                                    {{ number_format($event->min_price, 0, ',', ' ') }} FCFA
-                                                @else
-                                                    Gratuit
-                                                @endif
+                                {{-- Card body --}}
+                                <div class="p-4 flex-grow flex flex-col justify-between">
+                                    <div>
+                                        {{-- Category --}}
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="text-indigo-600 font-extrabold text-[10px] tracking-wider uppercase">
+                                                {{ $catDisplay }}
+                                            </span>
+                                            <span class="text-slate-300 text-xs">•</span>
+                                            <span class="text-slate-500 text-[11px] font-semibold flex items-center">
+                                                <i class="far fa-clock mr-1 text-slate-400"></i>
+                                                {{ \Carbon\Carbon::parse($event->start_heure)->format('H:i') }}
                                             </span>
                                         </div>
+
+                                        {{-- Title --}}
+                                        <h3 class="font-extrabold text-slate-900 text-sm mb-2 hover:text-indigo-600 transition-colors line-clamp-1">
+                                            <a href="{{ route('p.detail', $event->id) }}" class="text-slate-900 no-underline">{{ $event->titre }}</a>
+                                        </h3>
+
+                                        {{-- Excerpt description --}}
+                                        <p class="text-slate-500 text-xs line-clamp-2 leading-relaxed mb-4">
+                                            {{ $event->truncated_description }}
+                                        </p>
+                                    </div>
+
+                                    {{-- Footer row (Location & Price) --}}
+                                    <div class="flex justify-between items-center border-t border-slate-100 pt-3 mt-auto">
+                                        <div class="flex items-center text-slate-500 text-xs min-w-0 mr-3">
+                                            <i class="fas fa-map-marker-alt mr-1.5 text-slate-400 text-[11px]"></i>
+                                            <span class="truncate font-semibold">{{ $event->lieu }}</span>
+                                        </div>
+                                        <span class="font-extrabold text-emerald-600 text-xs bg-emerald-50 px-2.5 py-1 rounded-full whitespace-nowrap">
+                                            @if($event->min_price > 0)
+                                                {{ number_format($event->min_price, 0, ',', ' ') }} FCFA
+                                            @else
+                                                Gratuit
+                                            @endif
+                                        </span>
                                     </div>
                                 </div>
+
                             </div>
                         @endforeach
                     </div>
 
-                    <!-- Pagination -->
-                    <div class="d-flex justify-content-center mt-5">
+                    {{-- Pagination --}}
+                    <div class="flex justify-center mt-8">
                         {{ $events->links() }}
                     </div>
                 @else
-                    <div class="text-center py-5 bg-white border border-slate-100 rounded-2xl shadow-sm">
-                        <p class="text-lg font-semibold text-slate-500 mb-2">Aucun résultat trouvé</p>
-                        <p class="text-slate-400 small">Modifiez vos filtres de recherche ou réinitialisez pour afficher tous les événements.</p>
-                        <a href="{{ route('p.evenement') }}" class="btn px-4 py-2 mt-2 rounded-xl text-white font-semibold border-0" style="background: #1c2434;">
+                    {{-- Empty State --}}
+                    <div class="text-center py-16 bg-white border border-slate-100 rounded-2xl shadow-sm space-y-3">
+                        <div class="text-4xl">🔍</div>
+                        <p class="text-base font-bold text-slate-700">Aucun résultat trouvé</p>
+                        <p class="text-slate-400 text-xs max-w-sm mx-auto">
+                            Modifiez vos filtres de recherche ou réinitialisez pour afficher tous les événements.
+                        </p>
+                        <a href="{{ route('p.evenement') }}" class="inline-block px-5 py-2 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition-colors shadow-sm">
                             Réinitialiser les filtres
                         </a>
                     </div>
                 @endif
             </div>
+
         </div>
     </form>
-</div>
 
-<style>
-    .line-clamp-1 {
-        display: -webkit-box;
-        -webkit-line-clamp: 1;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    .line-clamp-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    .loading-opacity {
-        opacity: 0.5;
-        pointer-events: none;
-    }
-</style>
+    {{-- 3. BANNIERE CTA --}}
+    <div class="mt-16 bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100/50 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+        <div class="flex items-center gap-4">
+            <div class="p-3.5 bg-indigo-600/10 text-indigo-600 rounded-2xl text-2xl hidden md:block">⚡</div>
+            <div>
+                <h4 class="font-extrabold text-slate-900 text-base md:text-lg">Organisez votre événement ?</h4>
+                <p class="text-slate-500 text-xs md:text-sm mt-0.5">Touchez des milliers de participants et développez votre communauté.</p>
+            </div>
+        </div>
+        <a href="{{ route('organisateur.ajouter-un-evenement') }}" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-xl text-sm transition-all shadow-md shadow-indigo-600/15 flex items-center gap-2 whitespace-nowrap">
+            <span>Publier un événement</span>
+            <i class="fas fa-arrow-right text-xs opacity-80"></i>
+        </a>
+    </div>
+
+    {{-- 4. TRUST BADGES SECTION --}}
+    <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-10 border-t border-slate-200/60">
+        @php
+            $badges = [
+                ['title' => 'Événements vérifiés', 'desc' => 'Des événements de qualité validés par notre équipe.', 'icon' => '🛡️'],
+                ['title' => 'Paiement sécurisé', 'desc' => 'Réservez en toute sécurité avec plusieurs options.', 'icon' => '💳'],
+                ['title' => 'Rappels & Notifications', 'desc' => 'Ne manquez aucun événement avec nos rappels.', 'icon' => '🔔'],
+                ['title' => 'Communauté active', 'desc' => 'Rejoignez une communauté passionnée.', 'icon' => '👥']
+            ];
+        @endphp
+        @foreach($badges as $b)
+            <div class="flex gap-4">
+                <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-lg">
+                    {{ $b['icon'] }}
+                </div>
+                <div>
+                    <h5 class="font-bold text-slate-800 text-sm">{{ $b['title'] }}</h5>
+                    <p class="text-slate-500 text-xs mt-1 leading-relaxed">{{ $b['desc'] }}</p>
+                </div>
+            </div>
+        @endforeach
+    </div>
+
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('filter-form');
-    const container = document.getElementById('events-grid-container');
+    const filterForm = document.getElementById('filter-form');
     
-    // Submit on checkbox, select or price range change
-    const autoSubmitElements = form.querySelectorAll('input[type="checkbox"], select');
-    autoSubmitElements.forEach(el => {
-        el.addEventListener('change', function() {
-            if (container) container.classList.add('loading-opacity');
-            form.submit();
-        });
-    });
-
-    // Handle Price range visual updates and submit on mouseup
-    const priceRange = document.getElementById('prix_max_range');
-    const priceDisplay = document.getElementById('price-display-label');
-    if (priceRange && priceDisplay) {
-        priceRange.addEventListener('input', function() {
-            priceDisplay.textContent = `Jusqu'à ${priceRange.value}F`;
-        });
-        priceRange.addEventListener('change', function() {
-            if (container) container.classList.add('loading-opacity');
-            form.submit();
+    // Custom date synchronizer to hidden fields
+    const customStart = document.getElementById('custom_date_debut');
+    const customEnd = document.getElementById('custom_date_fin');
+    const hiddenStart = document.getElementById('hidden_date_debut');
+    const hiddenEnd = document.getElementById('hidden_date_fin');
+    
+    if (customStart && hiddenStart) {
+        customStart.addEventListener('change', function() {
+            hiddenStart.value = this.value;
         });
     }
-
-    // Highlight active date quick filters
-    const dateDebut = document.getElementById('date_debut').value;
-    const dateFin = document.getElementById('date_fin').value;
-    
-    if (dateDebut && dateFin) {
-        const today = new Date();
-        
-        // Check if weekend is selected
-        const currentDay = today.getDay();
-        const distToSat = currentDay <= 6 ? 6 - currentDay : 6;
-        const sat = new Date(today);
-        sat.setDate(today.getDate() + distToSat);
-        const sun = new Date(sat);
-        sun.setDate(sat.getDate() + 1);
-        
-        const satStr = formatDate(sat);
-        const sunStr = formatDate(sun);
-        const endOfMonthStr = formatDate(new Date(today.getFullYear(), today.getMonth() + 1, 0));
-
-        if (dateDebut === satStr && dateFin === sunStr) {
-            document.getElementById('btn-weekend').classList.replace('bg-slate-50', 'bg-indigo-50');
-            document.getElementById('btn-weekend').classList.add('border-indigo-300', 'text-indigo-600');
-        } else if (dateDebut === formatDate(today) && dateFin === endOfMonthStr) {
-            document.getElementById('btn-month').classList.replace('bg-slate-50', 'bg-indigo-50');
-            document.getElementById('btn-month').classList.add('border-indigo-300', 'text-indigo-600');
-        }
+    if (customEnd && hiddenEnd) {
+        customEnd.addEventListener('change', function() {
+            hiddenEnd.value = this.value;
+        });
     }
 });
-
-function setDateRange(rangeType) {
-    const today = new Date();
-    let start, end;
-    
-    if (rangeType === 'weekend') {
-        const currentDay = today.getDay();
-        const distToSat = currentDay <= 6 ? 6 - currentDay : 6;
-        start = new Date(today);
-        start.setDate(today.getDate() + distToSat);
-        end = new Date(start);
-        end.setDate(start.getDate() + 1);
-    } else if (rangeType === 'month') {
-        start = new Date(today);
-        end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    }
-    
-    if (start && end) {
-        document.getElementById('date_debut').value = formatDate(start);
-        document.getElementById('date_fin').value = formatDate(end);
-        
-        const container = document.getElementById('events-grid-container');
-        if (container) container.classList.add('loading-opacity');
-        document.getElementById('filter-form').submit();
-    }
-}
-
-function formatDate(date) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
-}
 </script>
+
 @endsection
