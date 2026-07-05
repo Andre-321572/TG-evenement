@@ -65,6 +65,21 @@
                     <span>Historique complet</span>
                 </a>
 
+                {{-- ── Section Administration ── --}}
+                <div class="pt-4 pb-2 px-4">
+                    <span class="text-xxs font-bold text-gray-500 uppercase tracking-wider">Administration</span>
+                </div>
+
+                <a href="{{ route('organisateur.utilisateurs') }}" class="flex items-center space-x-3 {{ request()->routeIs('organisateur.utilisateurs') ? 'text-white bg-indigo-500/10 border border-indigo-500/20 font-medium' : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent' }} rounded-xl px-4 py-3 transition-all duration-200">
+                    <i data-feather="users" class="w-5 h-5"></i>
+                    <span>Utilisateurs inscrits</span>
+                </a>
+
+                <a href="{{ route('organisateur.billet-all') }}" class="flex items-center space-x-3 {{ request()->routeIs('organisateur.billet-all') ? 'text-white bg-indigo-500/10 border border-indigo-500/20 font-medium' : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent' }} rounded-xl px-4 py-3 transition-all duration-200">
+                    <i data-feather="sliders" class="w-5 h-5"></i>
+                    <span>Design des tickets</span>
+                </a>
+
                 {{-- ── Section Scanner ── --}}
                 <div class="pt-4 pb-2 px-4">
                     <span class="text-xxs font-bold text-gray-500 uppercase tracking-wider">Contrôle d'accès</span>

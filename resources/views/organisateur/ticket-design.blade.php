@@ -1,4 +1,4 @@
-@extends('layouts.Obases')
+@extends('layouts.Obase')
 
 @section('title', '— Design du ticket | ' . $evenement->titre)
 
@@ -28,10 +28,10 @@
         <form action="{{ route('organisateur.ticket-design-store', $evenement->id) }}" method="POST" enctype="multipart/form-data" id="design-form">
             @csrf
 
-            <div class="row g-4">
+            <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
 
                 {{-- ===== COLONNE GAUCHE: Éditeur ===== --}}
-                <div class="col-lg-7">
+                <div style="flex:1; min-width:340px;">
 
                     {{-- Template de base --}}
                     <div class="design-card">
@@ -59,7 +59,7 @@
                     {{-- Logo --}}
                     <div class="design-card">
                         <h5 class="section-label">🖼️ Logo personnalisé</h5>
-                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                        <div style="display:flex; gap:1rem;">
                             @if($design->logo)
                                 <div style="position:relative;">
                                     <img src="{{ $design->logo_url }}" style="height:70px; border-radius:8px; border:2px solid #e2e8f0; background:#f8fafc; padding:4px;">
@@ -193,8 +193,8 @@
                 </div>
 
                 {{-- ===== COLONNE DROITE: Prévisualisation ===== --}}
-                <div class="col-lg-5">
-                    <div style="position:sticky; top:20px;">
+                <div style="flex:0 0 380px; max-width:420px;">
+                    <div>
                         <div class="design-card">
                             <h5 class="section-label">👁️ Prévisualisation en temps réel</h5>
 

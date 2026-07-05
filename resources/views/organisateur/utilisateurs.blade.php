@@ -1,4 +1,4 @@
-@extends('layouts.Obases')
+@extends('layouts.Obase')
 
 @section('title', '— Utilisateurs inscrits')
 

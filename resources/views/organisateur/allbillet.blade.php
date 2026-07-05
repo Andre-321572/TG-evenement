@@ -245,8 +245,17 @@
 
                             <!-- Actions -->
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold">
-                                <a href="{{ route('organisateur.billet-form') }}" class="text-indigo-400 hover:text-indigo-300 transition-colors"><i data-feather="edit-3" class="w-4 h-4 inline"></i></a>
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ route('organisateur.billet-form') }}" class="text-indigo-400 hover:text-indigo-300 transition-colors" title="Modifier">
+                                        <i data-feather="edit-3" class="w-4 h-4 inline"></i>
+                                    </a>
+                                    <a href="{{ route('organisateur.ticket-design-edit', $billet->evenement->id) }}"
+                                       class="text-violet-400 hover:text-violet-300 transition-colors" title="Design du ticket">
+                                        <i data-feather="sliders" class="w-4 h-4 inline"></i>
+                                    </a>
+                                </div>
                             </td>
+
                         </tr>
                     @empty
                         <tr>
