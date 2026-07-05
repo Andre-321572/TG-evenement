@@ -8,11 +8,11 @@
     padding: 0;
     font-family: 'Outfit', sans-serif;
 ">
-    <div style="max-width:1200px; margin:0 auto; padding:0 1.25rem; display:flex; align-items:center; justify-content:space-between; height:76px;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 1.25rem; display:flex; align-items:center; justify-content:space-between; height:90px;">
 
         {{-- Logo --}}
-        <a href="{{ url('/') }}" style="display:flex; align-items:center; text-decoration:none; height:72px;">
-            <img src="{{ asset('images/logo.png') }}" alt="TGEvent" style="height:100%; max-height:72px; width:auto;">
+        <a href="{{ url('/') }}" style="display:flex; align-items:center; text-decoration:none; height:90px;">
+            <img src="{{ asset('images/logo.png') }}" alt="TGEvent" style="height:100%; max-height:90px; width:auto;">
         </a>
 
         {{-- Desktop Nav links --}}
