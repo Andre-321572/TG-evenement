@@ -21,29 +21,9 @@
             </div>
         @endif
 
-        {{-- Stats cards --}}
-        <div class="row g-3 mb-4">
-            @php
-            $statCards = [
-                ['label'=>'Total inscrits',  'val'=>$stats['total'],         'icon'=>'👥', 'color'=>'#4f46e5','bg'=>'#eef2ff'],
-                ['label'=>'Participants',     'val'=>$stats['participants'],  'icon'=>'🎟️', 'color'=>'#059669','bg'=>'#dcfce7'],
-                ['label'=>'Organisateurs',    'val'=>$stats['organisateurs'], 'icon'=>'🎪', 'color'=>'#d97706','bg'=>'#fef3c7'],
-                ['label'=>'Scanners',         'val'=>$stats['scanners'],      'icon'=>'📷', 'color'=>'#0891b2','bg'=>'#cffafe'],
-                ['label'=>'Via Mobile App',   'val'=>$stats['mobile'],        'icon'=>'📱', 'color'=>'#7c3aed','bg'=>'#f5f3ff'],
-            ];
-            @endphp
-            @foreach($statCards as $card)
-            <div class="col-6 col-md-4 col-lg-2" style="flex:1;">
-                <div style="background:#fff; border-radius:14px; padding:1.1rem 1rem; border:1px solid #e2e8f0; text-align:center;">
-                    <div style="font-size:1.8rem; margin-bottom:.3rem;">{{ $card['icon'] }}</div>
-                    <div style="font-size:1.6rem; font-weight:800; color:{{ $card['color'] }};">{{ number_format($card['val']) }}</div>
-                    <div style="font-size:.78rem; color:#64748b; font-weight:600;">{{ $card['label'] }}</div>
-                </div>
-            </div>
-            @endforeach
-        </div>
 
         {{-- Filtres --}}
+
         <div style="background:#fff; border-radius:14px; padding:1.25rem; border:1px solid #e2e8f0; margin-bottom:1.5rem;">
             <form method="GET" action="{{ route('organisateur.utilisateurs') }}" class="d-flex gap-2 flex-wrap align-items-end">
                 <div style="flex:2; min-width:200px;">
