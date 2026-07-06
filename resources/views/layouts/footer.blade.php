@@ -8,7 +8,7 @@
                     La destination numéro un pour vos billets d'événements préférés. Fiable, rapide et sécurisé.
                 </p>
                 <div class="mt-4">
-                    <a href="{{ asset('downloads/tgevent.apk') }}" class="btn d-inline-flex align-items-center gap-2 px-3.5 py-2 shadow-sm border-0 hover:scale-105 transition-all duration-300" style="background: #1e3a8a; color: #ffffff; border-radius: 12px; font-weight: 700; font-size: 0.85rem;" download>
+                    <a href="https://expo.dev/artifacts/eas/qr71gqaDkJu8EBjDAt09uBMzPfPTZIvEh_ek2k5Gwyg.apk" class="btn d-inline-flex align-items-center gap-2 px-3.5 py-2 shadow-sm border-0 hover:scale-105 transition-all duration-300" style="background: #1e3a8a; color: #ffffff; border-radius: 12px; font-weight: 700; font-size: 0.85rem;" download>
                         <i class="fab fa-android fs-4 text-emerald-400"></i>
                         <div class="text-start text-white">
                             <span style="font-size: 0.62rem; display: block; font-weight: 500; opacity: 0.8; line-height: 1;">Version Mobile Android</span>
