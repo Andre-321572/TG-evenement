@@ -14,6 +14,9 @@ class PaiementController extends Controller
 {
     public function showForm(Evenement $evenement)
     {
+        if ($evenement->isPasse()) {
+            return redirect()->route('p.detail', $evenement->id)->with('error', 'Cet événement est déjà passé, vous ne pouvez plus acheter de tickets.');
+        }
         $evenement->load(['billets', 'sponsors']);
         return view('p.payement.payement', compact('evenement'));
     }
@@ -32,6 +35,14 @@ class PaiementController extends Controller
         ]);
 
         $evenement = Evenement::with('billets')->findOrFail($request->evenement_id);
+
+        if ($evenement->isPasse()) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['status' => 'error', 'message' => 'Cet événement est déjà passé, vous ne pouvez plus acheter de tickets.'], 422);
+            }
+            return redirect()->route('p.detail', $evenement->id)->with('error', 'Cet événement est déjà passé, vous ne pouvez plus acheter de tickets.');
+        }
+
         $billet    = Billet::findOrFail($request->billet_id);
         $quantity  = (int) $request->input('quantity', 1);
 
@@ -39,10 +50,14 @@ class PaiementController extends Controller
             return redirect()->back()->with('error', 'Quantité demandée supérieure au stock disponible.');
         }
 
-        // Le prix Stripe doit être en centimes (CFA → centimes fictifs : 1 CFA = 1 centime)
-        $amountCents = (int) ($billet->prix * 100);
+        $currency = strtolower(config('services.stripe.currency', 'xof'));
+        $zeroDecimalCurrencies = ['bif', 'clf', 'djf', 'gnf', 'isk', 'jpy', 'kmf', 'krw', 'mga', 'pyg', 'rwf', 'ugx', 'vnd', 'vuv', 'xaf', 'xof', 'xpf'];
+        
+        $amount = in_array($currency, $zeroDecimalCurrencies)
+            ? (int) $billet->prix
+            : (int) ($billet->prix * 100);
 
-        if ($amountCents <= 0) {
+        if ($amount <= 0) {
             return redirect()->back()->with('error', 'Prix du billet invalide.');
         }
 
@@ -56,7 +71,7 @@ class PaiementController extends Controller
                 'payment_method_types' => ['card'],
                 'line_items' => [[
                     'price_data' => [
-                        'currency'     => 'eur',   // Stripe test — en prod remplacer par XOF si disponible
+                        'currency'     => $currency,
                         'product_data' => [
                             'name'        => $evenement->titre . ' — ' . $billet->type,
                             'description' => 'Billet pour l\'événement du '
@@ -66,7 +81,7 @@ class PaiementController extends Controller
                                 ? [asset('storage/evenement/photo/' . $evenement->photo)]
                                 : [],
                         ],
-                        'unit_amount' => $amountCents,
+                        'unit_amount' => $amount,
                     ],
                     'quantity' => $quantity,
                 ]],

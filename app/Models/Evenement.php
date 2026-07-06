@@ -16,6 +16,8 @@ class Evenement extends Model
         'twiter', 'user_id'
     ];
 
+    protected $appends = ['photo_url', 'video_url', 'is_past'];
+
     // Relations
     public function ticketDesign()
     {
@@ -181,5 +183,23 @@ class Evenement extends Model
             return asset('storage/evenement/videos/' . $this->video);
         }
         return null;
+    }
+
+    /**
+     * Déterminer si l'événement est déjà passé.
+     */
+    public function isPasse()
+    {
+        $time = $this->end_heure ?: ($this->start_heure ?: '23:59:59');
+        $eventDateTime = \Carbon\Carbon::parse($this->date . ' ' . $time);
+        return $eventDateTime->isPast();
+    }
+
+    /**
+     * Accesseur pour savoir si l'événement est passé.
+     */
+    public function getIsPastAttribute()
+    {
+        return $this->isPasse();
     }
 }

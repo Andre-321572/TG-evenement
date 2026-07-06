@@ -231,7 +231,7 @@ class ApiAuthController extends Controller
                 'title' => 'Nouveau sur TGevent : ' . $event->titre,
                 'message' => 'Les billets pour ' . $event->titre . ' sont disponibles dès maintenant à partir de ' . ($event->min_price ?: '0') . ' FCFA.',
                 'time' => 'Annonce',
-                'isNew' => false,
+                'isNew' => $event->created_at ? $event->created_at->gt(now()->subDays(3)) : true,
                 'hasBanner' => true,
                 'bannerUrl' => $event->photo_url,
                 'filterType' => 'Annonces',

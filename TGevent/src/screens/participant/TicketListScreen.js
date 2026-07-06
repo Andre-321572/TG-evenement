@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, FlatList, ActivityIndicator, RefreshControl, To
 import { Ionicons } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
 import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from '../../api/client';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -11,6 +12,7 @@ export default function TicketListScreen({ navigation }) {
   const [tickets, setTickets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -27,9 +29,22 @@ export default function TicketListScreen({ navigation }) {
       const response = await apiClient.get('/my-tickets');
       if (response.data.status === 'success') {
         setTickets(response.data.tickets);
+        setIsOffline(false);
+        // Cache tickets in local storage
+        await AsyncStorage.setItem('cached_tickets', JSON.stringify(response.data.tickets));
       }
     } catch (e) {
-      console.error(e);
+      console.error('Erreur chargement billets', e);
+      setIsOffline(true);
+      // Load from cache
+      try {
+        const cached = await AsyncStorage.getItem('cached_tickets');
+        if (cached) {
+          setTickets(JSON.parse(cached));
+        }
+      } catch (cacheError) {
+        console.error('Erreur chargement cache billets', cacheError);
+      }
     } finally {
       setIsLoading(false);
       setRefreshing(false);
@@ -114,6 +129,12 @@ export default function TicketListScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {isOffline && (
+        <View style={styles.offlineBanner}>
+          <Ionicons name="cloud-offline-outline" size={16} color="#b45309" style={{ marginRight: 6 }} />
+          <Text style={styles.offlineText}>Affichage hors-ligne (données mises en cache)</Text>
+        </View>
+      )}
       {tickets.length === 0 ? (
         <View style={styles.empty}>
           <Ionicons name="ticket-outline" size={64} color="#94a3b8" style={{ marginBottom: 12 }} />
@@ -281,5 +302,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     width: '100%',
+  },
+  offlineBanner: {
+    backgroundColor: '#fef3c7',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#fde68a',
+  },
+  offlineText: {
+    color: '#b45309',
+    fontSize: 12,
+    fontWeight: '600',
   },
 });

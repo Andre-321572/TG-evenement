@@ -33,6 +33,11 @@ export default function EventDetailScreen({ route, navigation }) {
   };
 
   const handleBuyTicket = (billet, quantity) => {
+    if (event.is_past) {
+      Alert.alert('Événement passé', 'Cet événement est déjà passé. Il n\'est plus possible d\'acheter de tickets.');
+      return;
+    }
+
     if (!token) {
       Alert.alert(
         'Connexion requise',
@@ -124,7 +129,7 @@ export default function EventDetailScreen({ route, navigation }) {
                 </View>
                 <View style={styles.ticketAction}>
                   <Text style={styles.ticketPrice}>{billet.prix} FCFA</Text>
-                  {billet.quantite_disponible > 0 && (
+                  {billet.quantite_disponible > 0 && !event.is_past && (
                     <View style={styles.quantityRow}>
                       <TouchableOpacity
                         onPress={() => {
@@ -152,13 +157,13 @@ export default function EventDetailScreen({ route, navigation }) {
                   <TouchableOpacity
                     style={[
                       styles.buyButton,
-                      billet.quantite_disponible <= 0 && styles.buyButtonDisabled,
+                      (billet.quantite_disponible <= 0 || event.is_past) && styles.buyButtonDisabled,
                     ]}
                     onPress={() => handleBuyTicket(billet, qty)}
-                    disabled={billet.quantite_disponible <= 0}
+                    disabled={billet.quantite_disponible <= 0 || event.is_past}
                   >
                     <Text style={styles.buyButtonText}>
-                      {billet.quantite_disponible <= 0 ? 'Complet' : 'Réserver'}
+                      {event.is_past ? 'Événement passé' : (billet.quantite_disponible <= 0 ? 'Complet' : 'Réserver')}
                     </Text>
                   </TouchableOpacity>
                 </View>

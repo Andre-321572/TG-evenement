@@ -7,7 +7,7 @@ import { AuthContext } from '../../context/AuthContext';
 const { width } = Dimensions.get('window');
 
 export default function EventListScreen({ navigation }) {
-  const { user } = useContext(AuthContext);
+  const { user, unreadNotificationsCount } = useContext(AuthContext);
   const [events, setEvents] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -139,7 +139,14 @@ export default function EventListScreen({ navigation }) {
           style={styles.menuButton}
           onPress={() => navigation.navigate('Notifications')}
         >
-          <Ionicons name="notifications-outline" size={24} color="#1e3a8a" />
+          <View style={{ position: 'relative' }}>
+            <Ionicons name="notifications-outline" size={24} color="#1e3a8a" />
+            {unreadNotificationsCount > 0 && (
+              <View style={styles.badgeContainer}>
+                <Text style={styles.badgeText}>{unreadNotificationsCount}</Text>
+              </View>
+            )}
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -251,6 +258,24 @@ const styles = StyleSheet.create({
   },
   menuButton: {
     padding: 4,
+  },
+  badgeContainer: {
+    position: 'absolute',
+    right: -6,
+    top: -4,
+    backgroundColor: '#ef4444',
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: '#ffffff',
+    fontSize: 9,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   logoImage: {
     height: 48,

@@ -55,6 +55,7 @@ class ApiEventController extends Controller
             $event->photo_url = $event->photo ? asset('storage/evenement/photo/' . $event->photo) : asset('images/default-event.jpg');
             $event->video_url = $event->video ? asset('storage/evenement/videos/' . $event->video) : null;
             $event->min_price = $event->billets->min('prix') ?? 0;
+            $event->is_past = $event->isPasse();
             return $event;
         });
 
@@ -80,6 +81,7 @@ class ApiEventController extends Controller
 
         $event->photo_url = $event->photo ? asset('storage/evenement/photo/' . $event->photo) : asset('images/default-event.jpg');
         $event->video_url = $event->video ? asset('storage/evenement/videos/' . $event->video) : null;
+        $event->is_past = $event->isPasse();
 
         // Ajouter l'URL absolue des logos des sponsors
         foreach ($event->sponsors as $sponsor) {

@@ -5,46 +5,23 @@ import { AuthContext } from '../../context/AuthContext';
 import apiClient from '../../api/client';
 
 export default function NotificationsScreen({ navigation }) {
-  const { token } = useContext(AuthContext);
+  const { token, notificationsList, checkNotifications, markAllNotificationsAsRead } = useContext(AuthContext);
   const [selectedFilter, setSelectedFilter] = useState('Toutes'); // 'Toutes', 'Événements', 'Achats', 'Annonces'
-  const [notifications, setNotifications] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    if (token) {
-      fetchNotifications();
-    } else {
-      setIsLoading(false);
-    }
-  }, [token]);
-
-  const fetchNotifications = async () => {
-    try {
-      const response = await apiClient.get('/notifications');
-      if (response.data.status === 'success') {
-        setNotifications(response.data.notifications);
-      }
-    } catch (e) {
-      console.error('Erreur chargement notifications', e);
-    } finally {
-      setIsLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setRefreshing(true);
-    fetchNotifications();
+    await checkNotifications();
+    setRefreshing(false);
   };
 
-  const markAllAsRead = () => {
-    const updated = notifications.map(notif => ({ ...notif, isNew: false }));
-    setNotifications(updated);
+  const markAllAsRead = async () => {
+    await markAllNotificationsAsRead();
     Alert.alert('Notifications', 'Toutes les notifications ont été marquées comme lues !');
   };
 
-  const filteredNotifications = notifications.filter(notif => {
+  const filteredNotifications = notificationsList.filter(notif => {
     if (selectedFilter === 'Toutes') return true;
     return notif.filterType === selectedFilter;
   });

@@ -180,77 +180,88 @@
 
                 <!-- Tickets Selection Card -->
                 <div class="card border-0 shadow-sm rounded-2xl p-4 mb-3" style="background:#fff;">
-                    <h5 class="fw-bold text-slate-900 mb-1" style="font-family: 'Outfit', sans-serif;">Sélection de billets</h5>
-                    <p class="text-slate-400 small mb-4">Taxes incluses à la finalisation</p>
-
-                    @if($detail_evenement->billets && $detail_evenement->billets->count() > 0)
-                        <form action="{{ route('p.paiement.checkout') }}" method="POST" id="checkout-form">
-                            @csrf
-                            <input type="hidden" name="evenement_id" value="{{ $detail_evenement->id }}">
-                            <input type="hidden" name="billet_id" id="selected_billet_id" value="">
-                            <input type="hidden" name="quantity" id="selected_quantity" value="0">
-
-                            <div class="d-flex flex-column gap-3 mb-4">
-                                @foreach($detail_evenement->billets as $idx => $billet)
-                                    @php 
-                                        $dispo = $billet->quantite_disponible ?? 99; 
-                                        $isSoldOut = ($dispo <= 0);
-                                    @endphp
-                                    
-                                    @if($isSoldOut)
-                                        <!-- Sold Out Option -->
-                                        <div class="p-3 rounded-2xl d-flex justify-content-between align-items-center bg-slate-50 border border-slate-100 opacity-60">
-                                            <div>
-                                                <span class="fw-bold d-block text-slate-400 text-sm">{{ $billet->type }}</span>
-                                                <span class="text-slate-400 text-xs font-semibold">{{ number_format($billet->prix, 0, ',', ' ') }} FCFA</span>
-                                            </div>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <span class="text-slate-400 text-xs font-semibold me-2">Vendu</span>
-                                                <div class="w-8 h-8 rounded-lg bg-slate-100 d-flex align-items-center justify-content-center text-slate-400">
-                                                    <i class="fas fa-lock text-xs"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @else
-                                        <!-- Active Option -->
-                                        <div class="ticket-option p-3 rounded-2xl d-flex justify-content-between align-items-center border border-slate-100 transition-all duration-200 cursor-pointer" 
-                                             data-billet-id="{{ $billet->id }}" 
-                                             data-price="{{ $billet->prix }}"
-                                             onclick="selectTicket('{{ $billet->id }}')"
-                                             style="background:#f8fafc;">
-                                            <div>
-                                                <div class="d-flex align-items-center gap-2 mb-0.5">
-                                                    <span class="fw-bold d-block text-slate-800 text-sm leading-none">{{ $billet->type }}</span>
-                                                    @if($idx == 1)
-                                                        <span class="px-2 py-0.5 rounded text-[8px] font-bold text-white bg-indigo-600 uppercase tracking-wide leading-none">Populaire</span>
-                                                    @endif
-                                                </div>
-                                                <span class="text-indigo-600 text-xs font-bold">{{ number_format($billet->prix, 0, ',', ' ') }} FCFA</span>
-                                            </div>
-                                            <div class="d-flex align-items-center gap-2" onclick="event.stopPropagation();">
-                                                <button type="button" class="btn btn-sm btn-light w-8 h-8 rounded-lg d-flex align-items-center justify-content-center border-0 p-0 fs-5 font-bold text-slate-500 shadow-sm" onclick="decrementTicket('{{ $billet->id }}')">-</button>
-                                                <span class="fw-bold text-slate-800 px-2 text-sm ticket-qty" id="qty-{{ $billet->id }}">0</span>
-                                                <button type="button" class="btn btn-sm btn-light w-8 h-8 rounded-lg d-flex align-items-center justify-content-center border-0 p-0 fs-5 font-bold text-slate-500 shadow-sm" onclick="incrementTicket('{{ $billet->id }}')">+</button>
-                                            </div>
-                                        </div>
-                                    @endif
-                                @endforeach
+                    @if($detail_evenement->isPasse())
+                        <div class="text-center py-4 bg-red-50 text-red-600 rounded-2xl border border-red-100 p-3">
+                            <div class="w-12 h-12 rounded-full bg-red-100 d-flex align-items-center justify-content-center mx-auto mb-3">
+                                <i class="fas fa-exclamation-circle text-red-600 fs-4"></i>
                             </div>
-
-                            <div class="d-flex justify-content-between align-items-center border-t border-slate-100 pt-3 mb-4">
-                                <span class="text-slate-600 font-semibold text-sm">Total</span>
-                                <span class="fw-bold text-slate-900 fs-4" id="total-price-display">0 FCFA</span>
-                            </div>
-
-                            <button type="submit" id="btn-submit-checkout" class="btn w-100 py-3 bg-[#d9383a] hover:bg-[#c22e30] text-white font-bold rounded-xl text-sm transition-all duration-200 border-0 shadow-sm d-flex align-items-center justify-content-center gap-2" disabled>
-                                <i class="fas fa-ticket-alt"></i> Acheter maintenant
-                            </button>
-                        </form>
-                    @else
-                        <div class="text-center py-4 bg-slate-50 rounded-xl">
-                            <p class="small text-slate-400 mb-0">Aucun billet disponible pour cet événement.</p>
+                            <h6 class="fw-bold mb-1 text-red-800">Événement terminé</h6>
+                            <p class="small text-slate-500 mb-0">Cet événement est déjà passé. La réservation de billets est fermée.</p>
                         </div>
+                    @else
+                        <h5 class="fw-bold text-slate-900 mb-1" style="font-family: 'Outfit', sans-serif;">Sélection de billets</h5>
+                        <p class="text-slate-400 small mb-4">Taxes incluses à la finalisation</p>
+
+                        @if($detail_evenement->billets && $detail_evenement->billets->count() > 0)
+                            <form action="{{ route('p.paiement.checkout') }}" method="POST" id="checkout-form">
+                                @csrf
+                                <input type="hidden" name="evenement_id" value="{{ $detail_evenement->id }}">
+                                <input type="hidden" name="billet_id" id="selected_billet_id" value="">
+                                <input type="hidden" name="quantity" id="selected_quantity" value="0">
+
+                                <div class="d-flex flex-column gap-3 mb-4">
+                                    @foreach($detail_evenement->billets as $idx => $billet)
+                                        @php 
+                                            $dispo = $billet->quantite_disponible ?? 99; 
+                                            $isSoldOut = ($dispo <= 0);
+                                        @endphp
+                                        
+                                        @if($isSoldOut)
+                                            <!-- Sold Out Option -->
+                                            <div class="p-3 rounded-2xl d-flex justify-content-between align-items-center bg-slate-50 border border-slate-100 opacity-60">
+                                                <div>
+                                                    <span class="fw-bold d-block text-slate-400 text-sm">{{ $billet->type }}</span>
+                                                    <span class="text-slate-400 text-xs font-semibold">{{ number_format($billet->prix, 0, ',', ' ') }} FCFA</span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="text-slate-400 text-xs font-semibold me-2">Vendu</span>
+                                                    <div class="w-8 h-8 rounded-lg bg-slate-100 d-flex align-items-center justify-content-center text-slate-400">
+                                                        <i class="fas fa-lock text-xs"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <!-- Active Option -->
+                                            <div class="ticket-option p-3 rounded-2xl d-flex justify-content-between align-items-center border border-slate-100 transition-all duration-200 cursor-pointer" 
+                                                 data-billet-id="{{ $billet->id }}" 
+                                                 data-price="{{ $billet->prix }}"
+                                                 onclick="selectTicket('{{ $billet->id }}')"
+                                                 style="background:#f8fafc;">
+                                                <div>
+                                                    <div class="d-flex align-items-center gap-2 mb-0.5">
+                                                        <span class="fw-bold d-block text-slate-800 text-sm leading-none">{{ $billet->type }}</span>
+                                                        @if($idx == 1)
+                                                            <span class="px-2 py-0.5 rounded text-[8px] font-bold text-white bg-indigo-600 uppercase tracking-wide leading-none">Populaire</span>
+                                                        @endif
+                                                    </div>
+                                                    <span class="text-indigo-600 text-xs font-bold">{{ number_format($billet->prix, 0, ',', ' ') }} FCFA</span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2" onclick="event.stopPropagation();">
+                                                    <button type="button" class="btn btn-sm btn-light w-8 h-8 rounded-lg d-flex align-items-center justify-content-center border-0 p-0 fs-5 font-bold text-slate-500 shadow-sm" onclick="decrementTicket('{{ $billet->id }}')">-</button>
+                                                    <span class="fw-bold text-slate-800 px-2 text-sm ticket-qty" id="qty-{{ $billet->id }}">0</span>
+                                                    <button type="button" class="btn btn-sm btn-light w-8 h-8 rounded-lg d-flex align-items-center justify-content-center border-0 p-0 fs-5 font-bold text-slate-500 shadow-sm" onclick="incrementTicket('{{ $billet->id }}')">+</button>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center border-t border-slate-100 pt-3 mb-4">
+                                    <span class="text-slate-600 font-semibold text-sm">Total</span>
+                                    <span class="fw-bold text-slate-900 fs-4" id="total-price-display">0 FCFA</span>
+                                </div>
+
+                                <button type="submit" id="btn-submit-checkout" class="btn w-100 py-3 bg-[#d9383a] hover:bg-[#c22e30] text-white font-bold rounded-xl text-sm transition-all duration-200 border-0 shadow-sm d-flex align-items-center justify-content-center gap-2" disabled>
+                                    <i class="fas fa-ticket-alt"></i> Acheter maintenant
+                                </button>
+                            </form>
+                        @else
+                            <div class="text-center py-4 bg-slate-50 rounded-xl">
+                                <p class="small text-slate-400 mb-0">Aucun billet disponible pour cet événement.</p>
+                            </div>
+                        @endif
                     @endif
+                </div>
                 </div>
 
                 <!-- Organizer Profile -->
