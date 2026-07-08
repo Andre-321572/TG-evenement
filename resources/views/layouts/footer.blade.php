@@ -1,9 +1,9 @@
-<footer class="sky-footer border-t border-sky-200 py-12 mt-20" style="background-color: #e0f2fe;">
+<footer class="sky-footer border-t border-slate-200 py-12 mt-20" style="background-color: #ffffff;">
     <div class="container">
         <div class="row g-4">
             <!-- Brand Column -->
             <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
-                <img src="{{ asset('images/logo.png') }}" alt="TGEvent" style="height: 38px; width: auto; margin-bottom: 1rem;">
+                <img src="{{ asset('images/logo.png') }}" alt="HIT TECHNOLOGY" style="height: 38px; width: auto; margin-bottom: 1rem;">
                 <p class="text-slate-600 leading-relaxed small mb-0" style="max-width: 320px;">
                     La destination numéro un pour vos billets d'événements préférés. Fiable, rapide et sécurisé.
                 </p>
@@ -57,7 +57,7 @@
         <!-- Copyright -->
         <div class="row mt-5 pt-4 border-t border-sky-200 align-items-center text-slate-500 small">
             <div class="col-md-12 text-center">
-                <p class="mb-0">&copy; {{ date('Y') }} TGEvent. Tous droits réservés.</p>
+                <p class="mb-0">&copy; {{ date('Y') }} HIT TECHNOLOGY. Tous droits réservés.</p>
             </div>
         </div>
     </div>
@@ -66,25 +66,25 @@
 <style>
     /* Spécificités pour surcharger le layout base */
     footer.sky-footer {
-        background-color: #e0f2fe !important;
-        border-top: 1px solid #bae6fd !important;
+        background-color: #ffffff !important;
+        border-top: 1px solid #e2e8f0 !important;
     }
-    footer.sky-footer .text-white {
+    footer.sky-footer .text-white:not(.btn):not(.btn *) {
         color: #0f172a !important;
     }
     footer.sky-footer .text-gray-200, 
     footer.sky-footer .text-gray-300, 
     footer.sky-footer .text-gray-400,
     footer.sky-footer .text-slate-400 {
-        color: #334155 !important;
-    }
-    footer.sky-footer .text-gray-500 {
         color: #475569 !important;
     }
+    footer.sky-footer .text-gray-500 {
+        color: #64748b !important;
+    }
     footer.sky-footer a {
-        color: #334155 !important;
+        color: #475569 !important;
     }
     footer.sky-footer a:hover {
-        color: #1e3a8a !important;
+        color: #2563eb !important;
     }
 </style>

@@ -246,7 +246,7 @@
     <div id="app">
         <!-- Loading Screen -->
         <div id="chargement" class="fixed inset-0 z-[9999] flex flex-col justify-center items-center bg-[#f0f7ff]">
-            <span class="text-xl font-bold tracking-widest text-indigo-600 uppercase mb-6">TGEvent</span>
+            <span class="text-xl font-bold tracking-widest text-indigo-600 uppercase mb-6">HIT TECHNOLOGY</span>
             <div class="w-48 h-0.5 bg-slate-200 rounded-full overflow-hidden">
                 <div class="h-full bg-indigo-500 rounded-full animate-[load_1.2s_ease-in-out_infinite]"></div>
             </div>

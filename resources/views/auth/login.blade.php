@@ -31,8 +31,8 @@
         
         <!-- Title & Brand -->
         <div class="text-center mb-4">
-            <h2 class="fw-bold text-white fs-2 mb-1" style="font-family: 'Outfit', sans-serif; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">TGEvent</h2>
-            <p class="text-slate-200 small" style="text-shadow: 0 1px 6px rgba(0,0,0,0.3);">L'excellence logistique au service de vos émotions.</p>
+            <h2 class="fw-bold text-white keep-white fs-2 mb-1" style="font-family: 'Outfit', sans-serif; text-shadow: 0 2px 10px rgba(0,0,0,0.3); color: #ffffff !important;">HIT TECHNOLOGY</h2>
+            <p class="text-slate-200 keep-white small" style="text-shadow: 0 1px 6px rgba(0,0,0,0.3); color: rgba(255, 255, 255, 0.85) !important;">L'excellence logistique au service de vos émotions.</p>
         </div>
 
         <!-- Login Card -->

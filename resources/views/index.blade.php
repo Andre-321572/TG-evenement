@@ -13,7 +13,7 @@
 {{-- ======================================================
      HERO & SEARCH BAR — Mockup Layout
      ====================================================== --}}
-<section class="relative overflow-hidden py-5 pt-12 md:py-16 md:pt-20 px-4 text-center" style="background: radial-gradient(circle at top, rgba(217, 56, 58, 0.05) 0%, rgba(255, 255, 255, 0) 60%), #fafbfc;">
+<section class="relative overflow-hidden py-5 pt-12 md:py-16 md:pt-20 px-4 text-center" style="background: linear-gradient(rgba(255, 255, 255, 0.82), rgba(240, 247, 255, 0.92)), url('{{ asset('images/event_hero.png') }}') center/cover no-repeat;">
     <div class="max-w-3xl mx-auto mb-10 mt-6 animate__animated animate__fadeIn">
         <h1 class="font-extrabold text-slate-900 tracking-tight leading-tight mb-4" style="font-size: clamp(2.2rem, 5vw, 3.5rem); font-family: 'Outfit', sans-serif;">
             Vivez l'instant présent.<br>
