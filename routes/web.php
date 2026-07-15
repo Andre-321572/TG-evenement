@@ -219,6 +219,8 @@ Route::get('/debug-dir-check-abc', function() {
         $serverVars[$key] = $_SERVER[$key] ?? 'not set';
     }
 
+    $tgeventDir = '/var/www/digitalforges.org/htdocs/tgevent.digitalforges.org';
+
     return response()->json([
         'base_path' => base_path(),
         'public_path' => public_path(),
@@ -228,6 +230,10 @@ Route::get('/debug-dir-check-abc', function() {
         'files_in_public' => file_exists(public_path()) ? scandir(public_path()) : 'not found',
         'public_exists_in_base' => file_exists(base_path('public')),
         'public_is_link' => is_link(base_path('public')),
+        'tgevent_dir_exists' => file_exists($tgeventDir),
+        'tgevent_dir_is_link' => is_link($tgeventDir),
+        'tgevent_dir_link_target' => is_link($tgeventDir) ? readlink($tgeventDir) : 'not a link',
+        'files_in_tgevent_dir' => file_exists($tgeventDir) ? scandir($tgeventDir) : 'not found',
     ]);
 });
 
