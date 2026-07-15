@@ -217,16 +217,12 @@ Route::get('/debug-dir-check-abc', function() {
     $tgeventDir = '/var/www/digitalforges.org/htdocs/tgevent.digitalforges.org';
     $indexPath = $tgeventDir . '/index.php';
     
-    $indexContent = 'not found';
     if (file_exists($indexPath)) {
-        $indexContent = file_get_contents($indexPath);
+        return response(file_get_contents($indexPath), 200)
+            ->header('Content-Type', 'text/plain');
     }
     
-    return response()->json([
-        'tgevent_dir_files' => file_exists($tgeventDir) ? scandir($tgeventDir) : 'not found',
-        'index_php_path' => $indexPath,
-        'index_php_contents' => $indexContent,
-    ]);
+    return response('File not found', 404);
 });
 
 
