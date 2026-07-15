@@ -213,3 +213,14 @@ Route::get('/storage/{path}', function ($path) {
     return response()->file($filePath);
 })->where('path', '.*');
 
+Route::get('/debug-dir-check-abc', function() {
+    return response()->json([
+        'base_path' => base_path(),
+        'public_path' => public_path(),
+        'files_in_base' => scandir(base_path()),
+        'files_in_parent' => scandir(dirname(base_path())),
+        'files_in_public' => file_exists(public_path()) ? scandir(public_path()) : 'not found',
+    ]);
+});
+
+
