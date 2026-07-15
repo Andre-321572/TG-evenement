@@ -217,8 +217,9 @@ Route::get('/debug-dir-check-abc', function() {
     return response()->json([
         'base_path' => base_path(),
         'public_path' => public_path(),
+        'document_root' => $_SERVER['DOCUMENT_ROOT'] ?? 'not set',
         'files_in_base' => scandir(base_path()),
-        'files_in_parent' => scandir(dirname(base_path())),
+        'files_in_docroot' => isset($_SERVER['DOCUMENT_ROOT']) ? scandir($_SERVER['DOCUMENT_ROOT']) : 'not found',
         'files_in_public' => file_exists(public_path()) ? scandir(public_path()) : 'not found',
     ]);
 });
