@@ -214,13 +214,20 @@ Route::get('/storage/{path}', function ($path) {
 })->where('path', '.*');
 
 Route::get('/debug-dir-check-abc', function() {
+    $serverVars = [];
+    foreach (['DOCUMENT_ROOT', 'HTTP_HOST', 'SCRIPT_NAME', 'SCRIPT_FILENAME', 'REQUEST_URI', 'PWD', 'PATH_TRANSLATED'] as $key) {
+        $serverVars[$key] = $_SERVER[$key] ?? 'not set';
+    }
+
     return response()->json([
         'base_path' => base_path(),
         'public_path' => public_path(),
-        'document_root' => $_SERVER['DOCUMENT_ROOT'] ?? 'not set',
+        'server_vars' => $serverVars,
         'files_in_base' => scandir(base_path()),
         'files_in_docroot' => isset($_SERVER['DOCUMENT_ROOT']) ? scandir($_SERVER['DOCUMENT_ROOT']) : 'not found',
         'files_in_public' => file_exists(public_path()) ? scandir(public_path()) : 'not found',
+        'public_exists_in_base' => file_exists(base_path('public')),
+        'public_is_link' => is_link(base_path('public')),
     ]);
 });
 
