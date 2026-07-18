@@ -349,7 +349,11 @@
             }
 
             var checkedBillet = document.querySelector('.billet-radio:checked');
-            if (checkedBillet) setRecap(checkedBillet.value);
+            if (checkedBillet) {
+                setRecap(checkedBillet.value);
+            } else {
+                document.getElementById('payBtnText').textContent = 'Payer avec ' + getSelectedMethodName();
+            }
         });
     });
 
