@@ -57,7 +57,8 @@
                             <label class="d-block" for="billet_{{ $billet->id }}" style="cursor:{{ $dispo <= 0 ? 'not-allowed' : 'pointer' }};">
                                 <input type="radio" name="billet_id" id="billet_{{ $billet->id }}"
                                        value="{{ $billet->id }}"
-                                       class="d-none billet-radio"
+                                       class="sr-only billet-radio"
+                                       style="position: absolute; opacity: 0; pointer-events: none;"
                                        {{ $isSelected && $dispo > 0 ? 'checked' : '' }}
                                        {{ $dispo <= 0 ? 'disabled' : '' }}>
                                 <div class="billet-card p-3 rounded-2xl d-flex justify-content-between align-items-center"
@@ -122,8 +123,8 @@
                         <p class="fw-semibold small mb-3" style="color:#475569;">Moyen de paiement</p>
                         <div class="row g-2 mb-3">
                             <div class="col-6 col-md-3">
-                                <label class="d-block w-100" style="cursor:pointer;">
-                                    <input type="radio" name="payment_method" value="stripe" class="d-none payment-method-radio" checked>
+                                <label for="method_stripe" class="d-block w-100" style="cursor:pointer;">
+                                    <input type="radio" name="payment_method" id="method_stripe" value="stripe" class="sr-only payment-method-radio" style="position: absolute; opacity: 0; pointer-events: none;" checked>
                                     <div class="payment-method-card p-3 rounded-2xl text-center border" 
                                          style="border: 2px solid #4f46e5; background:rgba(79,70,229,0.04); transition:all .2s; min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                                         <i class="fas fa-credit-card mb-2" style="font-size:1.2rem; color:#4f46e5;"></i>
@@ -132,8 +133,8 @@
                                 </label>
                             </div>
                             <div class="col-6 col-md-3">
-                                <label class="d-block w-100" style="cursor:pointer;">
-                                    <input type="radio" name="payment_method" value="leekpay" class="d-none payment-method-radio">
+                                <label for="method_leekpay" class="d-block w-100" style="cursor:pointer;">
+                                    <input type="radio" name="payment_method" id="method_leekpay" value="leekpay" class="sr-only payment-method-radio" style="position: absolute; opacity: 0; pointer-events: none;">
                                     <div class="payment-method-card p-3 rounded-2xl text-center border" 
                                          style="border: 1.5px solid rgba(203,213,225,0.6); background:#fff; transition:all .2s; min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                                         <i class="fas fa-mobile-alt mb-2" style="font-size:1.2rem; color:#10b981;"></i>
@@ -142,8 +143,8 @@
                                 </label>
                             </div>
                             <div class="col-6 col-md-3">
-                                <label class="d-block w-100" style="cursor:pointer;">
-                                    <input type="radio" name="payment_method" value="moov_money" class="d-none payment-method-radio">
+                                <label for="method_moov" class="d-block w-100" style="cursor:pointer;">
+                                    <input type="radio" name="payment_method" id="method_moov" value="moov_money" class="sr-only payment-method-radio" style="position: absolute; opacity: 0; pointer-events: none;">
                                     <div class="payment-method-card p-3 rounded-2xl text-center border" 
                                          style="border: 1.5px solid rgba(203,213,225,0.6); background:#fff; transition:all .2s; min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                                         <div class="mb-2 d-flex align-items-center justify-content-center rounded-circle" style="width:24px; height:24px; background:#0284c7; color:#fff; font-size:.7rem; font-weight:bold; font-family:sans-serif;">Moov</div>
@@ -152,8 +153,8 @@
                                 </label>
                             </div>
                             <div class="col-6 col-md-3">
-                                <label class="d-block w-100" style="cursor:pointer;">
-                                    <input type="radio" name="payment_method" value="mix_by_yas" class="d-none payment-method-radio">
+                                <label for="method_mix" class="d-block w-100" style="cursor:pointer;">
+                                    <input type="radio" name="payment_method" id="method_mix" value="mix_by_yas" class="sr-only payment-method-radio" style="position: absolute; opacity: 0; pointer-events: none;">
                                     <div class="payment-method-card p-3 rounded-2xl text-center border" 
                                          style="border: 1.5px solid rgba(203,213,225,0.6); background:#fff; transition:all .2s; min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                                         <div class="mb-2 d-flex align-items-center justify-content-center rounded-circle" style="width:24px; height:24px; background:#ea580c; color:#fff; font-size:.7rem; font-weight:bold; font-family:sans-serif;">Mix</div>
