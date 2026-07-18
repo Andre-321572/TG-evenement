@@ -191,9 +191,6 @@
                                value="{{ old('phone') }}" placeholder="ex: +228 99 12 34 56">
                     </div>
 
-                    {{-- Hidden password input for simulation --}}
-                    <input type="hidden" name="password" id="hiddenPassword">
-
                     {{-- Bouton paiement --}}
                     <button type="submit" id="payBtn"
                             class="btn w-100 py-3 rounded-xl fw-bold text-white border-0 d-flex align-items-center justify-content-center gap-2"
@@ -268,31 +265,7 @@
     </div>
 </main>
 
-<!-- Modal Simulation Paiement Mobile -->
-<div id="mobilePaymentModal" class="d-none" style="position: fixed; inset: 0; z-index: 9999; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;">
-    <div class="glass-card rounded-3xl p-4 p-md-5 border border-white/10 shadow-lg text-center mx-3" style="background: #ffffff; width: 100%; max-width: 500px; position: relative;">
-        
-        <button type="button" id="closeModalBtn" class="btn border-0 position-absolute" style="top: 15px; right: 15px; background: #f1f5f9; color: #64748b; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-times"></i>
-        </button>
 
-        <h2 class="fw-bold mb-3" style="color:#1e293b; font-size:1.5rem;">Paiement avec <span id="modalMethodName">Mobile Money</span></h2>
-        <p class="mb-4 text-muted">Montant à régler : <strong style="color:#4f46e5; font-size:1.2rem;" id="modalAmount">0 FCFA</strong></p>
-
-        <!-- Etape 2: Mot de passe uniquement -->
-        <div id="modal-step-password">
-            <label class="form-label small fw-semibold text-start w-100" style="color:#475569;">Entrez le code secret de votre compte pour confirmer</label>
-            <input type="password" id="modal_password_input" class="form-control py-3 rounded-xl mb-4 text-center fw-bold fs-3" style="letter-spacing: 5px; background:rgba(241,245,249,0.5); border:2px solid #cbd5e1;">
-            <div class="d-flex gap-2">
-                <button type="button" id="modal-btn-submit" class="btn w-100 py-3 rounded-xl fw-bold text-white" style="background:#10b981;">Confirmer le paiement</button>
-            </div>
-        </div>
-        
-        <p class="text-center mt-4 small mb-0" style="color:#94a3b8;">
-            <i class="fas fa-lock me-1"></i> Connexion sécurisée
-        </p>
-    </div>
-</div>
 
 <script>
 (function () {
@@ -380,73 +353,15 @@
         checkedMethod.dispatchEvent(new Event('change'));
     }
 
-    document.getElementById('stripeForm').addEventListener('submit', function(e) {
-        if (currentMethod !== 'stripe' && !document.getElementById('mobilePaymentModal').classList.contains('payment-validated')) {
-            e.preventDefault(); // Stop normal submission
-            
-            var phone = document.getElementById('phoneInput').value.trim();
-            if (!phone) {
-                // Let HTML5 validation handle it if possible, otherwise just return
-                return;
-            }
-
-            // Show Modal for password
-            document.getElementById('modalMethodName').textContent = getSelectedMethodName();
-            document.getElementById('modalAmount').textContent = document.getElementById('recapTotal').textContent;
-            
-            // Reset Modal state
-            document.getElementById('modal_password_input').value = '';
-            document.getElementById('mobilePaymentModal').classList.remove('d-none');
-            
-            // Auto focus password
-            setTimeout(function() {
-                document.getElementById('modal_password_input').focus();
-            }, 100);
-            
-            // Re-enable payBtn in case it was disabled
-            document.getElementById('payBtn').disabled = false;
-            return;
-        }
-
+    document.getElementById('stripeForm').addEventListener('submit', function() {
         var btn = document.getElementById('payBtn');
         btn.disabled = true;
         
         if (currentMethod === 'stripe') {
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Redirection vers Stripe…';
         } else {
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Finalisation du paiement…';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Redirection vers LeekPay…';
         }
-    });
-
-    // Modal Logic
-    document.getElementById('closeModalBtn').addEventListener('click', function() {
-        document.getElementById('mobilePaymentModal').classList.add('d-none');
-    });
-
-    document.getElementById('modal-btn-submit').addEventListener('click', function() {
-        var pwd = document.getElementById('modal_password_input').value.trim();
-        if(pwd.length < 4) {
-            alert("Veuillez saisir votre code secret.");
-            return;
-        }
-        
-        var btn = document.getElementById('modal-btn-submit');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Validation...';
-        
-        // Add flag and hidden password
-        document.getElementById('hiddenPassword').value = pwd;
-        document.getElementById('mobilePaymentModal').classList.add('payment-validated');
-        
-        // Hide modal
-        document.getElementById('mobilePaymentModal').classList.add('d-none');
-        
-        // Submit main form
-        var stripeForm = document.getElementById('stripeForm');
-        var payBtn = document.getElementById('payBtn');
-        payBtn.disabled = true;
-        payBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Finalisation du paiement…';
-        stripeForm.submit();
     });
 })();
 </script>

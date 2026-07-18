@@ -112,34 +112,50 @@ class PaiementController extends Controller
                 return redirect()->back()->with('error', 'Erreur Stripe : ' . $e->getMessage());
             }
         } else {
-            // Moov Money or MIX by Yas simulated checkout
-            $sessionId = 'LOCAL-' . strtoupper($request->payment_method) . '-' . strtoupper(uniqid());
+            // Mobile Money via LeekPay (moov_money, mix_by_yas)
+            $currency = strtoupper(config('services.leekpay.currency', 'XOF'));
+            $amount = (int) ($billet->prix * $quantity);
+            $leekpaySecret = config('services.leekpay.secret');
 
-            // Simulation : if password is '0000', fail the payment.
-            $password = $request->input('password');
-            if ($password === '0000') {
-                return redirect()->back()->with('error', 'Solde insuffisant sur votre compte pour effectuer ce paiement.');
+            if (!$leekpaySecret) {
+                return redirect()->back()->with('error', 'La clé secrète LeekPay n\'est pas configurée. Le paiement est indisponible.');
             }
 
-            // Save Payment Record
-            \App\Models\Paiement::create([
-                'user_id'        => $buyerUserId ?: null,
-                'evenement_id'   => $evenement->id,
-                'amount'         => $billet->prix * $quantity,
-                'status'         => 'completed',
-                'payment_method' => $request->payment_method,
-                'reference'      => $sessionId,
-            ]);
+            try {
+                $response = \Illuminate\Support\Facades\Http::withToken($leekpaySecret)
+                    ->post('https://leekpay.fr/api/v1/checkout', [
+                        'amount'         => $amount,
+                        'currency'       => $currency,
+                        'description'    => 'Billet(s) pour : ' . $evenement->titre . ' — ' . $billet->type,
+                        'return_url'     => route('p.paiement.success') . '?gateway=leekpay&billet_id=' . $billet->id . '&evenement_id=' . $evenement->id . '&quantity=' . $quantity . '&email=' . urlencode($customerEmail) . '&name=' . urlencode($buyerName) . '&hide_layout=1',
+                        'cancel_url'     => route('p.paiement.cancel', $evenement->id) . '?hide_layout=1',
+                        'webhook_url'    => route('p.paiement.webhook'),
+                        'customer_email' => $customerEmail,
+                        'customer_name'  => $buyerName,
+                        'customer_phone' => $request->input('phone'),
+                        'metadata'       => [
+                            'evenement_id'   => $evenement->id,
+                            'billet_id'      => $billet->id,
+                            'user_id'        => $buyerUserId,
+                            'quantity'       => $quantity,
+                            'email'          => $customerEmail,
+                            'name'           => $buyerName,
+                            'payment_method' => $request->payment_method
+                        ]
+                    ]);
 
-            return redirect()->route('p.paiement.success', [
-                'session_id'   => $sessionId,
-                'billet_id'    => $billet->id,
-                'evenement_id' => $evenement->id,
-                'quantity'     => $quantity,
-                'email'        => urlencode($customerEmail),
-                'name'         => urlencode($buyerName),
-                'hide_layout'  => 1
-            ]);
+                $resData = $response->json();
+
+                if ($response->successful() && isset($resData['data']['payment_url'])) {
+                    return redirect($resData['data']['payment_url']);
+                } else {
+                    $errorMsg = $resData['message'] ?? 'Erreur inconnue avec LeekPay.';
+                    return redirect()->back()->with('error', 'Erreur d\'initialisation LeekPay : ' . $errorMsg);
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('LeekPay Checkout error: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Erreur LeekPay : ' . $e->getMessage());
+            }
         }
     }
 
