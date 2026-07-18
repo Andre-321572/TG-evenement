@@ -115,6 +115,12 @@ class PaiementController extends Controller
             // Moov Money or MIX by Yas simulated checkout
             $sessionId = 'LOCAL-' . strtoupper($request->payment_method) . '-' . strtoupper(uniqid());
 
+            // Simulation : if password is '0000', fail the payment.
+            $password = $request->input('password');
+            if ($password === '0000') {
+                return redirect()->back()->with('error', 'Solde insuffisant sur votre compte pour effectuer ce paiement.');
+            }
+
             // Save Payment Record
             \App\Models\Paiement::create([
                 'user_id'        => $buyerUserId ?: null,

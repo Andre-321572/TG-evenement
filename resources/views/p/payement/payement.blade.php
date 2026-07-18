@@ -182,6 +182,18 @@
                         </div>
                     </div>
 
+                    {{-- Mobile Money Phone Input (hidden by default) --}}
+                    <div id="phoneInputContainer" class="d-none mb-4 p-3 rounded-xl" style="background:rgba(241,245,249,0.5); border:1px solid rgba(226,232,240,0.8);">
+                        <label for="phoneInput" class="form-label small fw-bold" style="color:#334155;">
+                            <i class="fas fa-phone-alt me-1" style="color:#4f46e5;"></i> Numéro avec lequel vous voulez payer
+                        </label>
+                        <input type="tel" name="phone" id="phoneInput" class="form-control glass-input rounded-xl" 
+                               value="{{ old('phone') }}" placeholder="ex: +228 99 12 34 56">
+                    </div>
+
+                    {{-- Hidden password input for simulation --}}
+                    <input type="hidden" name="password" id="hiddenPassword">
+
                     {{-- Bouton paiement --}}
                     <button type="submit" id="payBtn"
                             class="btn w-100 py-3 rounded-xl fw-bold text-white border-0 d-flex align-items-center justify-content-center gap-2"
@@ -267,20 +279,12 @@
         <h2 class="fw-bold mb-3" style="color:#1e293b; font-size:1.5rem;">Paiement avec <span id="modalMethodName">Mobile Money</span></h2>
         <p class="mb-4 text-muted">Montant à régler : <strong style="color:#4f46e5; font-size:1.2rem;" id="modalAmount">0 FCFA</strong></p>
 
-        <!-- Etape 1: Numéro de téléphone -->
-        <div id="modal-step-phone">
-            <label class="form-label small fw-semibold text-start w-100" style="color:#475569;">Saisissez votre numéro de téléphone</label>
-            <input type="tel" id="modal_phone_input" class="form-control py-3 rounded-xl mb-4 text-center fw-bold fs-5" placeholder="ex: +228 99 00 00 00" style="background:rgba(241,245,249,0.5); border:2px solid #cbd5e1;">
-            <button type="button" id="modal-btn-next" class="btn w-100 py-3 rounded-xl fw-bold text-white" style="background:#4f46e5;">Suivant</button>
-        </div>
-
-        <!-- Etape 2: Mot de passe (cachée par défaut) -->
-        <div id="modal-step-password" class="d-none">
-            <label class="form-label small fw-semibold text-start w-100" style="color:#475569;">Entrez le code secret de votre compte</label>
+        <!-- Etape 2: Mot de passe uniquement -->
+        <div id="modal-step-password">
+            <label class="form-label small fw-semibold text-start w-100" style="color:#475569;">Entrez le code secret de votre compte pour confirmer</label>
             <input type="password" id="modal_password_input" class="form-control py-3 rounded-xl mb-4 text-center fw-bold fs-3" style="letter-spacing: 5px; background:rgba(241,245,249,0.5); border:2px solid #cbd5e1;">
             <div class="d-flex gap-2">
-                <button type="button" id="modal-btn-back" class="btn w-25 py-3 rounded-xl fw-bold" style="background:#e2e8f0; color:#475569;">Retour</button>
-                <button type="button" id="modal-btn-submit" class="btn w-75 py-3 rounded-xl fw-bold text-white" style="background:#10b981;">Confirmer le paiement</button>
+                <button type="button" id="modal-btn-submit" class="btn w-100 py-3 rounded-xl fw-bold text-white" style="background:#10b981;">Confirmer le paiement</button>
             </div>
         </div>
         
@@ -329,6 +333,16 @@
         radio.addEventListener('change', function() {
             currentMethod = radio.value;
 
+            // Show/hide phone input
+            var phoneContainer = document.getElementById('phoneInputContainer');
+            if (currentMethod === 'stripe') {
+                phoneContainer.classList.add('d-none');
+                document.getElementById('phoneInput').removeAttribute('required');
+            } else {
+                phoneContainer.classList.remove('d-none');
+                document.getElementById('phoneInput').setAttribute('required', 'required');
+            }
+
             // Update provider name label
             var providerName = document.getElementById('providerName');
             if (providerName) {
@@ -370,16 +384,24 @@
         if (currentMethod !== 'stripe' && !document.getElementById('mobilePaymentModal').classList.contains('payment-validated')) {
             e.preventDefault(); // Stop normal submission
             
-            // Show Modal
+            var phone = document.getElementById('phoneInput').value.trim();
+            if (!phone) {
+                // Let HTML5 validation handle it if possible, otherwise just return
+                return;
+            }
+
+            // Show Modal for password
             document.getElementById('modalMethodName').textContent = getSelectedMethodName();
             document.getElementById('modalAmount').textContent = document.getElementById('recapTotal').textContent;
             
             // Reset Modal state
-            document.getElementById('modal_phone_input').value = '';
             document.getElementById('modal_password_input').value = '';
-            document.getElementById('modal-step-phone').classList.remove('d-none');
-            document.getElementById('modal-step-password').classList.add('d-none');
             document.getElementById('mobilePaymentModal').classList.remove('d-none');
+            
+            // Auto focus password
+            setTimeout(function() {
+                document.getElementById('modal_password_input').focus();
+            }, 100);
             
             // Re-enable payBtn in case it was disabled
             document.getElementById('payBtn').disabled = false;
@@ -401,22 +423,6 @@
         document.getElementById('mobilePaymentModal').classList.add('d-none');
     });
 
-    document.getElementById('modal-btn-next').addEventListener('click', function() {
-        var phone = document.getElementById('modal_phone_input').value.trim();
-        if(phone.length < 8) {
-            alert("Veuillez saisir un numéro de téléphone valide.");
-            return;
-        }
-        document.getElementById('modal-step-phone').classList.add('d-none');
-        document.getElementById('modal-step-password').classList.remove('d-none');
-        document.getElementById('modal_password_input').focus();
-    });
-
-    document.getElementById('modal-btn-back').addEventListener('click', function() {
-        document.getElementById('modal-step-password').classList.add('d-none');
-        document.getElementById('modal-step-phone').classList.remove('d-none');
-    });
-
     document.getElementById('modal-btn-submit').addEventListener('click', function() {
         var pwd = document.getElementById('modal_password_input').value.trim();
         if(pwd.length < 4) {
@@ -428,7 +434,8 @@
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Validation...';
         
-        // Add flag and submit form
+        // Add flag and hidden password
+        document.getElementById('hiddenPassword').value = pwd;
         document.getElementById('mobilePaymentModal').classList.add('payment-validated');
         
         // Hide modal
