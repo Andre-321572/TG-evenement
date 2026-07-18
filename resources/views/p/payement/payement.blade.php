@@ -45,6 +45,20 @@
     </div>
     @endif
 
+    @if ($errors->any())
+    <div class="rounded-2xl p-3 mb-4 small"
+         style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); color:#dc2626;">
+        <div class="d-flex align-items-center gap-2 fw-bold mb-2">
+            <i class="fas fa-exclamation-triangle"></i> Veuillez corriger les erreurs suivantes :
+        </div>
+        <ul class="mb-0 ps-3">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <div class="row g-4 align-items-start">
 
         {{-- ── Sélection billet + paiement ── --}}
@@ -117,14 +131,14 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label small fw-semibold" style="color:#64748b;">Nom complet</label>
-                                <input type="text" name="name" class="form-control glass-input rounded-xl"
-                                       value="{{ Auth::user() ? Auth::user()->prenom . ' ' . Auth::user()->nom : '' }}"
+                                <input type="text" name="name" class="form-control glass-input rounded-xl @error('name') is-invalid @enderror"
+                                       value="{{ old('name', Auth::user() ? Auth::user()->prenom . ' ' . Auth::user()->nom : '') }}"
                                        placeholder="Jean Dupont">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-semibold" style="color:#64748b;">Email</label>
-                                <input type="email" name="email" class="form-control glass-input rounded-xl"
-                                       value="{{ Auth::user()?->email ?? '' }}"
+                                <input type="email" name="email" class="form-control glass-input rounded-xl @error('email') is-invalid @enderror"
+                                       value="{{ old('email', Auth::user()?->email ?? '') }}"
                                        placeholder="email@exemple.com">
                             </div>
                         </div>
@@ -133,9 +147,10 @@
                     {{-- Moyen de paiement --}}
                     <div class="mb-4 pt-3" style="border-top:1px solid rgba(203,213,225,0.4);">
                         <p class="fw-semibold small mb-3" style="color:#475569;">Moyen de paiement</p>
+                        @php $oldMethod = old('payment_method', 'stripe'); @endphp
                         <div class="row g-2 mb-3">
                             <div class="col-6 col-md-3">
-                                <input type="radio" name="payment_method" id="method_stripe" value="stripe" class="sr-only payment-method-radio" style="position: absolute; opacity: 0; pointer-events: none;" checked>
+                                <input type="radio" name="payment_method" id="method_stripe" value="stripe" class="d-none payment-method-radio" {{ $oldMethod === 'stripe' ? 'checked' : '' }}>
                                 <label for="method_stripe" class="d-block w-100" style="cursor:pointer;">
                                     <div class="payment-method-card p-3 rounded-2xl text-center border" 
                                          style="min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
@@ -145,7 +160,7 @@
                                 </label>
                             </div>
                             <div class="col-6 col-md-3">
-                                <input type="radio" name="payment_method" id="method_leekpay" value="leekpay" class="sr-only payment-method-radio" style="position: absolute; opacity: 0; pointer-events: none;">
+                                <input type="radio" name="payment_method" id="method_leekpay" value="leekpay" class="d-none payment-method-radio" {{ $oldMethod === 'leekpay' ? 'checked' : '' }}>
                                 <label for="method_leekpay" class="d-block w-100" style="cursor:pointer;">
                                     <div class="payment-method-card p-3 rounded-2xl text-center border" 
                                          style="min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
@@ -155,21 +170,21 @@
                                 </label>
                             </div>
                             <div class="col-6 col-md-3">
-                                <input type="radio" name="payment_method" id="method_moov" value="moov_money" class="sr-only payment-method-radio" style="position: absolute; opacity: 0; pointer-events: none;">
+                                <input type="radio" name="payment_method" id="method_moov" value="moov_money" class="d-none payment-method-radio" {{ $oldMethod === 'moov_money' ? 'checked' : '' }}>
                                 <label for="method_moov" class="d-block w-100" style="cursor:pointer;">
                                     <div class="payment-method-card p-3 rounded-2xl text-center border" 
                                          style="min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                                        <div class="mb-2 d-flex align-items-center justify-content-center rounded-circle" style="width:24px; height:24px; background:#0284c7; color:#fff; font-size:.7rem; font-weight:bold; font-family:sans-serif;">Moov</div>
+                                        <div class="mb-2 d-flex align-items-center justify-content-center rounded-circle text-white fw-bold" style="width:28px; height:28px; background:linear-gradient(135deg, #0284c7, #0369a1); font-size:.65rem; box-shadow: 0 2px 4px rgba(2,132,199,0.3);">Moov</div>
                                         <span class="small fw-bold d-block" style="color:#1e293b; font-size:0.75rem;">Moov Money</span>
                                     </div>
                                 </label>
                             </div>
                             <div class="col-6 col-md-3">
-                                <input type="radio" name="payment_method" id="method_mix" value="mix_by_yas" class="sr-only payment-method-radio" style="position: absolute; opacity: 0; pointer-events: none;">
+                                <input type="radio" name="payment_method" id="method_mix" value="mix_by_yas" class="d-none payment-method-radio" {{ $oldMethod === 'mix_by_yas' ? 'checked' : '' }}>
                                 <label for="method_mix" class="d-block w-100" style="cursor:pointer;">
                                     <div class="payment-method-card p-3 rounded-2xl text-center border" 
                                          style="min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                                        <div class="mb-2 d-flex align-items-center justify-content-center rounded-circle" style="width:24px; height:24px; background:#ea580c; color:#fff; font-size:.7rem; font-weight:bold; font-family:sans-serif;">Mix</div>
+                                        <div class="mb-2 d-flex align-items-center justify-content-center rounded-circle text-white fw-bold" style="width:28px; height:28px; background:linear-gradient(135deg, #ea580c, #c2410c); font-size:.65rem; box-shadow: 0 2px 4px rgba(234,88,12,0.3);">Mix</div>
                                         <span class="small fw-bold d-block" style="color:#1e293b; font-size:0.75rem;">MIX by Yas</span>
                                     </div>
                                 </label>
@@ -177,11 +192,15 @@
                         </div>
 
                         {{-- Mobile Money Phone Input (hidden by default) --}}
-                        <div id="phoneInputContainer" class="d-none mt-3">
-                            <label for="phoneInput" class="form-label small fw-semibold" style="color:#64748b;">Numéro de téléphone de paiement</label>
-                            <input type="tel" name="phone" id="phoneInput" class="form-control glass-input rounded-xl" 
-                                   placeholder="ex: +228 99 12 34 56">
-                            <span class="text-muted small mt-1 d-block" style="font-size: 0.75rem;">Saisissez votre numéro (indicatif pays requis, ex: +228 pour le Togo) pour valider le paiement.</span>
+                        <div id="phoneInputContainer" class="d-none mt-3 p-3 rounded-xl" style="background:rgba(241,245,249,0.5); border:1px solid rgba(226,232,240,0.8);">
+                            <label for="phoneInput" class="form-label small fw-bold" style="color:#334155;">
+                                <i class="fas fa-phone-alt me-1 text-primary"></i> Numéro de téléphone de paiement
+                            </label>
+                            <input type="tel" name="phone" id="phoneInput" class="form-control glass-input rounded-xl @error('phone') is-invalid @enderror" 
+                                   value="{{ old('phone') }}" placeholder="ex: +228 99 12 34 56">
+                            <span class="text-muted small mt-2 d-block" style="font-size: 0.75rem;">
+                                Saisissez votre numéro avec l'indicatif pays (ex: <strong>+228</strong> pour le Togo) pour valider le paiement.
+                            </span>
                         </div>
                     </div>
 
