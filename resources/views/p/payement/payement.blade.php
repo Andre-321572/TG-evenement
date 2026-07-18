@@ -2,6 +2,19 @@
 @section('title', '| Réserver — ' . $evenement->titre)
 
 @section('content')
+<style>
+    .payment-method-card, .billet-card {
+        transition: all 0.2s ease-in-out !important;
+    }
+    .payment-method-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(79, 70, 229, 0.08) !important;
+    }
+    .billet-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(79, 70, 229, 0.05) !important;
+    }
+</style>
 <main class="container py-5">
 
     <div class="mb-4">
@@ -78,7 +91,7 @@
                     {{-- Quantité --}}
                     <div class="mb-4">
                         <label for="quantity" class="fw-semibold small mb-2" style="color:#475569;">Quantité de billets</label>
-                        <select name="quantity" id="quantity-select" class="form-select rounded-xl" style="border-color:rgba(203,213,225,0.7); color:#1e293b; max-width:160px; font-weight:700;">
+                        <select name="quantity" id="quantity-select" class="form-select glass-input rounded-xl" style="max-width:160px; font-weight:700;">
                             @for($i = 1; $i <= 10; $i++)
                                 <option value="{{ $i }}" {{ (isset($preselectedQuantity) && (int)$preselectedQuantity === $i) ? 'selected' : '' }}>{{ $i }}</option>
                             @endfor
@@ -91,15 +104,13 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label small fw-semibold" style="color:#64748b;">Nom complet</label>
-                                <input type="text" name="name" class="form-control rounded-xl"
-                                       style="border-color:rgba(203,213,225,0.7); color:#1e293b;"
+                                <input type="text" name="name" class="form-control glass-input rounded-xl"
                                        value="{{ Auth::user() ? Auth::user()->prenom . ' ' . Auth::user()->nom : '' }}"
                                        placeholder="Jean Dupont">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-semibold" style="color:#64748b;">Email</label>
-                                <input type="email" name="email" class="form-control rounded-xl"
-                                       style="border-color:rgba(203,213,225,0.7); color:#1e293b;"
+                                <input type="email" name="email" class="form-control glass-input rounded-xl"
                                        value="{{ Auth::user()?->email ?? '' }}"
                                        placeholder="email@exemple.com">
                             </div>
@@ -155,8 +166,7 @@
                         {{-- Mobile Money Phone Input (hidden by default) --}}
                         <div id="phoneInputContainer" class="d-none mt-3">
                             <label for="phoneInput" class="form-label small fw-semibold" style="color:#64748b;">Numéro de téléphone de paiement</label>
-                            <input type="tel" name="phone" id="phoneInput" class="form-control rounded-xl" 
-                                   style="border-color:rgba(203,213,225,0.7); color:#1e293b;"
+                            <input type="tel" name="phone" id="phoneInput" class="form-control glass-input rounded-xl" 
                                    placeholder="ex: +228 99 12 34 56">
                             <span class="text-muted small mt-1 d-block" style="font-size: 0.75rem;">Saisissez votre numéro (indicatif pays requis, ex: +228 pour le Togo) pour valider le paiement.</span>
                         </div>
