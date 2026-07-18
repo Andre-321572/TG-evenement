@@ -38,4 +38,11 @@ return [
         'currency' => env('STRIPE_CURRENCY', 'xof'),
     ],
 
+    'leekpay' => [
+        'key'      => env('LEEKPAY_PUBLIC_KEY'),
+        'secret'   => env('LEEKPAY_SECRET_KEY'),
+        'currency' => env('LEEKPAY_CURRENCY', 'XOF'),
+    ],
+
 ];
+

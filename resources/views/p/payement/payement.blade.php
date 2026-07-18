@@ -100,6 +100,62 @@
                         </div>
                     </div>
 
+                    {{-- Moyen de paiement --}}
+                    <div class="mb-4 pt-3" style="border-top:1px solid rgba(203,213,225,0.4);">
+                        <p class="fw-semibold small mb-3" style="color:#475569;">Moyen de paiement</p>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6 col-md-3">
+                                <label class="d-block w-100" style="cursor:pointer;">
+                                    <input type="radio" name="payment_method" value="stripe" class="d-none payment-method-radio" checked>
+                                    <div class="payment-method-card p-3 rounded-2xl text-center border" 
+                                         style="border: 2px solid #4f46e5; background:rgba(79,70,229,0.04); transition:all .2s; min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                        <i class="fas fa-credit-card mb-2" style="font-size:1.2rem; color:#4f46e5;"></i>
+                                        <span class="small fw-bold d-block" style="color:#1e293b; font-size:0.75rem;">Carte (Stripe)</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <label class="d-block w-100" style="cursor:pointer;">
+                                    <input type="radio" name="payment_method" value="leekpay" class="d-none payment-method-radio">
+                                    <div class="payment-method-card p-3 rounded-2xl text-center border" 
+                                         style="border: 1.5px solid rgba(203,213,225,0.6); background:#fff; transition:all .2s; min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                        <i class="fas fa-mobile-alt mb-2" style="font-size:1.2rem; color:#10b981;"></i>
+                                        <span class="small fw-bold d-block" style="color:#1e293b; font-size:0.75rem;">Mobile Money</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <label class="d-block w-100" style="cursor:pointer;">
+                                    <input type="radio" name="payment_method" value="moov_money" class="d-none payment-method-radio">
+                                    <div class="payment-method-card p-3 rounded-2xl text-center border" 
+                                         style="border: 1.5px solid rgba(203,213,225,0.6); background:#fff; transition:all .2s; min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                        <div class="mb-2 d-flex align-items-center justify-content-center rounded-circle" style="width:24px; height:24px; background:#0284c7; color:#fff; font-size:.7rem; font-weight:bold; font-family:sans-serif;">Moov</div>
+                                        <span class="small fw-bold d-block" style="color:#1e293b; font-size:0.75rem;">Moov Money</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <label class="d-block w-100" style="cursor:pointer;">
+                                    <input type="radio" name="payment_method" value="mix_by_yas" class="d-none payment-method-radio">
+                                    <div class="payment-method-card p-3 rounded-2xl text-center border" 
+                                         style="border: 1.5px solid rgba(203,213,225,0.6); background:#fff; transition:all .2s; min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                        <div class="mb-2 d-flex align-items-center justify-content-center rounded-circle" style="width:24px; height:24px; background:#ea580c; color:#fff; font-size:.7rem; font-weight:bold; font-family:sans-serif;">Mix</div>
+                                        <span class="small fw-bold d-block" style="color:#1e293b; font-size:0.75rem;">MIX by Yas</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        {{-- Mobile Money Phone Input (hidden by default) --}}
+                        <div id="phoneInputContainer" class="d-none mt-3">
+                            <label for="phoneInput" class="form-label small fw-semibold" style="color:#64748b;">Numéro de téléphone de paiement</label>
+                            <input type="tel" name="phone" id="phoneInput" class="form-control rounded-xl" 
+                                   style="border-color:rgba(203,213,225,0.7); color:#1e293b;"
+                                   placeholder="ex: +228 99 12 34 56">
+                            <span class="text-muted small mt-1 d-block" style="font-size: 0.75rem;">Saisissez votre numéro (indicatif pays requis, ex: +228 pour le Togo) pour valider le paiement.</span>
+                        </div>
+                    </div>
+
                     {{-- Bouton paiement --}}
                     <button type="submit" id="payBtn"
                             class="btn w-100 py-3 rounded-xl fw-bold text-white border-0 d-flex align-items-center justify-content-center gap-2"
@@ -111,7 +167,7 @@
 
                     <p class="text-center mt-3 small" style="color:#94a3b8;">
                         <i class="fas fa-lock me-1"></i>
-                        Paiement sécurisé SSL — Powered by <strong>Stripe</strong>
+                        Paiement sécurisé SSL — Sécurisé par <strong id="providerName">Stripe</strong>
                     </p>
                 </form>
             </div>
@@ -177,8 +233,16 @@
 <script>
 (function () {
     var billets = @json($evenement->billets->map(fn($b) => ['id' => $b->id, 'type' => $b->type, 'prix' => $b->prix]));
+    var currentMethod = 'stripe';
 
     function fmt(n) { return new Intl.NumberFormat('fr-FR').format(n) + ' FCFA'; }
+
+    function getSelectedMethodName() {
+        if (currentMethod === 'moov_money') return 'Moov Money';
+        if (currentMethod === 'mix_by_yas') return 'MIX by Yas';
+        if (currentMethod === 'leekpay') return 'Mobile Money';
+        return 'Stripe';
+    }
 
     function setRecap(id) {
         var b = billets.find(function(x){ return String(x.id) === String(id); });
@@ -187,7 +251,7 @@
         var total = b.prix * qty;
         document.getElementById('recapType').textContent  = b.type + ' (x' + qty + ')';
         document.getElementById('recapTotal').textContent = fmt(total);
-        document.getElementById('payBtnText').textContent = 'Payer ' + fmt(total) + ' avec Stripe';
+        document.getElementById('payBtnText').textContent = 'Payer ' + fmt(total) + ' avec ' + getSelectedMethodName();
     }
 
     document.querySelectorAll('.billet-radio').forEach(function(radio) {
@@ -207,13 +271,70 @@
         if (checked) setRecap(checked.value);
     });
 
+    // Payment method radio logic
+    document.querySelectorAll('.payment-method-radio').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.payment-method-card').forEach(function(c) {
+                c.style.borderColor = 'rgba(203,213,225,0.6)';
+                c.style.background  = '#fff';
+                c.style.borderWidth = '1.5px';
+            });
+            var card = radio.closest('label').querySelector('.payment-method-card');
+            card.style.borderColor = '#4f46e5';
+            card.style.background  = 'rgba(79,70,229,0.04)';
+            card.style.borderWidth = '2px';
+            
+            currentMethod = radio.value;
+
+            // Show/hide phone input
+            var phoneContainer = document.getElementById('phoneInputContainer');
+            if (currentMethod === 'stripe') {
+                phoneContainer.classList.add('d-none');
+                document.getElementById('phoneInput').removeAttribute('required');
+            } else {
+                phoneContainer.classList.remove('d-none');
+                document.getElementById('phoneInput').setAttribute('required', 'required');
+            }
+
+            // Update provider name label
+            var providerName = document.getElementById('providerName');
+            if (providerName) {
+                if (currentMethod === 'stripe') {
+                    providerName.textContent = 'Stripe';
+                } else if (currentMethod === 'leekpay') {
+                    providerName.textContent = 'LeekPay';
+                } else {
+                    providerName.textContent = 'Mobile Money';
+                }
+            }
+
+            // Update submit button text and icon
+            var btnIcon = document.querySelector('#payBtn i');
+            if (currentMethod === 'stripe') {
+                btnIcon.className = 'fas fa-credit-card';
+            } else {
+                btnIcon.className = 'fas fa-mobile-alt';
+            }
+
+            var checkedBillet = document.querySelector('.billet-radio:checked');
+            if (checkedBillet) setRecap(checkedBillet.value);
+        });
+    });
+
     var checked = document.querySelector('.billet-radio:checked');
     if (checked) setRecap(checked.value);
 
     document.getElementById('stripeForm').addEventListener('submit', function() {
         var btn = document.getElementById('payBtn');
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Redirection vers Stripe…';
+        
+        if (currentMethod === 'stripe') {
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Redirection vers Stripe…';
+        } else if (currentMethod === 'leekpay') {
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Redirection vers LeekPay…';
+        } else {
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Validation du paiement mobile en cours…';
+        }
     });
 })();
 </script>

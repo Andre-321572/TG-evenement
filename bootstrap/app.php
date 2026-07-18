@@ -28,6 +28,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'scanner' => \App\Http\Middleware\ScannerMiddleware::class,
         ]);
+        $middleware->validateCsrfTokens(except: [
+            'p/payement/webhook',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -50,6 +50,7 @@ Route::prefix('p')->name('p.')->group(function () {
     Route::get('/payement/cancel/{evenement}', [PaiementController::class, 'cancel'])->name('paiement.cancel');
     Route::get('/payement/process', [PaiementController::class, 'processPayment'])->name('paiement.process');
     Route::get('/payement/{evenement}', [PaiementController::class, 'showForm'])->name('paiement.form');
+    Route::post('/payement/webhook', [PaiementController::class, 'webhook'])->name('paiement.webhook');
 });
 
 Route::middleware('auth')->group(function () {
