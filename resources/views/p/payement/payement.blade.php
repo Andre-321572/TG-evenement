@@ -3,16 +3,31 @@
 
 @section('content')
 <style>
-    .payment-method-card, .billet-card {
+    .payment-method-card {
+        border: 1.5px solid rgba(203, 213, 225, 0.6) !important;
+        background: #fff !important;
         transition: all 0.2s ease-in-out !important;
     }
     .payment-method-card:hover {
-        transform: translateY(-3px);
+        transform: translateY(-3px) !important;
         box-shadow: 0 8px 20px rgba(79, 70, 229, 0.08) !important;
     }
+    .payment-method-radio:checked + label .payment-method-card {
+        border: 2px solid #4f46e5 !important;
+        background: rgba(79, 70, 229, 0.04) !important;
+    }
+    .billet-card {
+        border: 1.5px solid rgba(203, 213, 225, 0.6) !important;
+        background: #fff !important;
+        transition: all 0.2s ease-in-out !important;
+    }
     .billet-card:hover {
-        transform: translateY(-2px);
+        transform: translateY(-2px) !important;
         box-shadow: 0 6px 15px rgba(79, 70, 229, 0.05) !important;
+    }
+    .billet-radio:checked + label .billet-card {
+        border: 2px solid #4f46e5 !important;
+        background: rgba(79, 70, 229, 0.04) !important;
     }
 </style>
 <main class="container py-5">
@@ -62,10 +77,7 @@
                                    {{ $dispo <= 0 ? 'disabled' : '' }}>
                             <label class="d-block" for="billet_{{ $billet->id }}" style="cursor:{{ $dispo <= 0 ? 'not-allowed' : 'pointer' }};">
                                 <div class="billet-card p-3 rounded-2xl d-flex justify-content-between align-items-center"
-                                     style="border: 1.5px solid {{ $isSelected && $dispo > 0 ? '#4f46e5' : 'rgba(203,213,225,0.6)' }};
-                                            background: {{ $isSelected && $dispo > 0 ? 'rgba(79,70,229,0.04)' : '#fff' }};
-                                            opacity: {{ $dispo <= 0 ? '0.5' : '1' }};
-                                            transition: all .2s;">
+                                     style="opacity: {{ $dispo <= 0 ? '0.5' : '1' }};">
                                     <div>
                                         <span class="fw-bold d-block" style="color:#1e293b; font-size:.95rem;">{{ $billet->type }}</span>
                                         @if($billet->description)
@@ -126,7 +138,7 @@
                                 <input type="radio" name="payment_method" id="method_stripe" value="stripe" class="sr-only payment-method-radio" style="position: absolute; opacity: 0; pointer-events: none;" checked>
                                 <label for="method_stripe" class="d-block w-100" style="cursor:pointer;">
                                     <div class="payment-method-card p-3 rounded-2xl text-center border" 
-                                         style="border: 2px solid #4f46e5; background:rgba(79,70,229,0.04); transition:all .2s; min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                         style="min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                                         <i class="fas fa-credit-card mb-2" style="font-size:1.2rem; color:#4f46e5;"></i>
                                         <span class="small fw-bold d-block" style="color:#1e293b; font-size:0.75rem;">Carte (Stripe)</span>
                                     </div>
@@ -136,7 +148,7 @@
                                 <input type="radio" name="payment_method" id="method_leekpay" value="leekpay" class="sr-only payment-method-radio" style="position: absolute; opacity: 0; pointer-events: none;">
                                 <label for="method_leekpay" class="d-block w-100" style="cursor:pointer;">
                                     <div class="payment-method-card p-3 rounded-2xl text-center border" 
-                                         style="border: 1.5px solid rgba(203,213,225,0.6); background:#fff; transition:all .2s; min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                         style="min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                                         <i class="fas fa-mobile-alt mb-2" style="font-size:1.2rem; color:#10b981;"></i>
                                         <span class="small fw-bold d-block" style="color:#1e293b; font-size:0.75rem;">Mobile Money</span>
                                     </div>
@@ -146,7 +158,7 @@
                                 <input type="radio" name="payment_method" id="method_moov" value="moov_money" class="sr-only payment-method-radio" style="position: absolute; opacity: 0; pointer-events: none;">
                                 <label for="method_moov" class="d-block w-100" style="cursor:pointer;">
                                     <div class="payment-method-card p-3 rounded-2xl text-center border" 
-                                         style="border: 1.5px solid rgba(203,213,225,0.6); background:#fff; transition:all .2s; min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                         style="min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                                         <div class="mb-2 d-flex align-items-center justify-content-center rounded-circle" style="width:24px; height:24px; background:#0284c7; color:#fff; font-size:.7rem; font-weight:bold; font-family:sans-serif;">Moov</div>
                                         <span class="small fw-bold d-block" style="color:#1e293b; font-size:0.75rem;">Moov Money</span>
                                     </div>
@@ -156,7 +168,7 @@
                                 <input type="radio" name="payment_method" id="method_mix" value="mix_by_yas" class="sr-only payment-method-radio" style="position: absolute; opacity: 0; pointer-events: none;">
                                 <label for="method_mix" class="d-block w-100" style="cursor:pointer;">
                                     <div class="payment-method-card p-3 rounded-2xl text-center border" 
-                                         style="border: 1.5px solid rgba(203,213,225,0.6); background:#fff; transition:all .2s; min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                         style="min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                                         <div class="mb-2 d-flex align-items-center justify-content-center rounded-circle" style="width:24px; height:24px; background:#ea580c; color:#fff; font-size:.7rem; font-weight:bold; font-family:sans-serif;">Mix</div>
                                         <span class="small fw-bold d-block" style="color:#1e293b; font-size:0.75rem;">MIX by Yas</span>
                                     </div>
@@ -273,18 +285,6 @@
 
     document.querySelectorAll('.billet-radio').forEach(function(radio) {
         radio.addEventListener('change', function() {
-            document.querySelectorAll('.billet-card').forEach(function(c) {
-                c.style.borderColor = 'rgba(203,213,225,0.6)';
-                c.style.background  = '#fff';
-            });
-            var label = document.querySelector('label[for="' + radio.id + '"]');
-            if (label) {
-                var card = label.querySelector('.billet-card');
-                if (card) {
-                    card.style.borderColor = '#4f46e5';
-                    card.style.background  = 'rgba(79,70,229,0.04)';
-                }
-            }
             setRecap(radio.value);
         });
     });
@@ -297,21 +297,6 @@
     // Payment method radio logic
     document.querySelectorAll('.payment-method-radio').forEach(function(radio) {
         radio.addEventListener('change', function() {
-            document.querySelectorAll('.payment-method-card').forEach(function(c) {
-                c.style.borderColor = 'rgba(203,213,225,0.6)';
-                c.style.background  = '#fff';
-                c.style.borderWidth = '1.5px';
-            });
-            var label = document.querySelector('label[for="' + radio.id + '"]');
-            if (label) {
-                var card = label.querySelector('.payment-method-card');
-                if (card) {
-                    card.style.borderColor = '#4f46e5';
-                    card.style.background  = 'rgba(79,70,229,0.04)';
-                    card.style.borderWidth = '2px';
-                }
-            }
-            
             currentMethod = radio.value;
 
             // Show/hide phone input
