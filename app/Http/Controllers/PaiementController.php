@@ -37,8 +37,7 @@ class PaiementController extends Controller
             'quantity'       => 'nullable|integer|min:1|max:100',
             'email'          => 'nullable|email',
             'user_id'        => 'nullable|integer',
-            'payment_method' => 'required|in:stripe,moov_money,mix_by_yas,leekpay',
-            'phone'          => 'required_if:payment_method,moov_money,mix_by_yas,leekpay|nullable|string',
+            'payment_method' => 'required|in:stripe,moov_money,mix_by_yas',
         ]);
 
         $evenement = Evenement::with('billets')->findOrFail($request->evenement_id);
@@ -112,89 +111,28 @@ class PaiementController extends Controller
                 Log::error('Stripe Checkout error: ' . $e->getMessage());
                 return redirect()->back()->with('error', 'Erreur Stripe : ' . $e->getMessage());
             }
-        } elseif ($request->payment_method === 'leekpay') {
-            $currency = strtoupper(config('services.leekpay.currency', 'XOF'));
-            $amount = (int) $billet->prix * $quantity;
-            $leekpaySecret = config('services.leekpay.secret');
-
-            if (!$leekpaySecret) {
-                return redirect()->back()->with('error', 'La clé secrète LeekPay n\'est pas configurée.');
-            }
-
-            try {
-                $response = Http::withToken($leekpaySecret)
-                    ->post('https://leekpay.fr/api/v1/checkout', [
-                        'amount'         => $amount,
-                        'currency'       => $currency,
-                        'description'    => 'Billet(s) pour : ' . $evenement->titre . ' — ' . $billet->type,
-                        'return_url'     => route('p.paiement.success') . '?gateway=leekpay&session_id={checkout_id}&billet_id=' . $billet->id . '&evenement_id=' . $evenement->id . '&quantity=' . $quantity . '&user_id=' . $buyerUserId . '&email=' . urlencode($customerEmail) . '&name=' . urlencode($buyerName) . '&hide_layout=1',
-                        'cancel_url'     => route('p.paiement.cancel', $evenement->id) . '?hide_layout=1',
-                        'webhook_url'    => route('p.paiement.webhook'),
-                        'customer_email' => $customerEmail,
-                        'customer_name'  => $buyerName,
-                        'customer_phone' => $request->input('phone'),
-                        'metadata'       => [
-                            'evenement_id' => $evenement->id,
-                            'billet_id'    => $billet->id,
-                            'user_id'      => $buyerUserId,
-                            'quantity'     => $quantity,
-                            'email'        => $customerEmail,
-                            'name'         => $buyerName,
-                        ]
-                    ]);
-
-                if ($response->successful()) {
-                    $resData = $response->json();
-                    if (isset($resData['success']) && $resData['success'] && isset($resData['data']['payment_url'])) {
-                        $checkoutId = $resData['data']['id'];
-                        $paymentUrl = $resData['data']['payment_url'];
-
-                        // Save Payment Record
-                        \App\Models\Paiement::create([
-                            'user_id'        => $buyerUserId ?: null,
-                            'evenement_id'   => $evenement->id,
-                            'amount'         => $amount,
-                            'status'         => 'pending',
-                            'payment_method' => 'leekpay',
-                            'reference'      => $checkoutId,
-                        ]);
-
-                        // Stocker le checkout ID dans la session
-                        session(['pending_leekpay_checkout_id' => $checkoutId]);
-
-                        return redirect($paymentUrl);
-                    }
-                }
-
-                Log::error('LeekPay checkout creation failed: ' . $response->body());
-                return redirect()->back()->with('error', 'Erreur d\'initialisation LeekPay : ' . ($response->json('message') ?? 'Erreur inconnue'));
-
-            } catch (\Exception $e) {
-                Log::error('LeekPay checkout exception: ' . $e->getMessage());
-                return redirect()->back()->with('error', 'Erreur de connexion LeekPay : ' . $e->getMessage());
-            }
         } else {
             // Moov Money or MIX by Yas simulated checkout
             $sessionId = 'LOCAL-' . strtoupper($request->payment_method) . '-' . strtoupper(uniqid());
 
-            // Save Payment Record
+            // Save Payment Record as pending
             \App\Models\Paiement::create([
                 'user_id'        => $buyerUserId ?: null,
                 'evenement_id'   => $evenement->id,
                 'amount'         => $billet->prix * $quantity,
-                'status'         => 'completed',
+                'status'         => 'pending',
                 'payment_method' => $request->payment_method,
                 'reference'      => $sessionId,
             ]);
 
-            return redirect()->route('p.paiement.success', [
+            // Rediriger vers la page de simulation de paiement mobile
+            return redirect()->route('p.paiement.simulate', [
                 'session_id'   => $sessionId,
                 'billet_id'    => $billet->id,
                 'evenement_id' => $evenement->id,
                 'quantity'     => $quantity,
-                'email'        => $customerEmail,
-                'name'         => $buyerName,
-                'hide_layout'  => 1
+                'email'        => urlencode($customerEmail),
+                'name'         => urlencode($buyerName),
             ]);
         }
     }
@@ -500,6 +438,55 @@ class PaiementController extends Controller
         return redirect()
             ->route('p.detail', $evenement->id)
             ->with('error', 'Paiement annulé. Vous pouvez réessayer à tout moment.');
+    }
+
+    /**
+     * Affiche la page de simulation de paiement mobile.
+     */
+    public function showSimulate(Request $request)
+    {
+        $sessionId = $request->get('session_id');
+        $payment = \App\Models\Paiement::where('reference', $sessionId)->firstOrFail();
+        
+        $methodName = $payment->payment_method === 'moov_money' ? 'Moov Money' : 'MIX by Yas';
+        $amount = $payment->amount;
+
+        return view('p.payement.simulate', compact('payment', 'sessionId', 'methodName', 'amount'));
+    }
+
+    /**
+     * Traite la simulation de paiement mobile.
+     */
+    public function processSimulate(Request $request)
+    {
+        $request->validate([
+            'session_id' => 'required|string',
+            'phone'      => 'required|string',
+            'password'   => 'required|string',
+        ]);
+
+        $sessionId = $request->input('session_id');
+        $payment = \App\Models\Paiement::where('reference', $sessionId)->firstOrFail();
+
+        // Marquer comme complété
+        $payment->update(['status' => 'completed']);
+
+        // Récupérer les paramètres passés dans l'URL pour la redirection success
+        $billetId = $request->input('billet_id');
+        $evenementId = $request->input('evenement_id');
+        $quantity = $request->input('quantity', 1);
+        $email = $request->input('email');
+        $name = $request->input('name');
+
+        return redirect()->route('p.paiement.success', [
+            'session_id'   => $sessionId,
+            'billet_id'    => $billetId,
+            'evenement_id' => $evenementId,
+            'quantity'     => $quantity,
+            'email'        => $email,
+            'name'         => $name,
+            'hide_layout'  => 1
+        ]);
     }
 
     // Ancienne méthode conservée pour compatibilité

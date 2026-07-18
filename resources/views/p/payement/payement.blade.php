@@ -149,7 +149,7 @@
                         <p class="fw-semibold small mb-3" style="color:#475569;">Moyen de paiement</p>
                         @php $oldMethod = old('payment_method', 'stripe'); @endphp
                         <div class="row g-2 mb-3">
-                            <div class="col-6 col-md-3">
+                            <div class="col-12 col-md-4">
                                 <input type="radio" name="payment_method" id="method_stripe" value="stripe" class="d-none payment-method-radio" {{ $oldMethod === 'stripe' ? 'checked' : '' }}>
                                 <label for="method_stripe" class="d-block w-100" style="cursor:pointer;">
                                     <div class="payment-method-card p-3 rounded-2xl text-center border" 
@@ -159,17 +159,7 @@
                                     </div>
                                 </label>
                             </div>
-                            <div class="col-6 col-md-3">
-                                <input type="radio" name="payment_method" id="method_leekpay" value="leekpay" class="d-none payment-method-radio" {{ $oldMethod === 'leekpay' ? 'checked' : '' }}>
-                                <label for="method_leekpay" class="d-block w-100" style="cursor:pointer;">
-                                    <div class="payment-method-card p-3 rounded-2xl text-center border" 
-                                         style="min-height:85px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                                        <i class="fas fa-mobile-alt mb-2" style="font-size:1.2rem; color:#10b981;"></i>
-                                        <span class="small fw-bold d-block" style="color:#1e293b; font-size:0.75rem;">Mobile Money</span>
-                                    </div>
-                                </label>
-                            </div>
-                            <div class="col-6 col-md-3">
+                            <div class="col-12 col-md-4">
                                 <input type="radio" name="payment_method" id="method_moov" value="moov_money" class="d-none payment-method-radio" {{ $oldMethod === 'moov_money' ? 'checked' : '' }}>
                                 <label for="method_moov" class="d-block w-100" style="cursor:pointer;">
                                     <div class="payment-method-card p-3 rounded-2xl text-center border" 
@@ -179,7 +169,7 @@
                                     </div>
                                 </label>
                             </div>
-                            <div class="col-6 col-md-3">
+                            <div class="col-12 col-md-4">
                                 <input type="radio" name="payment_method" id="method_mix" value="mix_by_yas" class="d-none payment-method-radio" {{ $oldMethod === 'mix_by_yas' ? 'checked' : '' }}>
                                 <label for="method_mix" class="d-block w-100" style="cursor:pointer;">
                                     <div class="payment-method-card p-3 rounded-2xl text-center border" 
@@ -189,18 +179,6 @@
                                     </div>
                                 </label>
                             </div>
-                        </div>
-
-                        {{-- Mobile Money Phone Input (hidden by default) --}}
-                        <div id="phoneInputContainer" class="d-none mt-3 p-3 rounded-xl" style="background:rgba(241,245,249,0.5); border:1px solid rgba(226,232,240,0.8);">
-                            <label for="phoneInput" class="form-label small fw-bold" style="color:#334155;">
-                                <i class="fas fa-phone-alt me-1 text-primary"></i> Numéro de téléphone de paiement
-                            </label>
-                            <input type="tel" name="phone" id="phoneInput" class="form-control glass-input rounded-xl @error('phone') is-invalid @enderror" 
-                                   value="{{ old('phone') }}" placeholder="ex: +228 99 12 34 56">
-                            <span class="text-muted small mt-2 d-block" style="font-size: 0.75rem;">
-                                Saisissez votre numéro avec l'indicatif pays (ex: <strong>+228</strong> pour le Togo) pour valider le paiement.
-                            </span>
                         </div>
                     </div>
 
@@ -288,7 +266,6 @@
     function getSelectedMethodName() {
         if (currentMethod === 'moov_money') return 'Moov Money';
         if (currentMethod === 'mix_by_yas') return 'MIX by Yas';
-        if (currentMethod === 'leekpay') return 'Mobile Money';
         return 'Stripe';
     }
 
@@ -318,25 +295,15 @@
         radio.addEventListener('change', function() {
             currentMethod = radio.value;
 
-            // Show/hide phone input
-            var phoneContainer = document.getElementById('phoneInputContainer');
-            if (currentMethod === 'stripe') {
-                phoneContainer.classList.add('d-none');
-                document.getElementById('phoneInput').removeAttribute('required');
-            } else {
-                phoneContainer.classList.remove('d-none');
-                document.getElementById('phoneInput').setAttribute('required', 'required');
-            }
-
             // Update provider name label
             var providerName = document.getElementById('providerName');
             if (providerName) {
                 if (currentMethod === 'stripe') {
                     providerName.textContent = 'Stripe';
-                } else if (currentMethod === 'leekpay') {
-                    providerName.textContent = 'LeekPay';
+                } else if (currentMethod === 'moov_money') {
+                    providerName.textContent = 'Moov Money';
                 } else {
-                    providerName.textContent = 'Mobile Money';
+                    providerName.textContent = 'MIX by Yas';
                 }
             }
 
@@ -371,10 +338,8 @@
         
         if (currentMethod === 'stripe') {
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Redirection vers Stripe…';
-        } else if (currentMethod === 'leekpay') {
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Redirection vers LeekPay…';
         } else {
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Validation du paiement mobile en cours…';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Redirection vers la page de paiement sécurisée…';
         }
     });
 })();
