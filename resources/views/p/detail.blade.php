@@ -205,9 +205,7 @@
                         <p class="text-slate-400 small mb-4">Taxes incluses à la finalisation</p>
 
                         @if($detail_evenement->billets && $detail_evenement->billets->count() > 0)
-                            <form action="{{ route('p.paiement.checkout') }}" method="POST" id="checkout-form">
-                                @csrf
-                                <input type="hidden" name="evenement_id" value="{{ $detail_evenement->id }}">
+                            <form action="{{ route('p.paiement.form', $detail_evenement->id) }}" method="GET" id="checkout-form">
                                 <input type="hidden" name="billet_id" id="selected_billet_id" value="">
                                 <input type="hidden" name="quantity" id="selected_quantity" value="0">
 

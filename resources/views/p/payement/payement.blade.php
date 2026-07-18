@@ -35,16 +35,21 @@
                         <p class="fw-semibold small mb-2" style="color:#475569;">Type de billet</p>
                         <div class="d-flex flex-column gap-2">
                             @foreach($evenement->billets as $billet)
-                            @php $dispo = $billet->quantite_disponible ?? 99; @endphp
+                            @php 
+                                $dispo = $billet->quantite_disponible ?? 99; 
+                                $isSelected = isset($preselectedBilletId) 
+                                    ? ((string)$billet->id === (string)$preselectedBilletId) 
+                                    : $loop->first;
+                            @endphp
                             <label class="d-block" for="billet_{{ $billet->id }}" style="cursor:{{ $dispo <= 0 ? 'not-allowed' : 'pointer' }};">
                                 <input type="radio" name="billet_id" id="billet_{{ $billet->id }}"
                                        value="{{ $billet->id }}"
                                        class="d-none billet-radio"
-                                       {{ $loop->first && $dispo > 0 ? 'checked' : '' }}
+                                       {{ $isSelected && $dispo > 0 ? 'checked' : '' }}
                                        {{ $dispo <= 0 ? 'disabled' : '' }}>
                                 <div class="billet-card p-3 rounded-2xl d-flex justify-content-between align-items-center"
-                                     style="border: 1.5px solid {{ $loop->first && $dispo > 0 ? '#4f46e5' : 'rgba(203,213,225,0.6)' }};
-                                            background: {{ $loop->first && $dispo > 0 ? 'rgba(79,70,229,0.04)' : '#fff' }};
+                                     style="border: 1.5px solid {{ $isSelected && $dispo > 0 ? '#4f46e5' : 'rgba(203,213,225,0.6)' }};
+                                            background: {{ $isSelected && $dispo > 0 ? 'rgba(79,70,229,0.04)' : '#fff' }};
                                             opacity: {{ $dispo <= 0 ? '0.5' : '1' }};
                                             transition: all .2s;">
                                     <div>
@@ -74,7 +79,7 @@
                         <label for="quantity" class="fw-semibold small mb-2" style="color:#475569;">Quantité de billets</label>
                         <select name="quantity" id="quantity-select" class="form-select rounded-xl" style="border-color:rgba(203,213,225,0.7); color:#1e293b; max-width:160px; font-weight:700;">
                             @for($i = 1; $i <= 10; $i++)
-                                <option value="{{ $i }}">{{ $i }}</option>
+                                <option value="{{ $i }}" {{ (isset($preselectedQuantity) && (int)$preselectedQuantity === $i) ? 'selected' : '' }}>{{ $i }}</option>
                             @endfor
                         </select>
                     </div>

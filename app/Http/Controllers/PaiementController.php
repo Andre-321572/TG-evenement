@@ -13,13 +13,17 @@ use Stripe\Checkout\Session as StripeSession;
 
 class PaiementController extends Controller
 {
-    public function showForm(Evenement $evenement)
+    public function showForm(Evenement $evenement, Request $request)
     {
         if ($evenement->isPasse()) {
             return redirect()->route('p.detail', $evenement->id)->with('error', 'Cet événement est déjà passé, vous ne pouvez plus acheter de tickets.');
         }
         $evenement->load(['billets', 'sponsors']);
-        return view('p.payement.payement', compact('evenement'));
+
+        $preselectedBilletId = $request->query('billet_id');
+        $preselectedQuantity = $request->query('quantity', 1);
+
+        return view('p.payement.payement', compact('evenement', 'preselectedBilletId', 'preselectedQuantity'));
     }
 
     /**
