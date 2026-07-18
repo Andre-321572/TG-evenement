@@ -66,6 +66,18 @@
      MAIN CONTENT
      ═══════════════════════════════════════════════ --}}
 <main class="container py-4 text-slate-800">
+    @if(session('error'))
+    <div class="alert alert-danger rounded-2xl p-3 mb-4 d-flex align-items-center gap-2 small"
+         style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); color:#dc2626;">
+        <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+    </div>
+    @endif
+    @if(session('success'))
+    <div class="alert alert-success rounded-2xl p-3 mb-4 d-flex align-items-center gap-2 small"
+         style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); color:#10b981;">
+        <i class="fas fa-check-circle"></i> {{ session('success') }}
+    </div>
+    @endif
     <div class="row g-4 align-items-start">
 
         {{-- ── Left Column (8/12) ── --}}
