@@ -125,6 +125,7 @@ class PaiementController extends Controller
                         'description'    => 'Billet(s) pour : ' . $evenement->titre . ' — ' . $billet->type,
                         'return_url'     => route('p.paiement.success') . '?gateway=leekpay&session_id={checkout_id}&billet_id=' . $billet->id . '&evenement_id=' . $evenement->id . '&quantity=' . $quantity . '&user_id=' . $buyerUserId . '&email=' . urlencode($customerEmail) . '&name=' . urlencode($buyerName) . '&hide_layout=1',
                         'cancel_url'     => route('p.paiement.cancel', $evenement->id) . '?hide_layout=1',
+                        'webhook_url'    => route('p.paiement.webhook'),
                         'customer_email' => $customerEmail,
                         'customer_name'  => $buyerName,
                         'customer_phone' => $request->input('phone'),
