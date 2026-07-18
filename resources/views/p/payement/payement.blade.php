@@ -74,7 +74,8 @@
                             </label>
                             @endforeach
                         </div>
-                            {{-- Quantité --}}
+                    </div>
+                    {{-- Quantité --}}
                     <div class="mb-4">
                         <label for="quantity" class="fw-semibold small mb-2" style="color:#475569;">Quantité de billets</label>
                         <select name="quantity" id="quantity-select" class="form-select rounded-xl" style="border-color:rgba(203,213,225,0.7); color:#1e293b; max-width:160px; font-weight:700;">
