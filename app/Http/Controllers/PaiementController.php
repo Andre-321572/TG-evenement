@@ -112,7 +112,6 @@ class PaiementController extends Controller
                 return redirect()->back()->with('error', 'Erreur Stripe : ' . $e->getMessage());
             }
         } else {
-        } else {
             // Moov Money or MIX by Yas simulated checkout
             $sessionId = 'LOCAL-' . strtoupper($request->payment_method) . '-' . strtoupper(uniqid());
 
