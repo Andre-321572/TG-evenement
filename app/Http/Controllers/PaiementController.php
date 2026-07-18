@@ -112,27 +112,28 @@ class PaiementController extends Controller
                 return redirect()->back()->with('error', 'Erreur Stripe : ' . $e->getMessage());
             }
         } else {
+        } else {
             // Moov Money or MIX by Yas simulated checkout
             $sessionId = 'LOCAL-' . strtoupper($request->payment_method) . '-' . strtoupper(uniqid());
 
-            // Save Payment Record as pending
+            // Save Payment Record
             \App\Models\Paiement::create([
                 'user_id'        => $buyerUserId ?: null,
                 'evenement_id'   => $evenement->id,
                 'amount'         => $billet->prix * $quantity,
-                'status'         => 'pending',
+                'status'         => 'completed',
                 'payment_method' => $request->payment_method,
                 'reference'      => $sessionId,
             ]);
 
-            // Rediriger vers la page de simulation de paiement mobile
-            return redirect()->route('p.paiement.simulate', [
+            return redirect()->route('p.paiement.success', [
                 'session_id'   => $sessionId,
                 'billet_id'    => $billet->id,
                 'evenement_id' => $evenement->id,
                 'quantity'     => $quantity,
                 'email'        => urlencode($customerEmail),
                 'name'         => urlencode($buyerName),
+                'hide_layout'  => 1
             ]);
         }
     }
@@ -440,54 +441,7 @@ class PaiementController extends Controller
             ->with('error', 'Paiement annulé. Vous pouvez réessayer à tout moment.');
     }
 
-    /**
-     * Affiche la page de simulation de paiement mobile.
-     */
-    public function showSimulate(Request $request)
-    {
-        $sessionId = $request->get('session_id');
-        $payment = \App\Models\Paiement::where('reference', $sessionId)->firstOrFail();
-        
-        $methodName = $payment->payment_method === 'moov_money' ? 'Moov Money' : 'MIX by Yas';
-        $amount = $payment->amount;
 
-        return view('p.payement.simulate', compact('payment', 'sessionId', 'methodName', 'amount'));
-    }
-
-    /**
-     * Traite la simulation de paiement mobile.
-     */
-    public function processSimulate(Request $request)
-    {
-        $request->validate([
-            'session_id' => 'required|string',
-            'phone'      => 'required|string',
-            'password'   => 'required|string',
-        ]);
-
-        $sessionId = $request->input('session_id');
-        $payment = \App\Models\Paiement::where('reference', $sessionId)->firstOrFail();
-
-        // Marquer comme complété
-        $payment->update(['status' => 'completed']);
-
-        // Récupérer les paramètres passés dans l'URL pour la redirection success
-        $billetId = $request->input('billet_id');
-        $evenementId = $request->input('evenement_id');
-        $quantity = $request->input('quantity', 1);
-        $email = $request->input('email');
-        $name = $request->input('name');
-
-        return redirect()->route('p.paiement.success', [
-            'session_id'   => $sessionId,
-            'billet_id'    => $billetId,
-            'evenement_id' => $evenementId,
-            'quantity'     => $quantity,
-            'email'        => $email,
-            'name'         => $name,
-            'hide_layout'  => 1
-        ]);
-    }
 
     // Ancienne méthode conservée pour compatibilité
     public function processPayment(Request $request)

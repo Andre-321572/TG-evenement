@@ -46,8 +46,6 @@ Route::prefix('p')->name('p.')->group(function () {
     Route::get('/voyage', [PublicController::class, 'voyage'])->name('voyage');
     Route::get('/detail/{id}/info',[PublicController::class,'show'])->name('detail');
     Route::post('/payement/checkout', [PaiementController::class, 'createCheckout'])->name('paiement.checkout');
-    Route::get('/payement/simulate', [PaiementController::class, 'showSimulate'])->name('paiement.simulate');
-    Route::post('/payement/simulate/process', [PaiementController::class, 'processSimulate'])->name('paiement.simulate.process');
     Route::get('/payement/success', [PaiementController::class, 'success'])->name('paiement.success');
     Route::get('/payement/cancel/{evenement}', [PaiementController::class, 'cancel'])->name('paiement.cancel');
     Route::get('/payement/process', [PaiementController::class, 'processPayment'])->name('paiement.process');
