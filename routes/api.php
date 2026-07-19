@@ -22,6 +22,9 @@ Route::get('/events', [ApiEventController::class, 'index']);
 Route::get('/events/{id}', [ApiEventController::class, 'show']);
 Route::get('/categories', [ApiEventController::class, 'categories']);
 
+// Paiement / Checkout (Mobile App)
+Route::post('/checkout', [ApiTicketController::class, 'checkout']);
+
 // Routes protégées par jeton (Sanctum)
 Route::middleware('auth:sanctum')->group(function () {
     // Authentification privée
