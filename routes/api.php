@@ -24,6 +24,7 @@ Route::get('/categories', [ApiEventController::class, 'categories']);
 
 // Paiement / Checkout (Mobile App)
 Route::post('/checkout', [ApiTicketController::class, 'checkout']);
+Route::post('/payment/status', [ApiTicketController::class, 'checkPaymentStatus']);
 
 // Routes protégées par jeton (Sanctum)
 Route::middleware('auth:sanctum')->group(function () {
