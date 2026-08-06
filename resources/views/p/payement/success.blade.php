@@ -6,6 +6,13 @@
     <div class="row justify-content-center">
         <div class="col-xl-9 col-lg-10">
 
+            {{-- Bouton flèche retour à l'accueil --}}
+            <div class="mb-4 no-print d-flex align-items-center justify-content-between">
+                <a href="{{ route('index') }}" class="btn d-inline-flex align-items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold transition-all text-decoration-none shadow-xs">
+                    <i class="fas fa-arrow-left"></i> Retour à l'accueil
+                </a>
+            </div>
+
             {{-- En-tête succès --}}
             <div class="text-center mb-4 no-print" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
                 <div style="width:54px; height:54px; background:#dcfce7; border:2px solid #86efac; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:.75rem; box-shadow:0 4px 12px rgba(34,197,94,0.15);">
@@ -198,8 +205,14 @@
             {{-- ═══════════ FIN TICKET PASS COMPACT ═══════════ --}}
 
 
-            {{-- Actions Téléchargement / Impression (Exclus du Ticket) --}}
+            {{-- Actions Téléchargement / Impression / Accueil (Exclus du Ticket) --}}
             <div class="d-flex flex-wrap gap-3 justify-content-center mt-4 no-print">
+                <a href="{{ route('index') }}"
+                   class="btn d-inline-flex align-items-center gap-2 px-4 py-2.5 shadow-sm"
+                   style="border:1.5px solid #e2e8f0; color:#475569; background:#ffffff;
+                          border-radius:.75rem; font-weight:700; font-size:.9rem; text-decoration:none;">
+                    <i class="fas fa-arrow-left"></i> Page d'accueil
+                </a>
                 <button onclick="downloadTicket()"
                         class="btn d-inline-flex align-items-center gap-2 px-4 py-2.5 shadow-md"
                         style="background:#16a34a; border:none; color:#ffffff;
