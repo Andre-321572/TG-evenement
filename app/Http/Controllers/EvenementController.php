@@ -183,8 +183,8 @@ class EvenementController extends Controller
                 Log::info('Événement sauvegardé avec succès', ['id' => $evenement->id]);
                 
                 return redirect()
-                    ->route('organisateur.evenement-en-cours')
-                    ->with('success', 'Événement créé avec succès !');
+                    ->route('organisateur.billet-form', ['evenement_id' => $evenement->id, 'wizard' => 1])
+                    ->with('success', 'Événement créé avec succès ! Configuration des billets en cours...');
             } else {
                 Log::error('Échec de la sauvegarde');
                 throw new \Exception('Échec de la sauvegarde en base de données');

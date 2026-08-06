@@ -29,9 +29,12 @@
         </div>
 
         <!-- Event Image Cover -->
-        <div class="h-44 relative overflow-hidden">
-            <img src="{{ $event->photo_url }}" alt="{{ $event->titre }}" class="w-full h-full object-cover">
-            <div class="absolute inset-0 bg-gradient-to-t from-[#131e3d] via-transparent to-transparent"></div>
+        <div class="relative min-h-[180px] p-3 overflow-hidden bg-slate-950 flex items-center justify-center">
+            @if($event->photo_url)
+            <img src="{{ $event->photo_url }}" alt="" class="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-110">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#131e3d]/80 to-[#131e3d]"></div>
+            <img src="{{ $event->photo_url }}" alt="{{ $event->titre }}" class="relative z-10 max-h-40 max-w-[90%] object-contain rounded-xl shadow-lg border border-white/20">
+            @endif
         </div>
 
         <!-- Body Details -->

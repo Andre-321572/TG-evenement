@@ -2,222 +2,210 @@
 @section('title', '| Ajouter un Sponsor')
 @section('content')
 
-<div class="container mx-auto px-6 py-8 max-w-4xl">
+@php
+    $currentEvId = $selectedEvenementId ?? ($evenementActuel->id ?? null);
+@endphp
 
-    {{-- Breadcrumb --}}
-    <nav class="flex items-center space-x-2 text-sm mb-6">
-        <a href="{{ route('organisateur.dashboard') }}" class="text-gray-400 hover:text-indigo-500 transition-colors">Dashboard</a>
-        <i data-feather="chevron-right" class="w-3.5 h-3.5 text-gray-400"></i>
-        <span class="font-semibold text-indigo-500">Nouveau sponsor</span>
-    </nav>
+<div class="container mx-auto px-4 sm:px-6 py-8 max-w-5xl text-slate-800">
 
-    {{-- Notification --}}
+    <!-- Wizard Stepper -->
+    @include('organisateur.include.wizard-stepper', ['step' => 3, 'evenement' => $evenementActuel ?? null])
+
+    {{-- Notifications --}}
     @if(session('success'))
-    <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-5 py-4 mb-6 rounded-2xl flex items-center justify-between" role="alert">
-        <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                <i data-feather="check" class="w-4 h-4 text-emerald-600"></i>
-            </div>
-            <span class="font-medium">{{ session('success') }}</span>
+    <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 p-4 mb-6 rounded-xl shadow-xs flex items-center justify-between">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-check-circle"></i>
+            <span class="text-sm font-semibold">{{ session('success') }}</span>
         </div>
-        <button onclick="this.parentElement.remove()" class="text-emerald-400 hover:text-emerald-600 transition-colors">
-            <i data-feather="x" class="w-4 h-4"></i>
-        </button>
+        <button onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700">×</button>
     </div>
     @endif
 
     @if(session('error'))
-    <div class="bg-red-50 border border-red-200 text-red-700 px-5 py-4 mb-6 rounded-2xl flex items-center justify-between" role="alert">
-        <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-                <i data-feather="alert-circle" class="w-4 h-4 text-red-600"></i>
-            </div>
-            <span class="font-medium">{{ session('error') }}</span>
+    <div class="bg-red-50 border border-red-200 text-red-700 p-4 mb-6 rounded-xl shadow-xs flex items-center justify-between">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-exclamation-circle"></i>
+            <span class="text-sm font-semibold">{{ session('error') }}</span>
         </div>
-        <button onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600 transition-colors">
-            <i data-feather="x" class="w-4 h-4"></i>
-        </button>
+        <button onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700">×</button>
     </div>
     @endif
 
     {{-- En-tête de la page --}}
-    <div class="mb-8">
-        <h1 class="text-2xl font-extrabold text-gray-900">Associer un sponsor</h1>
-        <p class="text-gray-500 mt-1 text-sm">Ajoutez un partenaire commercial à l'un de vos événements.</p>
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight" style="font-family: 'Outfit', sans-serif;">Étape 3 : Associer des Sponsors (Facultatif)</h1>
+            <p class="text-slate-500 text-sm font-medium mt-1">Ajoutez un ou plusieurs partenaires commerciaux et leurs logos pour valoriser votre événement.</p>
+        </div>
     </div>
 
-    <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Form Panel Batch Sponsors -->
+    <form action="{{ route('organisateur.valide-sponsor') }}" method="POST" id="batch-sponsor-form" enctype="multipart/form-data" class="space-y-6">
+        @csrf
+        @if(request('wizard') || isset($isWizard))
+            <input type="hidden" name="wizard" value="1">
+        @endif
+        <input type="hidden" name="action" id="sponsor-form-action" value="save">
 
-        {{-- Panneau gauche : aperçu du logo --}}
-        <div class="lg:col-span-1 space-y-5">
-
-            {{-- Carte aperçu logo --}}
-            <div class="glass-card rounded-2xl p-5 border border-blue-100/60">
-                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Aperçu du logo</p>
-                <div id="logoPreviewWrap" class="w-full aspect-video rounded-xl border-2 border-dashed border-blue-200 bg-blue-50/50 flex flex-col items-center justify-center cursor-pointer transition-all duration-200 hover:border-indigo-400 hover:bg-indigo-50/40"
-                     onclick="document.getElementById('logo').click()">
-                    <img id="logoPreviewImg" src="" alt="" class="w-full h-full object-contain rounded-xl hidden p-3">
-                    <div id="logoPlaceholder" class="flex flex-col items-center text-center px-4">
-                        <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center mb-2">
-                            <i data-feather="image" class="w-5 h-5 text-indigo-400"></i>
-                        </div>
-                        <p class="text-xs font-medium text-gray-500">Cliquez pour sélectionner<br>le logo du sponsor</p>
-                        <p class="text-xxs text-gray-400 mt-1">PNG, JPG, SVG</p>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Conseils --}}
-            <div class="glass-card rounded-2xl p-5 border border-blue-100/60">
-                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Bonnes pratiques</p>
-                <ul class="space-y-3">
-                    <li class="flex items-start space-x-2.5">
-                        <div class="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <i data-feather="check" class="w-3 h-3 text-indigo-500"></i>
-                        </div>
-                        <p class="text-xs text-gray-500 leading-relaxed">Utilisez un logo à fond transparent (PNG/SVG)</p>
-                    </li>
-                    <li class="flex items-start space-x-2.5">
-                        <div class="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <i data-feather="check" class="w-3 h-3 text-indigo-500"></i>
-                        </div>
-                        <p class="text-xs text-gray-500 leading-relaxed">Résolution recommandée : 400 × 200 px minimum</p>
-                    </li>
-                    <li class="flex items-start space-x-2.5">
-                        <div class="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <i data-feather="check" class="w-3 h-3 text-indigo-500"></i>
-                        </div>
-                        <p class="text-xs text-gray-500 leading-relaxed">Le logo apparaît sur la page publique de l'événement</p>
-                    </li>
-                </ul>
+        <!-- Card Event Choice -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-4">
+            <div>
+                <label for="evenement" class="block text-xs font-bold text-slate-600 mb-1.5 flex items-center gap-2">
+                    <i class="fas fa-calendar-alt text-indigo-600"></i>
+                    <span>Événement sponsorisé <span class="text-red-500">*</span></span>
+                </label>
+                <select id="evenement" name="evenement_id" required
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all">
+                    <option value="" disabled {{ !$currentEvId ? 'selected' : '' }}>— Sélectionner un événement —</option>
+                    @foreach($evenementid as $event)
+                        <option value="{{ $event->id }}" {{ $currentEvId == $event->id ? 'selected' : '' }}>
+                            {{ $event->titre }} ({{ \Carbon\Carbon::parse($event->date)->format('d/m/Y') }})
+                        </option>
+                    @endforeach
+                </select>
+                @error('evenement_id')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
         </div>
 
-        {{-- Formulaire principal --}}
-        <div class="lg:col-span-2">
-            <div class="glass-card rounded-2xl border border-blue-100/60 overflow-hidden">
-                <div class="px-6 py-4 border-b border-blue-100/60 bg-gradient-to-r from-indigo-50/60 to-blue-50/40">
-                    <h2 class="font-bold text-gray-800 text-base">Informations du sponsor</h2>
-                    <p class="text-xs text-gray-500 mt-0.5">Les champs marqués <span class="text-red-500">*</span> sont obligatoires</p>
-                </div>
+        <!-- Dynamic Sponsor Rows Container -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2" style="font-family: 'Outfit', sans-serif;">
+                    <span class="text-indigo-600"><i class="fas fa-handshake"></i></span>
+                    <span>Vos sponsors et partenaires</span>
+                </h3>
+                <button type="button" onclick="addSponsorRow()" class="px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 font-bold rounded-xl text-xs transition-all flex items-center gap-1.5 shadow-xs">
+                    <i class="fas fa-plus text-[10px]"></i> Ajouter un sponsor
+                </button>
+            </div>
 
-                <form action="{{ route('organisateur.valide-sponsor') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-5">
-                    @csrf
+            <div id="sponsor-rows-container" class="space-y-4">
+                <!-- Rows injected dynamically via JS -->
+            </div>
 
-                    {{-- Événement associé --}}
-                    <div>
-                        <label for="evenement" class="block text-sm font-semibold text-gray-700 mb-1.5">
-                            Événement sponsorisé <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <select id="evenement" name="evenement_id" required
-                                    class="w-full appearance-none rounded-xl border @error('evenement_id') border-red-400 bg-red-50 @else border-gray-200 bg-white @enderror px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all">
-                                <option value="" disabled selected>— Sélectionner un événement —</option>
-                                @foreach($evenementid as $event)
-                                    <option value="{{ $event->id }}" {{ old('evenement_id') == $event->id ? 'selected' : '' }}>
-                                        {{ $event->titre }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                                <i data-feather="chevron-down" class="w-4 h-4 text-gray-400"></i>
+            <!-- Empty state -->
+            <div id="sponsor-empty-state" class="text-center py-10 border-2 border-dashed border-slate-200 rounded-2xl">
+                <i class="fas fa-handshake text-slate-300 text-4xl mb-3"></i>
+                <p class="text-sm font-bold text-slate-600">Aucun sponsor en cours d'ajout.</p>
+                <p class="text-xs text-slate-400 mt-1">Cliquez sur "+ Ajouter un sponsor" pour rajouter des logos et liens web.</p>
+            </div>
+        </div>
+
+        <!-- Submit Actions -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200">
+            @if($currentEvId)
+                <a href="{{ route('organisateur.detail', ['id' => $currentEvId]) }}" class="w-full sm:w-auto text-center px-5 py-3 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold rounded-xl text-xs transition-all shadow-xs">
+                    Passer / Terminer sans sponsor
+                </a>
+            @else
+                <div></div>
+            @endif
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <button type="button" onclick="submitSponsorForm('save')" class="w-full sm:w-auto px-5 py-3 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold rounded-xl text-sm transition-all shadow-xs">
+                    Enregistrer les sponsors
+                </button>
+                <button type="button" onclick="submitSponsorForm('finish')" class="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-all border-0 shadow-sm flex items-center justify-center gap-2">
+                    <span>Terminer & Voir l'événement</span>
+                    <i class="fas fa-check text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Sponsors déjà associés -->
+    @if(isset($sponsorsExistants) && count($sponsorsExistants) > 0)
+        <div class="mt-8 bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8">
+            <h3 class="text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2" style="font-family: 'Outfit', sans-serif;">
+                <span class="text-emerald-600"><i class="fas fa-check-circle"></i></span>
+                <span>Sponsors déjà associés à cet événement ({{ count($sponsorsExistants) }})</span>
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                @foreach($sponsorsExistants as $s)
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col items-center text-center">
+                        @if($s->logo)
+                            <img src="{{ asset('storage/evenement/sponsors/' . $s->logo) }}" alt="{{ $s->nom }}" class="w-16 h-12 object-contain mb-2">
+                        @else
+                            <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-base mb-2">
+                                {{ strtoupper(substr($s->nom, 0, 2)) }}
                             </div>
-                        </div>
-                        @error('evenement_id')
-                            <p class="text-red-500 text-xs mt-1.5 flex items-center"><i data-feather="alert-circle" class="w-3 h-3 mr-1"></i>{{ $message }}</p>
-                        @enderror
+                        @endif
+                        <span class="text-xs font-bold text-slate-800 truncate w-full">{{ $s->nom }}</span>
                     </div>
-
-                    {{-- Nom du sponsor --}}
-                    <div>
-                        <label for="nom" class="block text-sm font-semibold text-gray-700 mb-1.5">
-                            Nom du sponsor <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" id="nom" name="nom" value="{{ old('nom') }}" required
-                               placeholder="Ex: Acme Corporation, Orange Togo..."
-                               class="w-full rounded-xl border @error('nom') border-red-400 bg-red-50 @else border-gray-200 bg-white @enderror px-4 py-2.5 text-sm text-gray-700 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all">
-                        @error('nom')
-                            <p class="text-red-500 text-xs mt-1.5 flex items-center"><i data-feather="alert-circle" class="w-3 h-3 mr-1"></i>{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    {{-- Logo (hidden input réel) --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">
-                            Logo / Identité visuelle <span class="text-red-500">*</span>
-                        </label>
-                        <div class="flex items-center space-x-3">
-                            <label for="logo"
-                                   class="flex items-center space-x-2 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-600 cursor-pointer hover:border-indigo-400 hover:text-indigo-600 transition-all shadow-sm">
-                                <i data-feather="upload" class="w-4 h-4"></i>
-                                <span id="logoLabel">Choisir un fichier</span>
-                            </label>
-                            <input type="file" id="logo" name="logo" accept="image/*" required class="hidden"
-                                   onchange="previewLogo(event)">
-                            <p class="text-xs text-gray-400">PNG, JPG, JPEG, SVG — max 2 Mo</p>
-                        </div>
-                        @error('logo')
-                            <p class="text-red-500 text-xs mt-1.5 flex items-center"><i data-feather="alert-circle" class="w-3 h-3 mr-1"></i>{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    {{-- Site web --}}
-                    <div>
-                        <label for="lien_web" class="block text-sm font-semibold text-gray-700 mb-1.5">
-                            Site web du sponsor
-                            <span class="text-gray-400 font-normal text-xs">(facultatif)</span>
-                        </label>
-                        <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2">
-                                <i data-feather="link" class="w-4 h-4 text-gray-400"></i>
-                            </span>
-                            <input type="url" id="lien_web" name="lien_web" value="{{ old('lien_web') }}"
-                                   placeholder="https://www.monsponsor.com"
-                                   class="w-full rounded-xl border @error('lien_web') border-red-400 bg-red-50 @else border-gray-200 bg-white @enderror pl-10 pr-4 py-2.5 text-sm text-gray-700 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all">
-                        </div>
-                        @error('lien_web')
-                            <p class="text-red-500 text-xs mt-1.5 flex items-center"><i data-feather="alert-circle" class="w-3 h-3 mr-1"></i>{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    {{-- Séparateur + Actions --}}
-                    <div class="pt-2 border-t border-gray-100 flex items-center justify-between gap-3">
-                        <a href="{{ route('organisateur.dashboard') }}"
-                           class="px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
-                            Annuler
-                        </a>
-                        <button type="submit"
-                                class="flex items-center space-x-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-colors duration-200 text-sm shadow-md shadow-indigo-200">
-                            <i data-feather="save" class="w-4 h-4"></i>
-                            <span>Enregistrer le sponsor</span>
-                        </button>
-                    </div>
-                </form>
+                @endforeach
             </div>
         </div>
-    </div>
+    @endif
+
 </div>
 
+<!-- JavaScript dynamic sponsor rows -->
 <script>
-function previewLogo(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+let sponsorRowIndex = 0;
 
-    // Mettre à jour le label
-    document.getElementById('logoLabel').textContent = file.name.length > 22 ? file.name.substring(0, 20) + '…' : file.name;
+function addSponsorRow(name = '', web = '') {
+    const container = document.getElementById('sponsor-rows-container');
+    const emptyState = document.getElementById('sponsor-empty-state');
+    emptyState.classList.add('hidden');
 
-    // Afficher l'aperçu
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const img = document.getElementById('logoPreviewImg');
-        const placeholder = document.getElementById('logoPlaceholder');
-        img.src = e.target.result;
-        img.classList.remove('hidden');
-        placeholder.classList.add('hidden');
-        document.getElementById('logoPreviewWrap').classList.remove('border-dashed');
-    };
-    reader.readAsDataURL(file);
+    const rowId = `sponsor-row-${sponsorRowIndex}`;
+    const div = document.createElement('div');
+    div.id = rowId;
+    div.className = "bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-3 transition-all relative shadow-xs";
+
+    div.innerHTML = `
+        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+            <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Sponsor #${sponsorRowIndex + 1}</span>
+            <button type="button" onclick="removeSponsorRow('${rowId}')" class="text-red-500 hover:text-red-700 text-xs font-bold flex items-center gap-1">
+                <i class="fas fa-trash-alt"></i> Supprimer
+            </button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+                <label class="text-xs font-bold text-slate-600 block mb-1">Nom du sponsor *</label>
+                <input type="text" name="sponsors[${sponsorRowIndex}][nom]" value="${name}" placeholder="Ex: Moov Togo, Canal+..." required
+                       class="w-full bg-white border border-slate-200 text-slate-800 text-sm rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-bold">
+            </div>
+            <div>
+                <label class="text-xs font-bold text-slate-600 block mb-1">Logo / Image (JPEG, PNG, SVG)</label>
+                <input type="file" name="sponsors[${sponsorRowIndex}][logo]" accept="image/*"
+                       class="w-full bg-white border border-slate-200 text-slate-800 text-xs rounded-xl px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+            <div>
+                <label class="text-xs font-bold text-slate-600 block mb-1">Site Web (Optionnel)</label>
+                <input type="url" name="sponsors[${sponsorRowIndex}][lien_web]" value="${web}" placeholder="https://..."
+                       class="w-full bg-white border border-slate-200 text-slate-800 text-sm rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+        </div>
+    `;
+
+    container.appendChild(div);
+    sponsorRowIndex++;
 }
+
+function removeSponsorRow(rowId) {
+    const row = document.getElementById(rowId);
+    if (row) {
+        row.remove();
+    }
+    const container = document.getElementById('sponsor-rows-container');
+    if (container.children.length === 0) {
+        document.getElementById('sponsor-empty-state').classList.remove('hidden');
+    }
+}
+
+function submitSponsorForm(actionValue) {
+    document.getElementById('sponsor-form-action').value = actionValue;
+    document.getElementById('batch-sponsor-form').submit();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    @if(!isset($sponsorsExistants) || count($sponsorsExistants) == 0)
+        addSponsorRow();
+    @endif
+});
 </script>
 
 @endsection

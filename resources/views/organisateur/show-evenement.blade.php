@@ -82,7 +82,7 @@
             <!-- Event Photo -->
             @if($evenement->photo)
                 <div class="glass-card rounded-2xl overflow-hidden border border-white/5">
-                    <img src="{{ asset('storage/evenement/photo/' . $evenement->photo) }}" class="w-full h-64 object-cover" alt="Image de l'événement">
+                    <img src="{{ asset('storage/evenement/photo/' . $evenement->photo) }}" class="w-full max-h-96 object-contain bg-slate-950/60 p-2 rounded-2xl" alt="Image de l'événement">
                 </div>
             @else
                 <div class="glass-card rounded-2xl border border-white/5 h-64 flex items-center justify-center">

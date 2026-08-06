@@ -17,50 +17,89 @@
 </style>
 
 {{-- ═══════════════════════════════════════════════
-     HERO — Full bleed, inline styles (bypass overrides)
+     HERO — Full bleed with poster showcase
      ═══════════════════════════════════════════════ --}}
-<div style="position:relative; width:100%; height:450px; overflow:hidden;">
-    <img src="{{ $detail_evenement->photo ? asset('storage/evenement/photo/' . $detail_evenement->photo) : asset('images/default-event.jpg') }}"
-         alt="{{ $detail_evenement->titre }}"
-         style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center;">
-    
-    {{-- Overlay gradient fading to light page background at the very bottom --}}
-    <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.65) 65%, rgba(250,251,252,1) 100%);"></div>
+@php
+    $eventPhoto = $detail_evenement->photo ? asset('storage/evenement/photo/' . $detail_evenement->photo) : asset('images/default-event.jpg');
+@endphp
 
-    {{-- Content overlay --}}
-    <div style="position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:2.5rem 2.5rem 3.5rem 2.5rem;">
-        <div style="max-width:860px;">
-            <span style="display:inline-block; padding:.35rem .9rem; border-radius:999px; font-size:.72rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#ffffff; background:#d9383a; margin-bottom:.9rem;">
-                ⭐ Événement Premium
-            </span>
-            <h1 style="font-size:clamp(1.8rem,5vw,3rem); font-weight:800; color:#ffffff; line-height:1.2; margin-bottom:1.2rem; text-shadow:0 2px 16px rgba(0,0,0,0.4); font-family: 'Outfit', sans-serif;">
-                {{ $detail_evenement->titre }}
-            </h1>
-            <div style="display:flex; flex-wrap:wrap; gap:1.5rem; text-shadow:0 1px 8px rgba(0,0,0,0.35);">
-                <span style="display:flex; align-items:center; gap:.5rem; color:rgba(255,255,255,0.9); font-size:.88rem; font-weight: 500;">
-                    <i class="far fa-calendar" style="color:#ffffff;"></i>
-                    {{ \Carbon\Carbon::parse($detail_evenement->date)->translatedFormat('l, d F Y') }}
-                </span>
-                <span style="display:flex; align-items:center; gap:.5rem; color:rgba(255,255,255,0.9); font-size:.88rem; font-weight: 500;">
-                    <i class="far fa-clock" style="color:#ffffff;"></i>
-                    {{ \Carbon\Carbon::parse($detail_evenement->start_heure)->format('H:i') }}
-                    @if($detail_evenement->end_heure) — {{ \Carbon\Carbon::parse($detail_evenement->end_heure)->format('H:i') }}@endif
-                </span>
-                <span style="display:flex; align-items:center; gap:.5rem; color:rgba(255,255,255,0.9); font-size:.88rem; font-weight: 500;">
-                    <i class="fas fa-map-marker-alt" style="color:#ffffff;"></i>
-                    {{ $detail_evenement->lieu }}
-                </span>
+<div style="position:relative; width:100%; min-height:420px; background:#0f172a; overflow:hidden; padding:2rem 0 3rem 0;">
+    {{-- Blurred Atmospheric Background --}}
+    <div style="position:absolute; inset:0; overflow:hidden;">
+        <img src="{{ $eventPhoto }}"
+             alt=""
+             style="width:100%; height:100%; object-fit:cover; filter:blur(40px); opacity:0.35; transform:scale(1.15);">
+        <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(15,23,42,0.65) 0%, rgba(15,23,42,0.92) 80%, rgba(250,251,252,1) 100%);"></div>
+    </div>
+
+    {{-- Container Content --}}
+    <div class="container" style="position:relative; z-index:10;">
+        {{-- Back button --}}
+        <div style="margin-bottom:1.5rem;">
+            <a href="{{ route('p.evenement') }}" style="display:inline-flex; align-items:center; gap:.5rem; padding:.5rem 1rem; border-radius:.75rem; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#ffffff; font-size:.82rem; font-weight:600; text-decoration:none; backdrop-filter:blur(8px);">
+                <i class="fas fa-arrow-left" style="font-size:.75rem;"></i> Retour aux événements
+            </a>
+        </div>
+
+        {{-- Hero Grid: Poster + Details --}}
+        <div class="row align-items-center g-4">
+            {{-- Left Column: Featured Event Poster Card (Full Uncropped Image) --}}
+            <div class="col-md-5 col-lg-4 text-center text-md-start">
+                <div style="position:relative; display:inline-block; border-radius:24px; overflow:hidden; background:rgba(0,0,0,0.5); border:2px solid rgba(255,255,255,0.25); box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);" class="group cursor-pointer" onclick="openEventPosterModal('{{ $eventPhoto }}')">
+                    <img src="{{ $eventPhoto }}"
+                         alt="{{ $detail_evenement->titre }}"
+                         style="width:100%; max-height:420px; object-fit:contain; display:block;"
+                         class="transition-all duration-300">
+                    <div style="position:absolute; inset:0; background:rgba(0,0,0,0.4); opacity:0; transition:opacity .3s;" class="hover:opacity-100 flex items-center justify-center text-white text-xs font-bold gap-2">
+                        <i class="fas fa-search-plus text-base"></i> Agrandir l'affiche
+                    </div>
+                </div>
+            </div>
+
+            {{-- Right Column: Event Info --}}
+            <div class="col-md-7 col-lg-8 text-white">
+                <div style="display:flex; align-items:center; gap:.75rem; flex-wrap:wrap; margin-bottom:.9rem;">
+                    <span style="display:inline-block; padding:.35rem .9rem; border-radius:999px; font-size:.72rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#ffffff; background:#d9383a;">
+                        ⭐ Événement {{ $detail_evenement->categorie ? strtoupper($detail_evenement->categorie) : 'PREMIUM' }}
+                    </span>
+                </div>
+                <h1 style="font-size:clamp(1.8rem,4vw,2.8rem); font-weight:800; color:#ffffff; line-height:1.25; margin-bottom:1.2rem; text-shadow:0 2px 16px rgba(0,0,0,0.4); font-family: 'Outfit', sans-serif;">
+                    {{ $detail_evenement->titre }}
+                </h1>
+                <div style="display:flex; flex-wrap:wrap; gap:1rem; text-shadow:0 1px 8px rgba(0,0,0,0.35);">
+                    <div style="display:flex; align-items:center; gap:.5rem; background:rgba(255,255,255,0.1); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.15); padding:.5rem 1rem; border-radius:12px; color:#ffffff; font-size:.88rem; font-weight:500;">
+                        <i class="far fa-calendar" style="color:#818cf8;"></i>
+                        <span>{{ \Carbon\Carbon::parse($detail_evenement->date)->translatedFormat('l, d F Y') }}</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:.5rem; background:rgba(255,255,255,0.1); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.15); padding:.5rem 1rem; border-radius:12px; color:#ffffff; font-size:.88rem; font-weight:500;">
+                        <i class="far fa-clock" style="color:#818cf8;"></i>
+                        <span>{{ \Carbon\Carbon::parse($detail_evenement->start_heure)->format('H:i') }} @if($detail_evenement->end_heure) — {{ \Carbon\Carbon::parse($detail_evenement->end_heure)->format('H:i') }}@endif</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:.5rem; background:rgba(255,255,255,0.1); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.15); padding:.5rem 1rem; border-radius:12px; color:#ffffff; font-size:.88rem; font-weight:500;">
+                        <i class="fas fa-map-marker-alt" style="color:#f87171;"></i>
+                        <span>{{ $detail_evenement->lieu }}</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    {{-- Back button --}}
-    <div style="position:absolute; top:1.25rem; left:1.5rem; z-index: 30;">
-        <a href="{{ route('p.evenement') }}" style="display:inline-flex; align-items:center; gap:.5rem; padding:.5rem 1rem; border-radius:.75rem; background:rgba(0,0,0,0.35); border:1px solid rgba(255,255,255,0.15); color:#ffffff; font-size:.82rem; font-weight:600; text-decoration:none; backdrop-filter:blur(8px);">
-            <i class="fas fa-arrow-left" style="font-size:.75rem;"></i> Retour
-        </a>
-    </div>
 </div>
+
+<!-- Modal Fullscreen Image View -->
+<div id="eventPosterModal" style="position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.92); display:none; align-items:center; justify-content:center; padding:1.5rem;" onclick="closeEventPosterModal()">
+    <button type="button" style="position:absolute; top:1.5rem; right:1.5rem; width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.2); border:none; color:#fff; font-size:1.5rem; font-weight:bold; cursor:pointer;" onclick="closeEventPosterModal()">&times;</button>
+    <img id="posterModalImg" src="" alt="Affiche événement" style="max-height:90vh; max-width:90vw; object-fit:contain; border-radius:16px; box-shadow:0 25px 50px rgba(0,0,0,0.5);">
+</div>
+
+<script>
+function openEventPosterModal(src) {
+    document.getElementById('posterModalImg').src = src;
+    document.getElementById('eventPosterModal').style.display = 'flex';
+}
+function closeEventPosterModal() {
+    document.getElementById('eventPosterModal').style.display = 'none';
+}
+</script>
 
 {{-- ═══════════════════════════════════════════════
      MAIN CONTENT

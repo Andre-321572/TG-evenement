@@ -101,59 +101,126 @@ class BilletController extends Controller
     /**
      * Afficher le formulaire de création
      */
-    public function create()
+    /**
+     * Afficher le formulaire de création
+     */
+    public function create(Request $request)
     {
         $evenementid = Evenement::select('id', 'titre', 'date', 'lieu')
                                ->orderBy('date', 'desc')
                                ->get();
 
-        return view('organisateur.billet', compact('evenementid'));
+        $selectedEvenementId = $request->input('evenement_id');
+        $evenementActuel = null;
+        $billetsExistants = collect();
+
+        if ($selectedEvenementId) {
+            $evenementActuel = Evenement::with('billets')->find($selectedEvenementId);
+            if ($evenementActuel) {
+                $billetsExistants = $evenementActuel->billets;
+            }
+        }
+
+        $isWizard = $request->has('wizard') || !empty($selectedEvenementId);
+
+        return view('organisateur.billet', compact('evenementid', 'selectedEvenementId', 'evenementActuel', 'billetsExistants', 'isWizard'));
     }
 
     /**
-     * Enregistrer un nouveau billet
+     * Enregistrer un ou plusieurs nouveaux billets
      */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
+            'evenement_id' => 'required|exists:evenements,id',
             'type' => 'nullable|string|max:50',
             'prix' => 'nullable|numeric|min:0',
             'quantite' => 'nullable|integer|min:0',
-            'evenement_id' => 'required|exists:evenements,id',
+            'billets' => 'nullable|array',
+            'billets.*.type' => 'nullable|string|max:50',
+            'billets.*.prix' => 'nullable|numeric|min:0',
+            'billets.*.quantite' => 'nullable|integer|min:0',
         ], [
-            'prix.min' => 'Le prix minimum est 0 FCFA',
-            'prix.numeric' => 'Le prix doit être un nombre',
-            'quantite.min' => 'La quantité minimum est 0',
-            'quantite.integer' => 'La quantité doit être un nombre entier',
             'evenement_id.required' => 'Vous devez sélectionner un événement',
             'evenement_id.exists' => 'L\'événement sélectionné n\'existe pas',
+            'prix.min' => 'Le prix minimum est 0 FCFA',
+            'quantite.min' => 'La quantité minimum est 0',
         ]);
 
-        // Vérifier si un billet du même type existe déjà pour cet événement
-        $billetExistant = Billet::where('evenement_id', $validatedData['evenement_id'])
-                                ->where('type', $validatedData['type'] ?? 'STANDARD')
-                                ->first();
+        $evenementId = $validatedData['evenement_id'];
+        $countAdded = 0;
 
-        if ($billetExistant) {
-            return back()->withErrors(['type' => 'Un billet de ce type existe déjà pour cet événement'])
-                        ->withInput();
+        \Illuminate\Support\Facades\DB::transaction(function () use ($request, $validatedData, $evenementId, &$countAdded) {
+            // Traitement du tableau de billets dynamiques
+            if ($request->has('billets') && is_array($request->input('billets')) && count($request->input('billets')) > 0) {
+                foreach ($request->input('billets') as $bItem) {
+                    if (empty($bItem['type'])) continue;
+
+                    $type = trim($bItem['type']);
+                    $prix = floatval($bItem['prix'] ?? 0);
+                    $quantite = intval($bItem['quantite'] ?? 0);
+
+                    // Vérifier si un billet du même type existe déjà
+                    $billetExistant = Billet::where('evenement_id', $evenementId)
+                                            ->where('type', $type)
+                                            ->first();
+
+                    if ($billetExistant) {
+                        $billetExistant->prix = $prix;
+                        $billetExistant->quantite_totale += $quantite;
+                        $billetExistant->quantite_disponible += $quantite;
+                        $billetExistant->quantite += $quantite;
+                        $billetExistant->save();
+                    } else {
+                        Billet::create([
+                            'type' => $type,
+                            'prix' => $prix,
+                            'quantite' => $quantite,
+                            'quantite_totale' => $quantite,
+                            'quantite_disponible' => $quantite,
+                            'quantite_vendue' => 0,
+                            'evenement_id' => $evenementId,
+                        ]);
+                    }
+                    $countAdded++;
+                }
+            } elseif (!empty($validatedData['type'])) {
+                // Traitement d'une entrée unique classique
+                $type = trim($validatedData['type']);
+                $prix = floatval($validatedData['prix'] ?? 0);
+                $quantite = intval($validatedData['quantite'] ?? 0);
+
+                $billetExistant = Billet::where('evenement_id', $evenementId)
+                                        ->where('type', $type)
+                                        ->first();
+
+                if (!$billetExistant) {
+                    Billet::create([
+                        'type' => $type,
+                        'prix' => $prix,
+                        'quantite' => $quantite,
+                        'quantite_totale' => $quantite,
+                        'quantite_disponible' => $quantite,
+                        'quantite_vendue' => 0,
+                        'evenement_id' => $evenementId,
+                    ]);
+                    $countAdded++;
+                }
+            }
+        });
+
+        $redirectParams = ['evenement_id' => $evenementId];
+        if ($request->has('wizard')) {
+            $redirectParams['wizard'] = $request->input('wizard');
         }
 
-        // Créer le billet avec des valeurs par défaut
-        $quantite = $validatedData['quantite'] ?? 0;
+        if ($request->input('action') === 'next_sponsors') {
+            return redirect()->route('organisateur.sponsor-form', $redirectParams)
+                            ->with('success', $countAdded > 0 ? "$countAdded catégorie(s) de billet(s) configurée(s) avec succès !" : "Passage à l'étape des sponsors.");
+        }
 
-        $billet = Billet::create([
-            'type' => $validatedData['type'] ?? 'STANDARD',
-            'prix' => $validatedData['prix'] ?? 0,
-            'quantite' => $quantite,
-            'quantite_totale' => $quantite,
-            'quantite_disponible' => $quantite,
-            'quantite_vendue' => 0,
-            'evenement_id' => $validatedData['evenement_id'],
-        ]);
-
-        return redirect()->route('organisateur.billet-form')
-                        ->with('success', 'Le billet a été ajouté avec succès');
+        return redirect()->route('organisateur.billet-form', $redirectParams)
+                        ->with('success', $countAdded > 0 ? "$countAdded catégorie(s) de billet(s) ajoutée(s) avec succès !" : "Configuration enregistrée.");
     }
 
     /**

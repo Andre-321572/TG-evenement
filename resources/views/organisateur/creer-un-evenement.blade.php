@@ -36,6 +36,9 @@
         </div>
     @endif
 
+    <!-- Wizard Stepper -->
+    @include('organisateur.include.wizard-stepper', ['step' => 1])
+
     <!-- Form start -->
     <form action="{{ route('organisateur.evenement_valider') }}" method="POST" id="event-create-form" enctype="multipart/form-data" class="needs-validation space-y-8" novalidate>
         @csrf
@@ -46,15 +49,16 @@
         <!-- Top Header & Submit Actions -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-100">
             <div>
-                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight" style="font-family: 'Outfit', sans-serif;">Créer un nouvel événement</h1>
-                <p class="text-slate-500 text-sm font-medium mt-1">Remplissez les détails ci-dessous pour lancer votre prochain succès.</p>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight" style="font-family: 'Outfit', sans-serif;">Étape 1 : Créer l'événement</h1>
+                <p class="text-slate-500 text-sm font-medium mt-1">Renseignez les détails ci-dessous. Vous ajouterez ensuite les billets et les sponsors.</p>
             </div>
             <div class="flex items-center gap-2">
                 <button type="button" onclick="submitEventForm('en organisation')" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold rounded-xl text-sm transition-all shadow-xs">
                     Enregistrer en brouillon
                 </button>
-                <button type="button" onclick="submitEventForm('publier')" class="px-5 py-2.5 text-white bg-[#d9383a] hover:bg-[#c22e30] font-bold rounded-xl text-sm transition-all border-0 shadow-sm">
-                    Publier l'événement
+                <button type="button" onclick="submitEventForm('publier')" class="px-5 py-2.5 text-white bg-indigo-600 hover:bg-indigo-700 font-bold rounded-xl text-sm transition-all border-0 shadow-sm flex items-center gap-2">
+                    <span>Suivant : Créer les billets</span>
+                    <i class="fas fa-arrow-right text-xs"></i>
                 </button>
             </div>
         </div>
@@ -280,8 +284,9 @@
             <button type="button" onclick="submitEventForm('en organisation')" class="px-6 py-3 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold rounded-xl text-sm transition-all shadow-xs">
                 Enregistrer en brouillon
             </button>
-            <button type="button" onclick="submitEventForm('publier')" class="px-6 py-3 text-white bg-[#d9383a] hover:bg-[#c22e30] font-bold rounded-xl text-sm transition-all border-0 shadow-sm">
-                Publier l'événement
+            <button type="button" onclick="submitEventForm('publier')" class="px-6 py-3 text-white bg-indigo-600 hover:bg-indigo-700 font-bold rounded-xl text-sm transition-all border-0 shadow-sm flex items-center gap-2">
+                <span>Suivant : Créer les billets</span>
+                <i class="fas fa-arrow-right text-xs"></i>
             </button>
         </div>
 

@@ -20,22 +20,41 @@ class SponsorController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        $evenementid = Evenement::all();
-        return view('organisateur.sponsor', compact('evenementid'));
+        $evenementid = Evenement::orderBy('date', 'desc')->get();
+        $selectedEvenementId = $request->input('evenement_id');
+        $evenementActuel = null;
+        $sponsorsExistants = collect();
+
+        if ($selectedEvenementId) {
+            $evenementActuel = Evenement::with('sponsors')->find($selectedEvenementId);
+            if ($evenementActuel) {
+                $sponsorsExistants = $evenementActuel->sponsors;
+            }
+        }
+
+        $isWizard = $request->has('wizard') || !empty($selectedEvenementId);
+
+        return view('organisateur.sponsor', compact('evenementid', 'selectedEvenementId', 'evenementActuel', 'sponsorsExistants', 'isWizard'));
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'nom' => 'required|string|max:255',
-            'logo' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg|max:10240', // 10MB max
-            'lien_web' => 'nullable|string|url',
             'evenement_id' => 'required|exists:evenements,id',
+            'nom' => 'nullable|string|max:255',
+            'logo' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg|max:10240',
+            'lien_web' => 'nullable|string|url',
+            'sponsors' => 'nullable|array',
+            'sponsors.*.nom' => 'nullable|string|max:255',
+            'sponsors.*.lien_web' => 'nullable|string|url',
         ], [
             'logo.mimes' => "Le fichier doit être une image au format jpeg, png, jpg, gif ou svg.",
             'lien_web.url' => "Le lien web doit être une URL valide.",
@@ -43,22 +62,60 @@ class SponsorController extends Controller
             'evenement_id.exists' => "L'événement sélectionné n'existe pas.",
         ]);
 
+        $evenementId = $validatedData['evenement_id'];
+        $countAdded = 0;
+
         try {
-            $sponsor = new Sponsor();
-            $sponsor->nom = $validatedData['nom'];
-            
-            if ($request->hasFile('logo')) {
-                $photoPath = $request->file('logo')->store('evenement/sponsors', 'public');
-                $sponsor->logo = basename($photoPath);
-            } else {
-                $sponsor->logo = '';
+            // Traitement du tableau de sponsors dynamiques
+            if ($request->has('sponsors') && is_array($request->input('sponsors')) && count($request->input('sponsors')) > 0) {
+                foreach ($request->input('sponsors') as $index => $sItem) {
+                    if (empty($sItem['nom'])) continue;
+
+                    $sponsor = new Sponsor();
+                    $sponsor->nom = trim($sItem['nom']);
+                    $sponsor->lien_web = $sItem['lien_web'] ?? '';
+                    $sponsor->evenement_id = $evenementId;
+
+                    if ($request->hasFile("sponsors.{$index}.logo")) {
+                        $photoPath = $request->file("sponsors.{$index}.logo")->store('evenement/sponsors', 'public');
+                        $sponsor->logo = basename($photoPath);
+                    } else {
+                        $sponsor->logo = '';
+                    }
+
+                    $sponsor->save();
+                    $countAdded++;
+                }
+            } elseif (!empty($validatedData['nom'])) {
+                // Traitement d'une entrée unique classique
+                $sponsor = new Sponsor();
+                $sponsor->nom = trim($validatedData['nom']);
+
+                if ($request->hasFile('logo')) {
+                    $photoPath = $request->file('logo')->store('evenement/sponsors', 'public');
+                    $sponsor->logo = basename($photoPath);
+                } else {
+                    $sponsor->logo = '';
+                }
+
+                $sponsor->lien_web = $validatedData['lien_web'] ?? '';
+                $sponsor->evenement_id = $evenementId;
+                $sponsor->save();
+                $countAdded++;
             }
 
-            $sponsor->lien_web = $validatedData['lien_web'] ?? '';
-            $sponsor->evenement_id = $validatedData['evenement_id'];
-            $sponsor->save();
+            $redirectParams = ['evenement_id' => $evenementId];
+            if ($request->has('wizard')) {
+                $redirectParams['wizard'] = $request->input('wizard');
+            }
 
-            return redirect()->route('organisateur.sponsor-form')->with('success', 'Sponsor inséré avec succès.');
+            if ($request->input('action') === 'finish') {
+                return redirect()->route('organisateur.detail', ['id' => $evenementId])
+                                ->with('success', 'Félicitations ! Événement, billets et sponsors configurés avec succès.');
+            }
+
+            return redirect()->route('organisateur.sponsor-form', $redirectParams)
+                            ->with('success', $countAdded > 0 ? "$countAdded sponsor(s) inséré(s) avec succès !" : "Configuration enregistrée.");
         } catch (\Exception $e) {
             Log::error('Erreur lors de la création du sponsor : ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Erreur lors de la création du sponsor : ' . $e->getMessage());
