@@ -39,9 +39,10 @@ class OrganisateurController extends Controller
             ->limit(5)
             ->get();
             
-        // Événements en ligne (publiés)
+        // Événements en ligne (publiés) — limités pour ne pas charger toute la DB
         $evenementsEnLigne = Evenement::where('statut', 'publier')
             ->orderBy('date', 'desc')
+            ->limit(20)
             ->get();
 
         return view('organisateur.index', compact(
@@ -385,9 +386,9 @@ class OrganisateurController extends Controller
         $evenementdateavenir = Evenement::where('date', '>', $dateActuelle)
             ->with('user')
             ->orderBy('date', 'asc')
-            ->get();
+            ->paginate(20);
             
-        $countfuture = $evenementdateavenir->count();
+        $countfuture = $evenementdateavenir->total();
         
         return view('organisateur.future.evenementenattent', compact('evenementdateavenir', 'countfuture'));
     }
@@ -401,9 +402,9 @@ class OrganisateurController extends Controller
         $evenementdatepasser = Evenement::where('date', '<', $dateActuelle)
             ->with('user')
             ->orderBy('date', 'desc')
-            ->get();
+            ->paginate(20);
             
-        $countpasser = $evenementdatepasser->count();
+        $countpasser = $evenementdatepasser->total();
         
         return view('organisateur.evenement-passé', compact('evenementdatepasser', 'countpasser'));
     }
@@ -416,7 +417,7 @@ class OrganisateurController extends Controller
         $evenementsEnAttente = Evenement::where('statut', 'en organisation')
             ->with('user')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(20);
             
         return view('organisateur.future.organiser-en-attent', compact('evenementsEnAttente'));
     }

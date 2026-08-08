@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Faq;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class PublicController extends Controller
 {
@@ -80,28 +81,26 @@ class PublicController extends Controller
             ]
         ];
 
-        // Statistiques pour la page d'accueil
-        $stats = [
-            'total_events' => Evenement::where('statut', 'publier')->count(),
-            'upcoming_events' => Evenement::where('statut', 'publier')
-                                        ->where('date', '>=', now())
-                                        ->count(),
-            'total_categories' => Evenement::where('statut', 'publier')
-                                         ->distinct('categorie')
-                                         ->count('categorie')
-        ];
+        // Statistiques pour la page d'accueil — mises en cache 5 minutes
+        $stats = Cache::remember('home_stats', 300, function () {
+            return [
+                'total_events'      => Evenement::where('statut', 'publier')->count(),
+                'upcoming_events'   => Evenement::where('statut', 'publier')
+                                                ->where('date', '>=', now())
+                                                ->count(),
+                'total_categories'  => Evenement::where('statut', 'publier')
+                                                ->distinct('categorie')
+                                                ->count('categorie'),
+            ];
+        });
 
-        // Événement en vedette (priorité aux événements futurs, sinon le plus récent)
-        $featuredEvent = Evenement::where('statut', 'publier')
-                                 ->where('date', '>=', now()->toDateString())
-                                 ->orderBy('date', 'asc')
-                                 ->first();
-
-        if (!$featuredEvent) {
-            $featuredEvent = Evenement::where('statut', 'publier')
-                                    ->orderBy('date', 'desc')
-                                    ->first();
-        }
+        // Événement en vedette — mis en cache 5 minutes
+        $featuredEvent = Cache::remember('featured_event', 300, function () {
+            return Evenement::where('statut', 'publier')
+                            ->orderByRaw('CASE WHEN date >= CURDATE() THEN 0 ELSE 1 END')
+                            ->orderBy('date', 'asc')
+                            ->first();
+        });
 
         if ($featuredEvent) {
             $featuredEvent->truncated_description = Str::limit($featuredEvent->description, 300);
@@ -274,30 +273,30 @@ class PublicController extends Controller
             return $event;
         });
 
-        // Récupérer les catégories et lieux pour les filtres
-        $categories = Evenement::select('categorie')
-                               ->distinct()
-                               ->whereNotNull('categorie')
-                               ->where('statut', 'publier')
-                               ->pluck('categorie');
+        // Catégories et lieux mis en cache 10 minutes (changent rarement)
+        $categories = Cache::remember('filter_categories', 600, function () {
+            return Evenement::select('categorie')
+                            ->distinct()
+                            ->whereNotNull('categorie')
+                            ->where('statut', 'publier')
+                            ->pluck('categorie');
+        });
 
-        $lieux = Evenement::select('lieu')
-                          ->distinct()
-                          ->whereNotNull('lieu')
-                          ->where('statut', 'publier')
-                          ->pluck('lieu');
+        $lieux = Cache::remember('filter_lieux', 600, function () {
+            return Evenement::select('lieu')
+                            ->distinct()
+                            ->whereNotNull('lieu')
+                            ->where('statut', 'publier')
+                            ->pluck('lieu');
+        });
 
-        // Événement en vedette (le plus récent publié)
-        $featuredEvent = Evenement::where('statut', 'publier')
-                                  ->where('date', '>=', now()->toDateString())
-                                  ->orderBy('date', 'asc')
-                                  ->first();
-
-        if (!$featuredEvent) {
-            $featuredEvent = Evenement::where('statut', 'publier')
-                                    ->orderBy('date', 'desc')
-                                    ->first();
-        }
+        // Événement en vedette — mis en cache 5 minutes
+        $featuredEvent = Cache::remember('featured_event', 300, function () {
+            return Evenement::where('statut', 'publier')
+                            ->orderByRaw('CASE WHEN date >= CURDATE() THEN 0 ELSE 1 END')
+                            ->orderBy('date', 'asc')
+                            ->first();
+        });
 
         if ($featuredEvent) {
             $featuredEvent->truncated_description = Str::limit($featuredEvent->description, 300);

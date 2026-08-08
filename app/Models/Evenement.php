@@ -16,7 +16,7 @@ class Evenement extends Model
         'twiter', 'user_id'
     ];
 
-    protected $appends = ['photo_url', 'video_url', 'is_past'];
+    protected $appends = ['photo_url', 'video_url'];
 
     // Relations
     public function ticketDesign()
