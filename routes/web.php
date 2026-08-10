@@ -31,12 +31,13 @@ use App\Http\Controllers\ScannerController;
 Route::get('/', [PublicController::class, 'index'])->name('index');
 
 Route::get('/app-qrcode', function () {
-    return response()->file(public_path('qrcode-presentation.html'));
+    return view('qrcode');
 })->name('app-qrcode');
 
 Route::get('/qrcode-presentation.html', function () {
-    return response()->file(public_path('qrcode-presentation.html'));
+    return view('qrcode');
 });
+
 
 
 /*-------------------------------------public---------------------------------- */
