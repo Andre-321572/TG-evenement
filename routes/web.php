@@ -30,6 +30,15 @@ use App\Http\Controllers\ScannerController;
 
 Route::get('/', [PublicController::class, 'index'])->name('index');
 
+Route::get('/app-qrcode', function () {
+    return response()->file(public_path('qrcode-presentation.html'));
+})->name('app-qrcode');
+
+Route::get('/qrcode-presentation.html', function () {
+    return response()->file(public_path('qrcode-presentation.html'));
+});
+
+
 /*-------------------------------------public---------------------------------- */
 // Routes avec le préfixe '/p' et le préfixe de nom 'p.'
 Route::prefix('p')->name('p.')->group(function () {
